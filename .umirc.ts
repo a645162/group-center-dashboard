@@ -23,18 +23,18 @@ export default defineConfig({
     {
       name: 'GPU',
       path: '/gpu',
-      component: './Gpu',
+      component: './GpuDashboard',
     },
-    {
-      name: '权限演示',
-      path: '/access',
-      component: './Access',
-    },
-    {
-      name: ' CRUD 示例',
-      path: '/table',
-      component: './Table',
-    },
+    // {
+    //   name: '权限演示',
+    //   path: '/access',
+    //   component: './Access',
+    // },
+    // {
+    //   name: ' CRUD 示例',
+    //   path: '/table',
+    //   component: './Table',
+    // },
   ],
   // @umijs/max-plugin-openapi
   // openAPI: [

@@ -3,8 +3,9 @@ import { getMachineList } from '@/services/group_center/frontEndMachineListContr
 import { AxiosResponse } from '@umijs/max';
 import { Layout, Row, Typography } from 'antd';
 import React, { useEffect, useState } from 'react';
-import styles from './Gpu.less';
-import MachineSelector from './Machine';
+import styles from './GpuDashboard.less';
+
+import MachineSelector from '@/components/Machine/MachineSelector';
 
 interface Props {
   name: string;
@@ -30,7 +31,7 @@ const useMachineListState = () => {
   return machineList;
 };
 
-const Gpu: React.FC<Props> = (props) => {
+const GpuDashboard: React.FC<Props> = (props) => {
   const { name } = props;
 
   const machineList = useMachineListState();
@@ -70,4 +71,4 @@ const Gpu: React.FC<Props> = (props) => {
   );
 };
 
-export default Gpu;
+export default GpuDashboard;

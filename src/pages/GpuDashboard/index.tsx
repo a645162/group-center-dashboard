@@ -1,4 +1,4 @@
-import Gpu from '@/components/Gpu';
+import GpuDashboard from '@/components/Machine/GpuDashboard';
 import { trim } from '@/utils/format';
 import { PageContainer } from '@ant-design/pro-components';
 import { useModel } from '@umijs/max';
@@ -9,7 +9,7 @@ const GpuPage: React.FC = () => {
   return (
     <PageContainer ghost>
       <div className={styles.container}>
-        <Gpu name={trim(name)} />
+        <GpuDashboard name={trim(name)} />
       </div>
     </PageContainer>
   );
