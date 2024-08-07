@@ -1,6 +1,10 @@
-import type { CascaderProps } from 'antd';
 import { Cascader } from 'antd';
 import React from 'react';
+
+type MachineSelectorProps = {
+  machineList: API.FrontEndMachine[];
+  onMachineChange?: (selectedMachine: API.FrontEndMachine) => void;
+};
 
 interface Option {
   value: string;
@@ -8,47 +12,71 @@ interface Option {
   children?: Option[];
 }
 
-const options: Option[] = [
-  {
-    value: 'zhejiang',
-    label: 'Zhejiang',
-    children: [
-      {
-        value: 'hangzhou',
-        label: 'Hangzhou',
-        children: [
-          {
-            value: 'xihu',
-            label: 'West Lake',
-          },
-        ],
-      },
-    ],
-  },
-  {
-    value: 'jiangsu',
-    label: 'Jiangsu',
-    children: [
-      {
-        value: 'nanjing',
-        label: 'Nanjing',
-        children: [
-          {
-            value: 'zhonghuamen',
-            label: 'Zhong Hua Men',
-          },
-        ],
-      },
-    ],
-  },
-];
+const MachineSelector: React.FC<MachineSelectorProps> = ({
+  machineList,
+  onMachineChange,
+}) => {
+  // First level
+  // machineList[i].position
 
-const onChange: CascaderProps<Option>['onChange'] = (value) => {
-  console.log(value);
+  // Second level
+  // machineList[i].machineName
+
+  // Get all positions and not duplicated
+  const positionOptions: Option[] = [];
+  for (let i = 0; i < machineList.length; i++) {
+    const position = machineList[i].position;
+    if (
+      positionOptions.find((element) => element.label === position) ===
+      undefined
+    ) {
+      positionOptions.push({
+        value: position,
+        label: position,
+      });
+    }
+  }
+
+  for (let i = 0; i < machineList.length; i++) {
+    for (let j = 0; j < positionOptions.length; j++) {
+      const position = machineList[i].position;
+      const currentPosition = positionOptions[j].label;
+      if (position === currentPosition) {
+        if (positionOptions[j].children === undefined) {
+          positionOptions[j].children = [];
+        }
+
+        // @ts-ignore
+        positionOptions[j].children.push({
+          value: machineList[i].machineUrl,
+          label: machineList[i].machineName,
+        });
+      }
+    }
+  }
+
+  const onChange = (value: string[]) => {
+    const selectedMachine = machineList.find(
+      (machine) => machine.machineUrl === value[1],
+    );
+    if (selectedMachine) {
+      // console.log('onMachineChange', selectedMachine);
+
+      if (onMachineChange) {
+        onMachineChange(selectedMachine);
+      }
+    }
+  };
+
+  return (
+    <>
+      <Cascader
+        options={positionOptions}
+        onChange={onChange}
+        placeholder="Please select"
+      />
+    </>
+  );
 };
-
-const MachineSelector: React.FC = () => (
-  <Cascader options={options} onChange={onChange} placeholder="Please select" />
-);
 
 export default MachineSelector;
