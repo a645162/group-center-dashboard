@@ -20,6 +20,11 @@ export default defineConfig({
       component: './Home',
     },
     {
+      name: 'GPU',
+      path: '/gpu',
+      component: './Gpu',
+    },
+    {
       name: '权限演示',
       path: '/access',
       component: './Access',
@@ -33,4 +38,8 @@ export default defineConfig({
 
   npmClient: 'pnpm',
   mako: {},
+  define: {
+    'process.env.GROUP_CENTER_URL': process.env.GROUP_CENTER_URL,
+  },
+  tailwindcss: {},
 });
