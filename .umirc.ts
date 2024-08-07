@@ -40,7 +40,7 @@ export default defineConfig({
     {
       requestLibPath: 'import { request } from "@umijs/max"',
       schemaPath: 'http://localhost:15090/v3/api-docs',
-      projectName: 'swagger',
+      projectName: 'group_center',
     },
   ],
   npmClient: 'pnpm',
