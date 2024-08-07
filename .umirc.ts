@@ -36,13 +36,14 @@ export default defineConfig({
       component: './Table',
     },
   ],
-  openAPI: [
-    {
-      requestLibPath: 'import { request } from "@umijs/max"',
-      schemaPath: 'http://localhost:15090/v3/api-docs',
-      projectName: 'group_center',
-    },
-  ],
+  // @umijs/max-plugin-openapi
+  // openAPI: [
+  //   {
+  //     requestLibPath: 'import { request } from "@umijs/max"',
+  //     schemaPath: 'http://localhost:15090/v3/api-docs',
+  //     projectName: 'group_center',
+  //   },
+  // ],
   npmClient: 'pnpm',
   mako: {},
   define: {
