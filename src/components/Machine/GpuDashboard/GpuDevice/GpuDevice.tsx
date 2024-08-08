@@ -12,14 +12,8 @@ const GpuDevice: React.FC<Props> = (props) => {
 
   return (
     <div>
-      <h2>({apiUrl})</h2>
-
-      <h1>GpuDevice</h1>
-      <h2>Device {gpuIndex}</h2>
-      <div>
-        <GpuUsageCard apiUrl={apiUrl} gpuIndex={gpuIndex} />
-        <GpuTaskListCard apiUrl={apiUrl} gpuIndex={gpuIndex} />
-      </div>
+      <GpuUsageCard apiUrl={apiUrl} gpuIndex={gpuIndex} />
+      <GpuTaskListCard apiUrl={apiUrl} gpuIndex={gpuIndex} />
     </div>
   );
 };

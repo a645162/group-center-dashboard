@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 
-import { GROUP_CENTER_URL } from '@/constants/group_center';
 import { getMachineList } from '@/services/group_center/frontEndMachineListController';
 import { AxiosResponse } from '@umijs/max';
 
@@ -8,7 +7,7 @@ import GpuDashboard from '@/components/Machine/GpuDashboard';
 import MachineSelector from '@/components/Machine/MachineSelector';
 
 interface Props {
-  name: string;
+  name?: string;
 }
 
 const useMachineListState = () => {
@@ -47,7 +46,7 @@ const GpuDashboardWithNoContent = (
 };
 
 const GpuDashboardPageContent: React.FC<Props> = (props) => {
-  const { name } = props;
+  const {} = props;
 
   const machineList = useMachineListState();
 
@@ -56,15 +55,11 @@ const GpuDashboardPageContent: React.FC<Props> = (props) => {
 
   return (
     <div>
-      <h1>GPU</h1>
-      <h2>{name}</h2>
-      <h2>({GROUP_CENTER_URL})</h2>
-
-      <ul>
+      {/* <ul>
         {machineList.map((machine) => (
           <li key={machine.machineName}>{machine.machineName}</li>
         ))}
-      </ul>
+      </ul> */}
 
       <MachineSelector
         machineList={machineList}
