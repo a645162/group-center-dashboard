@@ -20,13 +20,13 @@ const machine_list = [
   {
     machineName: '4 x 2080Ti',
     machineUrl: '/gpu/2084',
-    position: '开发环境3',
+    position: '测试环境1',
     urlKeywords: ['/2084'],
   },
   {
     machineName: '2 x 2080Ti',
     machineUrl: '/gpu/2082',
-    position: '开发环境4',
+    position: '测试环境2',
     urlKeywords: ['/2082'],
   },
 ];

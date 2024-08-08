@@ -1,6 +1,8 @@
 import React from 'react';
-import GpuTaskListCard from './GpuTaskListCard';
-import GpuUsageCard from './GpuUsageCard';
+import GpuTaskListCard from './Task/GpuTaskListCard';
+import GpuUsageCard from './Usage/GpuUsageCard';
+
+import './GpuDevice.less';
 
 interface Props {
   apiUrl: string;
@@ -11,7 +13,7 @@ const GpuDevice: React.FC<Props> = (props) => {
   const { apiUrl, gpuIndex } = props;
 
   return (
-    <div>
+    <div className="gpu-device">
       <GpuUsageCard apiUrl={apiUrl} gpuIndex={gpuIndex} />
       <GpuTaskListCard apiUrl={apiUrl} gpuIndex={gpuIndex} />
     </div>
