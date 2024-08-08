@@ -53,6 +53,14 @@ const GpuDashboardPageContent: React.FC<Props> = (props) => {
   const [selectedMachineState, setSelectedMachineState] =
     useState<API.FrontEndMachine | null>(null);
 
+  if (!machineList) {
+    return (
+      <>
+        <h1>Trying to connect to server...</h1>
+      </>
+    );
+  }
+
   return (
     <div>
       {/* <ul>
