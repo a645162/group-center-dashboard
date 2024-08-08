@@ -1,5 +1,42 @@
 import { defineConfig } from '@umijs/max';
 
+const getEnvBool = (key: string): boolean => {
+  const value = process.env[key];
+
+  if (value === undefined) {
+    // Key is undefined
+    return false;
+  }
+
+  return value.toString().toLowerCase().trim() === 'true';
+};
+
+const disableProxy = getEnvBool('DISABLE_PROXY');
+const enableProxy = !disableProxy && getEnvBool('ENABLE_PROXY');
+console.log('disableProxy', disableProxy);
+console.log('enableProxy', enableProxy);
+let proxyConfig = enableProxy
+  ? {
+      proxy: {
+        '/api': {
+          target: process.env.GROUP_CENTER_URL + '/api/',
+          changeOrigin: true,
+          pathRewrite: { '^/api': '' },
+        },
+        '/web': {
+          target: process.env.GROUP_CENTER_URL + '/web/',
+          changeOrigin: true,
+          pathRewrite: { '^/web': '' },
+        },
+        '/gpu': {
+          target: process.env.GROUP_CENTER_URL + '/gpu/',
+          changeOrigin: true,
+          pathRewrite: { '^/gpu': '' },
+        },
+      },
+    }
+  : {};
+
 export default defineConfig({
   favicons: ['/assets/favicon.ico'],
   // links: [{ rel: 'icon', href: '/assets/favicon.ico' }],
@@ -46,23 +83,7 @@ export default defineConfig({
   //     projectName: 'group_center',
   //   },
   // ],
-  proxy: {
-    '/api': {
-      target: process.env.GROUP_CENTER_URL + '/api/',
-      changeOrigin: true,
-      pathRewrite: { '^/api': '' },
-    },
-    '/web': {
-      target: process.env.GROUP_CENTER_URL + '/web/',
-      changeOrigin: true,
-      pathRewrite: { '^/web': '' },
-    },
-    '/gpu': {
-      target: process.env.GROUP_CENTER_URL + '/gpu/',
-      changeOrigin: true,
-      pathRewrite: { '^/gpu': '' },
-    },
-  },
+  ...proxyConfig,
   npmClient: 'pnpm',
   mako: {},
   define: {
