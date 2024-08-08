@@ -40,18 +40,31 @@ const gpu_task_info = {
   ],
 };
 
+const responseGpuCount = {
+  result: 1,
+};
+const responseGpuUsageInfo = gpu_usage_info;
+const responseGpuTaskInfo = gpu_task_info;
+
 export default {
-  'GET /gpu_usage_info': (req: any, res: any) => {
+  'GET /gpu/3090/gpu_count': (req: any, res: any) => {
     res.json({
       success: true,
-      data: gpu_usage_info,
+      data: responseGpuCount,
       errorCode: 0,
     });
   },
-  'GET /gpu_task_info': (req: any, res: any) => {
+  'GET /gpu/3090/gpu_usage_info': (req: any, res: any) => {
     res.json({
       success: true,
-      data: gpu_task_info,
+      data: responseGpuUsageInfo,
+      errorCode: 0,
+    });
+  },
+  'GET /gpu/3090/gpu_task_info': (req: any, res: any) => {
+    res.json({
+      success: true,
+      data: responseGpuTaskInfo,
       errorCode: 0,
     });
   },

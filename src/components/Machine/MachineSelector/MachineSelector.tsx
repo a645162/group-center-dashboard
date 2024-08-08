@@ -68,12 +68,17 @@ const MachineSelector: React.FC<MachineSelectorProps> = ({
     }
   };
 
+  const style = {
+    minWidth: '200px',
+  };
+
   return (
     <>
       <Cascader
         options={positionOptions}
         onChange={onChange}
         placeholder="Please select"
+        style={style}
       />
     </>
   );

@@ -1,7 +1,7 @@
-import GpuDashboard from '@/components/Machine/GpuDashboard';
 import { trim } from '@/utils/format';
 import { PageContainer } from '@ant-design/pro-components';
 import { useModel } from '@umijs/max';
+import GpuDashboardPageContent from './GpuDashboardPageContent';
 import styles from './index.less';
 
 const GpuPage: React.FC = () => {
@@ -9,7 +9,7 @@ const GpuPage: React.FC = () => {
   return (
     <PageContainer ghost>
       <div className={styles.container}>
-        <GpuDashboard name={trim(name)} />
+        <GpuDashboardPageContent name={trim(name)} />
       </div>
     </PageContainer>
   );

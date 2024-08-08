@@ -17,6 +17,12 @@ const machine_list = [
     position: '开发环境2',
     urlKeywords: ['/4090b'],
   },
+  {
+    machineName: '4 x 2080Ti',
+    machineUrl: '/gpu/2084',
+    position: '开发环境3',
+    urlKeywords: ['/2084'],
+  },
 ];
 
 export default {

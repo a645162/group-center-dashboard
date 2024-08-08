@@ -27,7 +27,7 @@
     "@umijs/max-plugin-openapi": "^2.0.3",
     "husky": "^9",
     "lint-staged": "^15.2.8",
-    "npm-check-updates": "^17.0.3",
+    "npm-check-updates": "^17.0.5",
     "nrm": "^1.2.6",
     "prettier": "^3.3.3",
     "prettier-plugin-organize-imports": "^4.0.0",
