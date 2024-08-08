@@ -1,6 +1,8 @@
 import { defineConfig } from '@umijs/max';
 
 export default defineConfig({
+  favicons: ['/assets/favicon.ico'],
+  links: [{ rel: 'icon', href: '/assets/favicon.ico' }],
   plugins: ['@umijs/max-plugin-openapi'],
   antd: {},
   access: {},
