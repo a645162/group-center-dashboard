@@ -2,13 +2,13 @@ import ConcatUrl from '@/services/ConcatUrl';
 import { request } from '@umijs/max';
 
 export async function getGpuCount(apiBaseUrl: string) {
-  return request<API.Result_GpuCount>(ConcatUrl(apiBaseUrl, 'gpu_count'), {
+  return request<API.DashboardGpuCount>(ConcatUrl(apiBaseUrl, 'gpu_count'), {
     method: 'GET',
   });
 }
 
 export async function getGpuUsageInfo(apiBaseUrl: string, gpuIndex: number) {
-  return request<API.Result_GpuUsageInfo>(
+  return request<API.DashboardGpuUsageInfo>(
     ConcatUrl(apiBaseUrl, '/gpu_usage_info'),
     {
       method: 'GET',
@@ -20,7 +20,7 @@ export async function getGpuUsageInfo(apiBaseUrl: string, gpuIndex: number) {
 }
 
 export async function getGpuTaskInfo(apiBaseUrl: string, gpuIndex: number) {
-  return request<API.Result_GpuTaskInfo>(
+  return request<API.DashboardGpuTaskItemInfoResponse>(
     ConcatUrl(apiBaseUrl, '/gpu_task_info'),
     {
       method: 'GET',

@@ -33,10 +33,6 @@ const machine_list = [
 
 export default {
   'GET /web/open/front_end/machineList': (req: any, res: any) => {
-    res.json({
-      success: true,
-      data: machine_list,
-      errorCode: 0,
-    });
+    res.json(machine_list);
   },
 };

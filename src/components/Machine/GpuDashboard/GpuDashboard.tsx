@@ -12,8 +12,7 @@ const useGpuCountState = (apiUrl: string) => {
 
   useEffect(() => {
     getGpuCount(apiUrl)
-      .then((responseData) => {
-        const data = responseData.data;
+      .then((data) => {
         const count = data?.result || 0;
         console.log('Gpu Count:', count);
         setGpuCountState(count);

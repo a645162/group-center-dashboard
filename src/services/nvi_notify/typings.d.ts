@@ -57,26 +57,4 @@ declare namespace API {
     result: number;
     taskList: API.DashboardGpuTaskItemInfo[];
   }
-
-  // AxioResponse
-  interface Result_MachineSystemInfo {
-    success?: boolean;
-    errorMessage?: string;
-    data?: API.MachineSystemInfo;
-  }
-  interface Result_GpuCount {
-    success?: boolean;
-    errorMessage?: string;
-    data?: API.DashboardGpuCount;
-  }
-  interface Result_GpuUsageInfo {
-    success?: boolean;
-    errorMessage?: string;
-    data?: API.DashboardGpuUsageInfo;
-  }
-  interface Result_GpuTaskInfo {
-    success?: boolean;
-    errorMessage?: string;
-    data?: API.DashboardGpuTaskItemInfoResponse;
-  }
 }

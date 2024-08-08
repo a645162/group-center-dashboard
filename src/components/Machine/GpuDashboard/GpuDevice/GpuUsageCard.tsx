@@ -40,8 +40,7 @@ const useGpuUsageInfo = (apiUrl: string, gpuIndex: number) => {
   useEffect(() => {
     const intervalId = setInterval(() => {
       getGpuUsageInfo(apiUrl, gpuIndex)
-        .then((responseData) => {
-          const data = responseData.data;
+        .then((data) => {
           setGpuUsageInfo(data);
         })
         .catch((error: any) => {

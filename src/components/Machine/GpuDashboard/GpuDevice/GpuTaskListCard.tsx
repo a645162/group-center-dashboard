@@ -14,9 +14,8 @@ const useGpuTaskListState = (apiUrl: string, gpuIndex: number) => {
   useEffect(() => {
     const intervalId = setInterval(() => {
       getGpuTaskInfo(apiUrl, gpuIndex)
-        .then((responseData) => {
-          const data = responseData.data?.taskList;
-          setGpuTaskList(data);
+        .then((data) => {
+          setGpuTaskList(data.taskList);
         })
         .catch((error: any) => {
           console.log('error:', error);
