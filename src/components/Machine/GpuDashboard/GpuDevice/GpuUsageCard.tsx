@@ -62,15 +62,13 @@ const calculateColorIndex = (
   const maxValue = max > min ? max : min;
   const minValue = max > min ? min : max;
 
-  const index = Math.floor(((maxValue - minValue) * percent) / 100 + minValue);
-
-  return index;
+  return Math.floor(((maxValue - minValue) * percent) / 100 + minValue);
 };
 const computeColor = (percent: number) => {
   const threshold1 = 40,
     threshold2 = 80;
   if (percent < threshold1) {
-    return green[calculateColorIndex((percent - 0) / (threshold1 - 0), 8, 3)];
+    return green[calculateColorIndex(percent / threshold1, 8, 3)];
   } else if (percent >= threshold1 && percent < threshold2) {
     return orange[
       (calculateColorIndex((percent - threshold1) / (threshold2 - threshold1)),
@@ -103,7 +101,6 @@ const GpuUsageCard: React.FC<Props> = (props) => {
 
   return (
     <div className="gpu-usage-card">
-      <p>GPU Name: {gpuUsageInfo?.gpuName || ''}</p>
       <Card style={{ minWidth: 300 }}>
         <div style={{ display: 'flex', alignItems: 'center' }}>
           {/* 左侧容器 */}
@@ -115,7 +112,7 @@ const GpuUsageCard: React.FC<Props> = (props) => {
             }}
           >
             {/* 左上 */}
-            <div>{gpuUsageInfo?.gpuName}</div>
+            <div>{gpuUsageInfo?.gpuName || ''}</div>
 
             {/* 左下 */}
             <div>

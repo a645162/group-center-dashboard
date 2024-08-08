@@ -69,7 +69,7 @@ const MachineSelector: React.FC<MachineSelectorProps> = ({
   };
 
   const style = {
-    minWidth: '200px',
+    minWidth: '300px',
   };
 
   return (
