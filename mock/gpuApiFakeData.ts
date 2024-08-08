@@ -1,3 +1,8 @@
+import {
+  getCurrentTimeStamp,
+  getPreviousTimeStamp,
+} from '../src/utils/Time/DateTimeUtils';
+
 const basicGpuUsageInfo = {
   result: 1,
   gpuName: 'RTX 3090',
@@ -84,6 +89,11 @@ export const generateGpuTaskInfo = (maxTaskCount: number) => {
     currentTask.name = 'User ' + getRandomInt(9);
     currentTask.projectName = 'Project ' + (i + 1).toString();
     currentTask.worldSize = getRandomInt(2);
+    currentTask.startTimestamp = getPreviousTimeStamp(
+      getCurrentTimeStamp(),
+      getRandomInt(24),
+      getRandomInt(60),
+    );
 
     taskList.push(currentTask);
   }

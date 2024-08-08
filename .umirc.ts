@@ -23,8 +23,8 @@ export default defineConfig({
       component: './Home',
     },
     {
-      name: 'GPU',
-      path: '/gpu',
+      name: 'GPU看板',
+      path: '/gpu-dashboard',
       component: './GpuDashboard',
     },
     // {

@@ -6,10 +6,10 @@ declare namespace API {
     memorySwapTotalMb: number;
     memorySwapUsedMb: number;
   }
-  interface GpuCount {
+  interface DashboardGpuCount {
     result: number;
   }
-  interface GpuUsageInfo {
+  interface DashboardGpuUsageInfo {
     result: string;
     gpuName: string;
     coreUsage: number;
@@ -20,7 +20,7 @@ declare namespace API {
     gpuTDP: number;
     gpuTemperature: number;
   }
-  interface GpuTaskInfo {
+  interface DashboardGpuTaskItemInfo {
     id: number;
     name: string;
 
@@ -53,9 +53,9 @@ declare namespace API {
     cudaVersion: string;
     cudaVisibleDevices: string;
   }
-  interface GpuTaskInfoResponse {
+  interface DashboardGpuTaskItemInfoResponse {
     result: number;
-    taskList: API.GpuTaskInfo[];
+    taskList: API.DashboardGpuTaskItemInfo[];
   }
 
   // AxioResponse
@@ -67,16 +67,16 @@ declare namespace API {
   interface Result_GpuCount {
     success?: boolean;
     errorMessage?: string;
-    data?: API.GpuCount;
+    data?: API.DashboardGpuCount;
   }
   interface Result_GpuUsageInfo {
     success?: boolean;
     errorMessage?: string;
-    data?: API.GpuUsageInfo;
+    data?: API.DashboardGpuUsageInfo;
   }
   interface Result_GpuTaskInfo {
     success?: boolean;
     errorMessage?: string;
-    data?: GpuTaskInfoResponse;
+    data?: API.DashboardGpuTaskItemInfoResponse;
   }
 }

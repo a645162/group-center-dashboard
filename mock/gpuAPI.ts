@@ -92,4 +92,26 @@ export default {
       errorCode: 0,
     });
   },
+
+  'GET /gpu/2082/gpu_count': (req: any, res: any) => {
+    res.json({
+      success: true,
+      data: generateGpuCountResponse(2),
+      errorCode: 0,
+    });
+  },
+  'GET /gpu/2082/gpu_usage_info': (req: any, res: any) => {
+    res.json({
+      success: true,
+      data: generateGpuUsageInfo('RTX 2080 Ti'),
+      errorCode: 0,
+    });
+  },
+  'GET /gpu/2082/gpu_task_info': (req: any, res: any) => {
+    res.json({
+      success: true,
+      data: generateGpuTaskInfo(2),
+      errorCode: 0,
+    });
+  },
 };

@@ -8,7 +8,8 @@ interface Props {
 }
 
 const useGpuTaskListState = (apiUrl: string, gpuIndex: number) => {
-  const [gpuTaskList, setGpuTaskList] = useState<API.GpuTaskInfo[]>();
+  const [gpuTaskList, setGpuTaskList] =
+    useState<API.DashboardGpuTaskItemInfo[]>();
 
   useEffect(() => {
     const intervalId = setInterval(() => {
