@@ -82,6 +82,19 @@ const computeColor = (percent: number) => {
   }
 };
 
+const ProgressConponent = (percent: number) => {
+  // format = {(percent) => `${percent} Days`}
+  return (
+    <Progress
+      percent={percent}
+      steps={10}
+      size="small"
+      strokeColor={computeColor(percent)}
+      format={(percent) => `${percent}`.padStart(2, '0') + '%'}
+    />
+  );
+};
+
 const GpuUsageCard: React.FC<Props> = (props) => {
   const { apiUrl, gpuIndex } = props;
 
@@ -96,7 +109,7 @@ const GpuUsageCard: React.FC<Props> = (props) => {
   const gpuMemoryTotalFormatted = getMemoryString(gpuMemoryTotalGiB);
 
   if (!gpuUsageInfo) {
-    return <div>Loading...</div>;
+    return <div>Loading......</div>;
   }
 
   return (
@@ -126,20 +139,10 @@ const GpuUsageCard: React.FC<Props> = (props) => {
           {/* 右侧容器 */}
           <div style={{ display: 'flex', flexDirection: 'column' }}>
             {/* 右上 */}
-            <Progress
-              percent={gpuUsageInfo?.memoryUsage}
-              steps={10}
-              size="small"
-              strokeColor={computeColor(gpuUsageInfo?.memoryUsage)}
-            />
+            {ProgressConponent(gpuUsageInfo?.memoryUsage)}
 
             {/* 右下 */}
-            <Progress
-              percent={gpuUsageInfo?.coreUsage}
-              steps={10}
-              size="small"
-              strokeColor={computeColor(gpuUsageInfo?.coreUsage)}
-            />
+            {ProgressConponent(gpuUsageInfo?.coreUsage)}
           </div>
         </div>
       </Card>

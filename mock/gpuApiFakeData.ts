@@ -88,6 +88,12 @@ export const generateGpuTaskInfo = (maxTaskCount: number) => {
     currentTask.debugMode = Math.random() < 0.5; // 50% debugMode
     currentTask.name = 'User ' + getRandomInt(9);
     currentTask.projectName = 'Project ' + (i + 1).toString();
+    if (Math.random() < 0.5) {
+      currentTask.screenSessionName = 'Screen ' + (i + 1).toString();
+    } else {
+      currentTask.screenSessionName = '';
+    }
+
     currentTask.worldSize = getRandomInt(2);
     currentTask.startTimestamp = getPreviousTimeStamp(
       getCurrentTimeStamp(),

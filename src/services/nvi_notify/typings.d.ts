@@ -52,6 +52,8 @@ declare namespace API {
     cudaRoot: string;
     cudaVersion: string;
     cudaVisibleDevices: string;
+
+    driverVersion: string;
   }
   interface DashboardGpuTaskItemInfoResponse {
     result: number;

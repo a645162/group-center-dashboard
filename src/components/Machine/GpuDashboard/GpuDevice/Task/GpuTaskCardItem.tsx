@@ -1,6 +1,7 @@
 import RunTimeComponent from '@/components/Time/RunTimeComponent';
 import { Card, Divider, Space } from 'antd';
 import React from 'react';
+import GpuTaskDetailModal from './GpuTaskDetailModal';
 
 interface Props {
   index: number;
@@ -16,6 +17,7 @@ const GpuTaskCardItem: React.FC<Props> = (props) => {
 
   return (
     <div>
+      <GpuTaskDetailModal taskInfo={taskInfo} />
       <Space direction="vertical" size={16}>
         <Card
           size="small"
