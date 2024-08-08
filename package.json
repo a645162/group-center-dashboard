@@ -5,6 +5,7 @@
   "scripts": {
     "build": "max build",
     "dev": "max dev",
+    "dev-pure": "MOCK=none max dev",
     "format": "prettier --cache --write .",
     "postinstall": "max setup",
     "openapi": "max openapi",

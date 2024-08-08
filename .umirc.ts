@@ -46,6 +46,23 @@ export default defineConfig({
   //     projectName: 'group_center',
   //   },
   // ],
+  proxy: {
+    '/api': {
+      target: process.env.GROUP_CENTER_URL + '/api/',
+      changeOrigin: true,
+      pathRewrite: { '^/api': '' },
+    },
+    '/web': {
+      target: process.env.GROUP_CENTER_URL + '/web/',
+      changeOrigin: true,
+      pathRewrite: { '^/web': '' },
+    },
+    '/gpu': {
+      target: process.env.GROUP_CENTER_URL + '/gpu/',
+      changeOrigin: true,
+      pathRewrite: { '^/gpu': '' },
+    },
+  },
   npmClient: 'pnpm',
   mako: {},
   define: {

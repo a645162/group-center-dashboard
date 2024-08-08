@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 
 import { getMachineList } from '@/services/group_center/frontEndMachineListController';
-import { AxiosResponse } from '@umijs/max';
 
 import GpuDashboard from '@/components/Machine/GpuDashboard';
 import MachineSelector from '@/components/Machine/MachineSelector';
@@ -11,16 +10,13 @@ interface Props {
 }
 
 const useMachineListState = () => {
-  const [machineList, setMachineList] = useState<API.FrontEndMachine[]>([]); // 提供一个初始状态值
+  const [machineList, setMachineList] = useState<API.FrontEndMachine[]>([]);
 
   useEffect(() => {
     getMachineList()
       .then((data) => {
-        const trueData = data as unknown as AxiosResponse<
-          API.FrontEndMachine[]
-        >;
-        console.log('data:', trueData.data);
-        setMachineList(trueData.data);
+        // console.log('data:', data);
+        setMachineList(data);
       })
       .catch((error: any) => {
         console.log('error:', error);
