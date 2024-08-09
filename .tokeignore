@@ -1,0 +1,10 @@
+node_modules/
+src/.umi/
+.husky/
+
+Resource/
+src/assets/
+
+dist/
+
+pnpm-lock.yaml

@@ -3,7 +3,7 @@ import { defineConfig } from '@umijs/max';
 import childConfig from './config/config';
 
 export default defineConfig({
-  favicons: ['/assets/favicon.ico'],
+  favicons: ['/favicon.ico'],
   // links: [{ rel: 'icon', href: '/assets/favicon.ico' }],
   plugins: ['@umijs/max-plugin-openapi'],
   antd: {},
