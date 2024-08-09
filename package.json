@@ -18,7 +18,7 @@
   "dependencies": {
     "@ant-design/icons": "^5.4.0",
     "@ant-design/pro-components": "^2.7.15",
-    "@umijs/max": "^4.3.11",
+    "@umijs/max": "^4.3.12",
     "antd": "^5.20.0",
     "axios": "^1.7.3",
     "typescript-cookie": "^1.0.6"
@@ -29,7 +29,7 @@
     "@umijs/max-plugin-openapi": "^2.0.3",
     "husky": "^9",
     "lint-staged": "^15.2.8",
-    "npm-check-updates": "^17.0.5",
+    "npm-check-updates": "^17.0.6",
     "nrm": "^1.2.6",
     "prettier": "^3.3.3",
     "prettier-plugin-organize-imports": "^4.0.0",
