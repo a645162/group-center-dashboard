@@ -1,7 +1,9 @@
 import RunTimeComponent from '@/components/Time/RunTimeComponent';
 import { Card, Divider, Space } from 'antd';
-import React from 'react';
-import GpuTaskDetailModal from './GpuTaskDetailModal';
+import React, { useRef } from 'react';
+import GpuTaskDetailModal, {
+  GpuTaskDetailModalHandles,
+} from './Detail/GpuTaskDetailModal';
 
 interface Props {
   index: number;
@@ -11,18 +13,28 @@ interface Props {
 const GpuTaskCardItem: React.FC<Props> = (props) => {
   const { index, taskInfo } = props;
 
+  const modalFunctionRef = useRef<GpuTaskDetailModalHandles>(null);
+
+  const onClickShowDetail = () => {
+    modalFunctionRef.current?.tryToShowModal();
+  };
+
   const screenSessionString = taskInfo.screenSessionName
     ? `(${taskInfo.screenSessionName})`
     : '';
 
   return (
     <div>
-      <GpuTaskDetailModal taskInfo={taskInfo} />
+      <GpuTaskDetailModal taskInfo={taskInfo} ref={modalFunctionRef} />
       <Space direction="vertical" size={16}>
         <Card
           size="small"
           title={`[${index + 1}]${taskInfo.projectName}${screenSessionString}`}
-          extra={<a href="#">详细信息</a>}
+          extra={
+            <a href="#" onClick={onClickShowDetail}>
+              详细信息
+            </a>
+          }
           style={{ width: 300 }}
         >
           <div style={{ display: 'flex', alignItems: 'center' }}>
