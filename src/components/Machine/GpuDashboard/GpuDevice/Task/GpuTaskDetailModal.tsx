@@ -1,3 +1,4 @@
+import VShow from '@/components/Vue/V-Show';
 import { convertFromMBToGB, getMemoryString } from '@/utils/Convert/MemorySize';
 import { getTimeStrFromTimestamp } from '@/utils/Time/DateTimeUtils';
 import { Button, Modal } from 'antd';
@@ -82,9 +83,9 @@ const GpuTaskDetailModal: React.FC<Props> = (props) => {
 
         {/* <Divider dashed /> */}
 
-        {taskInfo.screenSessionName && (
+        <VShow v-show={taskInfo.screenSessionName.length > 0}>
           <div>Screen会话名称:{taskInfo.screenSessionName}</div>
-        )}
+        </VShow>
 
         {taskInfo.projectName && <div>项目名称:{taskInfo.projectName}</div>}
 
