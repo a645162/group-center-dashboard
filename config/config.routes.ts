@@ -14,6 +14,11 @@ let routesConfig = {
       path: '/gpu-dashboard',
       component: './GpuDashboard',
     },
+    {
+      name: '硬盘看板',
+      path: '/disk-dashboard',
+      component: './DiskDashboard',
+    },
     // {
     //   name: '权限演示',
     //   path: '/access',

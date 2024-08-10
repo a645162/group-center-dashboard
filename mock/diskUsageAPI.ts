@@ -22,6 +22,6 @@ export default {
   },
 
   'GET /cpu/server/disk_usage': (req: any, res: any) => {
-    res.json(generateDiskUsageData(6));
+    res.json(generateDiskUsageData(4));
   },
 };

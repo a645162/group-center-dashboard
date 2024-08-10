@@ -10,7 +10,7 @@ declare namespace API {
   interface MachineDiskUsage {
     mountPoint: string;
 
-    usePercentage: number;
+    usedPercentage: number;
 
     usedStr: string;
     freeStr: string;

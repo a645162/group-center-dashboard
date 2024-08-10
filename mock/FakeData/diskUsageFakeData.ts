@@ -17,7 +17,9 @@ const generateDiskUsage = (mountPoint: string, isSSD: boolean = false) => {
   const usagePercentage = getRandomInt(0, 100);
   const usageRatio = usagePercentage / 100;
 
-  let data = diskTemplate;
+  // Clone Template
+  // let data = diskTemplate;
+  let data = JSON.parse(JSON.stringify(diskTemplate));
 
   data.mountPoint = mountPoint;
 

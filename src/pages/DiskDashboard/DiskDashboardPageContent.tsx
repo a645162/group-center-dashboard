@@ -1,9 +1,7 @@
 import React, { useEffect, useState } from 'react';
 
+import MachineDisk from '@/components/Machine/MachineInfo/Hardware/Disk/MachineDisk';
 import { getPublicMachineList } from '@/services/group_center/frontEndMachineListController';
-
-import GpuDashboard from '@/components/Machine/GpuDashboard';
-import MachineSelector from '@/components/Machine/MachineSelector';
 
 interface Props {
   name?: string;
@@ -16,7 +14,7 @@ const useMachineListState = () => {
     getPublicMachineList()
       .then((data) => {
         // console.log('data:', data);
-        setMachineList(data.filter((machine) => machine.isGpu));
+        setMachineList(data);
       })
       .catch((error: any) => {
         console.log('error:', error);
@@ -26,28 +24,10 @@ const useMachineListState = () => {
   return machineList;
 };
 
-const GpuDashboardWithNoContent = (
-  selectedMachineState: API.FrontEndMachine | null,
-) => {
-  if (selectedMachineState) {
-    return (
-      <GpuDashboard
-        name={selectedMachineState.machineName}
-        apiUrl={selectedMachineState.machineUrl}
-      />
-    );
-  } else {
-    return <></>;
-  }
-};
-
-const GpuDashboardPageContent: React.FC<Props> = (props) => {
+const DiskDashboardPageContent: React.FC<Props> = (props) => {
   const {} = props;
 
   const machineList = useMachineListState();
-
-  const [selectedMachineState, setSelectedMachineState] =
-    useState<API.FrontEndMachine | null>(null);
 
   if (!machineList) {
     return (
@@ -59,20 +39,21 @@ const GpuDashboardPageContent: React.FC<Props> = (props) => {
 
   return (
     <div>
-      {/* <ul>
+      <ul>
         {machineList.map((machine) => (
           <li key={machine.machineName}>{machine.machineName}</li>
         ))}
-      </ul> */}
+      </ul>
 
-      <MachineSelector
-        machineList={machineList}
-        onMachineChange={setSelectedMachineState}
-      />
-
-      {GpuDashboardWithNoContent(selectedMachineState)}
+      {machineList.map((machine) => (
+        <MachineDisk
+          key={machine.machineName}
+          name={machine.machineName}
+          apiUrl={machine.machineUrl}
+        />
+      ))}
     </div>
   );
 };
 
-export default GpuDashboardPageContent;
+export default DiskDashboardPageContent;

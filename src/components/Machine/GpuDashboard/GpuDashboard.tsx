@@ -30,9 +30,9 @@ const GpuDashboard: React.FC<Props> = (props) => {
 
   const gpuCountState = useGpuCountState(apiUrl);
 
-  //   if (gpuCountState === 0) {
-  //     return (<div>暂无GPU</div>);
-  //   }
+  if (gpuCountState === 0) {
+    return <div>暂无GPU</div>;
+  }
 
   const gpuInfoStyle = {
     display: 'flex',
@@ -41,7 +41,7 @@ const GpuDashboard: React.FC<Props> = (props) => {
   return (
     <div>
       <h1>
-        {name}({useGpuCountState(apiUrl)}卡)
+        {name}({gpuCountState}卡)
       </h1>
       <div style={gpuInfoStyle}>
         {Array.from({ length: gpuCountState }, (_, i) => (
