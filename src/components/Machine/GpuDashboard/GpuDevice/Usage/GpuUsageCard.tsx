@@ -141,10 +141,10 @@ const GpuUsageCard: React.FC<Props> = (props) => {
           {/* 右侧容器 */}
           <div style={{ display: 'flex', flexDirection: 'column' }}>
             {/* 右上 */}
-            {ProgressConponent(gpuUsageInfo?.memoryUsage)}
+            <div>显存 {ProgressConponent(gpuUsageInfo?.memoryUsage)}</div>
 
             {/* 右下 */}
-            {ProgressConponent(gpuUsageInfo?.coreUsage)}
+            <div>核心 {ProgressConponent(gpuUsageInfo?.coreUsage)}</div>
           </div>
         </div>
       </Card>

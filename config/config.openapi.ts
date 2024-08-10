@@ -3,6 +3,8 @@ import { getEnvBool } from './utils';
 const enableOpenApi = getEnvBool('ENABLE_OPEN_API');
 console.log('ENABLE_OPEN_API', enableOpenApi);
 
+console.log('[OpenAPI]', enableOpenApi);
+
 let openApiConfig = enableOpenApi
   ? {
       // @umijs/max-plugin-openapi

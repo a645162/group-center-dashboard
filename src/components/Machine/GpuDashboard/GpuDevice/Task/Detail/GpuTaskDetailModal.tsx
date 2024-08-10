@@ -1,7 +1,8 @@
 import { copyToClipboardPromise } from '@/utils/System/Clipboard';
-import { Button, Modal } from 'antd';
+import { Button, message, Modal } from 'antd';
 import React, { useCallback, useState } from 'react';
 import GpuTaskDetailContent from './GpuTaskDetailContent';
+import GpuTaskDetailTags from './GpuTaskDetailTags';
 
 export interface GpuTaskDetailModalHandles {
   tryToShowModal: () => void;
@@ -20,6 +21,8 @@ const GpuTaskDetailModal = React.forwardRef<GpuTaskDetailModalHandles, Props>(
 
     const contentDivRef = React.useRef<HTMLDivElement>(null);
 
+    const [messageApi, contextHolder] = message.useMessage();
+
     const showModal = () => {
       setOpen(true);
     };
@@ -29,20 +32,25 @@ const GpuTaskDetailModal = React.forwardRef<GpuTaskDetailModalHandles, Props>(
 
       if (contentDivRef.current) {
         const text = contentDivRef.current.innerText;
-        copyToClipboardPromise(text).finally(() => {
-          setLoading(false);
-          setOpen(false);
-        });
+        copyToClipboardPromise(text)
+          .then(() => {
+            messageApi.open({
+              type: 'success',
+              content: '复制成功！',
+            });
+          })
+          .catch(() => {
+            messageApi.open({
+              type: 'error',
+              content: '复制失败！',
+            });
+          })
+          .finally(() => {
+            setLoading(false);
+            setOpen(false);
+          });
       }
     };
-
-    //   const handleOk = () => {
-    //     setLoading(true);
-    //     setTimeout(() => {
-    //       setLoading(false);
-    //       setOpen(false);
-    //     }, 3000);
-    //   };
 
     const onClickCancel = () => {
       setOpen(false);
@@ -57,14 +65,15 @@ const GpuTaskDetailModal = React.forwardRef<GpuTaskDetailModalHandles, Props>(
       tryToShowModal,
     }));
 
+    const title = `[${taskInfo.name}]${taskInfo.projectName}-${taskInfo.pyFileName};`;
+
     return (
       <>
-        {/* <Button type="primary" onClick={showModal}>
-          Show Detail
-        </Button> */}
+        {contextHolder}
+
         <Modal
           open={open}
-          title="Title"
+          title={title}
           onOk={onClickCancel}
           onCancel={onClickCancel}
           footer={[
@@ -84,8 +93,12 @@ const GpuTaskDetailModal = React.forwardRef<GpuTaskDetailModalHandles, Props>(
             //   </Button>,
           ]}
         >
-          <div ref={contentDivRef}>
-            <GpuTaskDetailContent taskInfo={taskInfo} />
+          <div>
+            <div ref={contentDivRef}>
+              <GpuTaskDetailContent taskInfo={taskInfo} />
+            </div>
+
+            <GpuTaskDetailTags taskInfo={taskInfo} />
           </div>
         </Modal>
       </>
