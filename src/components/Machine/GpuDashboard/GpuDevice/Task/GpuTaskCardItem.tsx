@@ -1,5 +1,7 @@
 import RunTimeComponent from '@/components/Time/RunTimeComponent';
-import { Card, Divider, Space } from 'antd';
+import VShow from '@/components/Vue/V-Show';
+import { ClockCircleOutlined, SyncOutlined } from '@ant-design/icons';
+import { Card, Divider, Space, Tag } from 'antd';
 import React, { useRef } from 'react';
 import GpuTaskDetailModal, {
   GpuTaskDetailModalHandles,
@@ -23,6 +25,9 @@ const GpuTaskCardItem: React.FC<Props> = (props) => {
     ? `(${taskInfo.screenSessionName})`
     : '';
 
+  const isMultiGpu = taskInfo.worldSize > 1;
+  const multiGpuString = `${taskInfo.localRank}/${taskInfo.worldSize}`;
+
   return (
     <div>
       <GpuTaskDetailModal taskInfo={taskInfo} ref={modalFunctionRef} />
@@ -37,31 +42,47 @@ const GpuTaskCardItem: React.FC<Props> = (props) => {
           }
           style={{ width: 300 }}
         >
-          <div style={{ display: 'flex', alignItems: 'center' }}>
-            {/* 左侧容器 */}
-            <div
-              style={{
-                display: 'flex',
-                flexDirection: 'column',
-                marginRight: '16px',
-              }}
-            >
-              {/* 左上 */}
-              <div>{taskInfo.name}</div>
+          <div>
+            <div style={{ display: 'flex', alignItems: 'center' }}>
+              {/* 左侧容器 */}
+              <div
+                style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  marginRight: '16px',
+                }}
+              >
+                {/* 左上 */}
+                <div>{taskInfo.name}</div>
 
-              {/* 左下 */}
-              <div>{/* {taskInfo.} */}</div>
+                {/* 左下 */}
+                <div>{/* {taskInfo.} */}</div>
+              </div>
+
+              {/* 中间的垂直分割线 */}
+              <Divider type="vertical" />
+
+              {/* 右侧容器 */}
+              <div style={{ display: 'flex', flexDirection: 'column' }}>
+                {/* 右上 */}
+
+                {/* 右下 */}
+                <RunTimeComponent startTime={taskInfo.startTimestamp} />
+              </div>
             </div>
 
-            {/* 中间的垂直分割线 */}
-            <Divider type="vertical" />
+            <div className="tags">
+              <VShow v-show={taskInfo.debugMode}>
+                <Tag icon={<SyncOutlined spin />} color="processing">
+                  调试
+                </Tag>
+              </VShow>
 
-            {/* 右侧容器 */}
-            <div style={{ display: 'flex', flexDirection: 'column' }}>
-              {/* 右上 */}
-
-              {/* 右下 */}
-              <RunTimeComponent startTime={taskInfo.startTimestamp} />
+              <VShow v-show={isMultiGpu}>
+                <Tag icon={<ClockCircleOutlined />} color="default">
+                  {multiGpuString}
+                </Tag>
+              </VShow>
             </div>
           </div>
         </Card>

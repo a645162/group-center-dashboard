@@ -1,6 +1,7 @@
 import { getEnvBool } from './utils';
 
 const enableOpenApi = getEnvBool('ENABLE_OPEN_API');
+console.log('ENABLE_OPEN_API', enableOpenApi);
 
 let openApiConfig = enableOpenApi
   ? {

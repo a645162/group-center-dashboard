@@ -8,6 +8,7 @@
     "dev-proxy": "ENABLE_PROXY=true max dev",
     "dev-proxy-win": "set ENABLE_PROXY=true && max dev",
     "dev-pure": "MOCK=none max dev",
+    "dev-pure-win": "set MOCK=none && max dev",
     "format": "prettier --cache --write .",
     "postinstall": "max setup",
     "openapi": "ENABLE_OPEN_API=true max openapi",

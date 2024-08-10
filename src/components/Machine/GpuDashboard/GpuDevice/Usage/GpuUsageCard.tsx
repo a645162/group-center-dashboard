@@ -125,7 +125,9 @@ const GpuUsageCard: React.FC<Props> = (props) => {
             }}
           >
             {/* 左上 */}
-            <div>{gpuUsageInfo?.gpuName || ''}</div>
+            <div>
+              [{gpuIndex}]{gpuUsageInfo?.gpuName || ''}
+            </div>
 
             {/* 左下 */}
             <div>

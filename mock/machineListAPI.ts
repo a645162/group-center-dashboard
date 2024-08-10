@@ -48,6 +48,13 @@ const machine_list = [
     urlKeywords: ['/2082'],
     isGpu: true,
   },
+  {
+    machineName: '8 x RTX 4090 A',
+    machineUrl: '/gpu/4098a',
+    position: '购物清单',
+    urlKeywords: ['/4098a'],
+    isGpu: true,
+  },
 ];
 
 export default {

@@ -54,4 +54,14 @@ export default {
   'GET /gpu/2082/gpu_task_info': (req: any, res: any) => {
     res.json(generateGpuTaskInfo(2));
   },
+
+  'GET /gpu/4098a/gpu_count': (req: any, res: any) => {
+    res.json(generateGpuCountResponse(8));
+  },
+  'GET /gpu/4098a/gpu_usage_info': (req: any, res: any) => {
+    res.json(generateGpuUsageInfo('RTX 4090'));
+  },
+  'GET /gpu/4098a/gpu_task_info': (req: any, res: any) => {
+    res.json(generateGpuTaskInfo(2));
+  },
 };

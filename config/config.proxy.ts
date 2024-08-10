@@ -1,10 +1,14 @@
 import { getEnvBool } from './utils';
 
 const disableProxy = getEnvBool('DISABLE_PROXY');
-const enableProxy = !disableProxy && getEnvBool('ENABLE_PROXY');
-console.log('disableProxy', disableProxy);
-console.log('enableProxy', enableProxy);
-let proxyConfig = enableProxy
+const enableProxy = getEnvBool('ENABLE_PROXY');
+const finalResult = !disableProxy && enableProxy;
+
+console.log('DISABLE_PROXY', disableProxy);
+console.log('ENABLE_PROXY', enableProxy);
+console.log('[Proxy]', finalResult);
+
+let proxyConfig = finalResult
   ? {
       proxy: {
         '/api': {
