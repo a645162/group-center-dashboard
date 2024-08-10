@@ -1,5 +1,10 @@
+import VShow from '@/components/Vue/V-Show';
 import { green, orange, red } from '@ant-design/colors';
-import { Card, Progress } from 'antd';
+import {
+  CloseCircleOutlined,
+  ExclamationCircleOutlined,
+} from '@ant-design/icons';
+import { Card, Progress, Tag } from 'antd';
 import React from 'react';
 
 interface Props {
@@ -51,18 +56,41 @@ const DiskUsageCard: React.FC<Props> = (props) => {
 
   const cardTitle = `${diskUsage.mountPoint}(${diskUsage.purpose})`;
 
+  const divStyle = {
+    margin: '4px',
+    paddingLeft: '4px',
+  };
+
   const cardStyle = {
     minWidth: 100,
-    leftPadding: '24px',
   };
 
   return (
-    <div className="disk-usage-card">
+    <div className="disk-usage-card" style={divStyle}>
       <Card size="small" title={cardTitle} style={cardStyle}>
         {ProgressConponent(diskUsage.usedPercentage)}
         <div>已用: {diskUsage.usedStr}</div>
         <div>可用: {diskUsage.freeStr}</div>
         <div>总共: {diskUsage.totalStr}</div>
+        <div style={{ paddingTop: '4px' }}>
+          <VShow v-show={diskUsage.triggerHighPercentageUsed}>
+            <Tag icon={<ExclamationCircleOutlined />} color="warning">
+              已用高占比
+            </Tag>
+          </VShow>
+
+          <VShow v-show={diskUsage.triggerLowFreeBytes}>
+            <Tag icon={<ExclamationCircleOutlined />} color="warning">
+              低可用空间
+            </Tag>
+          </VShow>
+
+          <VShow v-show={diskUsage.triggerSizeWarning}>
+            <Tag icon={<CloseCircleOutlined />} color="error">
+              需要清理
+            </Tag>
+          </VShow>
+        </div>
       </Card>
     </div>
   );

@@ -47,7 +47,7 @@ const MachineDisk: React.FC<Props> = (props) => {
 
   return (
     <div className="gpu-usage-card">
-      <Card size="small" title={name} extra={<a href="#">More</a>}>
+      <Card size="default" title={name}>
         {cardContent(diskUsageState)}
       </Card>
     </div>
