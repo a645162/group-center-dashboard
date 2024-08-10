@@ -1,4 +1,4 @@
-import { getGpuTaskInfo } from '@/services/nvi_notify/GpuInfo';
+import { getGpuTaskInfo } from '@/services/agent/GpuInfo';
 import React, { useEffect, useState } from 'react';
 import GpuTaskCardItem from './GpuTaskCardItem';
 

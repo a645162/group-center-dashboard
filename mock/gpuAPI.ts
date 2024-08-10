@@ -2,7 +2,7 @@ import {
   generateGpuCountResponse,
   generateGpuTaskInfo,
   generateGpuUsageInfo,
-} from './gpuApiFakeData';
+} from './FakeData/gpuApiFakeData';
 
 export default {
   'GET /gpu/3090/gpu_count': (req: any, res: any) => {

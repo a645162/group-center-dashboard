@@ -1,4 +1,4 @@
-import { getGpuUsageInfo } from '@/services/nvi_notify/GpuInfo';
+import { getGpuUsageInfo } from '@/services/agent/GpuInfo';
 import { green, orange, red } from '@ant-design/colors';
 import { Card, Divider, Progress } from 'antd';
 import React, { useEffect, useState } from 'react';

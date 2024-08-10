@@ -1,4 +1,4 @@
-import { getGpuCount } from '@/services/nvi_notify/GpuInfo';
+import { getGpuCount } from '@/services/agent/GpuInfo';
 import React, { useEffect, useState } from 'react';
 import GpuDevice from './GpuDevice';
 

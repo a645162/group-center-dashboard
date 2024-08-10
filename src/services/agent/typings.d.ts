@@ -6,6 +6,28 @@ declare namespace API {
     memorySwapTotalMb: number;
     memorySwapUsedMb: number;
   }
+
+  interface MachineDiskUsage {
+    mountPoint: string;
+
+    usePercentage: number;
+
+    usedStr: string;
+    freeStr: string;
+    totalStr: string;
+
+    triggerHighPercentageUsed: boolean;
+    triggerLowFreeBytes: boolean;
+    triggerSizeWarning: boolean;
+
+    type: string;
+    purpose: string;
+  }
+  interface MachineDiskUsageResponse {
+    result: number;
+    diskUsage: API.MachineDiskUsage[];
+  }
+
   interface DashboardGpuCount {
     result: number;
   }

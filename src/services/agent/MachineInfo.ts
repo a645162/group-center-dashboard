@@ -6,3 +6,12 @@ export async function getMachineSystemInfo(apiBaseUrl: string) {
     method: 'GET',
   });
 }
+
+export async function getDiskUsage(apiBaseUrl: string) {
+  return request<API.MachineDiskUsageResponse>(
+    ConcatUrl(apiBaseUrl, 'disk_usage'),
+    {
+      method: 'GET',
+    },
+  );
+}
