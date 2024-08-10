@@ -32,7 +32,7 @@ const machine_list = [
 ];
 
 export default {
-  'GET /web/open/front_end/machineList': (req: any, res: any) => {
+  'GET /web/open/front_end/publicMachineList': (req: any, res: any) => {
     res.json(machine_list);
   },
 };

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 
-import { getMachineList } from '@/services/group_center/frontEndMachineListController';
+import { getPublicMachineList } from '@/services/group_center/frontEndMachineListController';
 
 import GpuDashboard from '@/components/Machine/GpuDashboard';
 import MachineSelector from '@/components/Machine/MachineSelector';
@@ -13,7 +13,7 @@ const useMachineListState = () => {
   const [machineList, setMachineList] = useState<API.FrontEndMachine[]>([]);
 
   useEffect(() => {
-    getMachineList()
+    getPublicMachineList()
       .then((data) => {
         // console.log('data:', data);
         setMachineList(data);
