@@ -1,9 +1,11 @@
 import envConfig from './config.env';
+import openApiConfig from './config.openapi';
 import proxyConfig from './config.proxy';
-import routeConfig from './config.route';
+import routesConfig from './config.routes';
 
 const childConfig = {
-  ...routeConfig,
+  ...routesConfig,
+  ...openApiConfig,
   ...proxyConfig,
   ...envConfig,
 };

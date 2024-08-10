@@ -1,4 +1,4 @@
-let routeConfig = {
+let routesConfig = {
   routes: [
     {
       path: '/',
@@ -25,14 +25,6 @@ let routeConfig = {
     //   component: './Table',
     // },
   ],
-  // @umijs/max-plugin-openapi
-  // openAPI: [
-  //   {
-  //     requestLibPath: 'import { request } from "@umijs/max"',
-  //     schemaPath: 'http://localhost:15090/v3/api-docs',
-  //     projectName: 'group_center',
-  //   },
-  // ],
 };
 
-export default routeConfig;
+export default routesConfig;

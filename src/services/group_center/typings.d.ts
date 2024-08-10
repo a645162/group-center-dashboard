@@ -19,8 +19,8 @@ declare namespace API {
     ipAddress: string;
     rememberAuthIp: boolean;
     serverVersion: string;
-    succeed?: boolean;
     authenticated?: boolean;
+    succeed?: boolean;
   };
 
   type ClientResponse = {
@@ -29,8 +29,8 @@ declare namespace API {
     haveError: boolean;
     isSucceed: boolean;
     result: string;
-    succeed?: boolean;
     authenticated?: boolean;
+    succeed?: boolean;
   };
 
   type FrontEndMachine = {
@@ -38,6 +38,7 @@ declare namespace API {
     machineUrl: string;
     urlKeywords: string[];
     position: string;
+    isGpu: boolean;
   };
 
   type getSshKeyFileParams = {
