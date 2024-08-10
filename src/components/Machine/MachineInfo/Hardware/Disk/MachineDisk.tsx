@@ -24,27 +24,31 @@ const useDiskUsageState = (apiUrl: string) => {
   return diskUsage;
 };
 
+const cardContent = (mountPointList: API.MachineDiskUsage[]) => {
+  const divStyle = {
+    display: 'flex',
+  };
+
+  return mountPointList.length === 0 ? (
+    <div>暂无任何硬盘挂载点</div>
+  ) : (
+    <div style={divStyle}>
+      {mountPointList.map((diskUsage, index) => (
+        <DiskUsageCard key={index} diskUsage={diskUsage} />
+      ))}
+    </div>
+  );
+};
+
 const MachineDisk: React.FC<Props> = (props) => {
   const { name, apiUrl } = props;
 
   const diskUsageState = useDiskUsageState(apiUrl);
 
-  if (diskUsageState.length === 0) {
-    return <div>暂无任何硬盘挂载点</div>;
-  }
-
-  const divStyle = {
-    display: 'flex',
-  };
-
   return (
     <div className="gpu-usage-card">
       <Card size="small" title={name} extra={<a href="#">More</a>}>
-        <div style={divStyle}>
-          {diskUsageState.map((diskUsageInfo, index) => (
-            <DiskUsageCard key={index} diskUsage={diskUsageInfo} />
-          ))}
-        </div>
+        {cardContent(diskUsageState)}
       </Card>
     </div>
   );

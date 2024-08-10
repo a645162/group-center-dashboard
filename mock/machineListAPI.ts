@@ -7,6 +7,13 @@ const machine_list = [
     isGpu: false,
   },
   {
+    machineName: 'NAS',
+    machineUrl: '/cpu/nas',
+    position: '存储机房',
+    urlKeywords: ['/nas'],
+    isGpu: false,
+  },
+  {
     machineName: '3090',
     machineUrl: '/gpu/3090',
     position: '开发环境1',

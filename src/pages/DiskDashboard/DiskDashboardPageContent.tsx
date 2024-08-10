@@ -39,11 +39,11 @@ const DiskDashboardPageContent: React.FC<Props> = (props) => {
 
   return (
     <div>
-      <ul>
+      {/* <ul>
         {machineList.map((machine) => (
           <li key={machine.machineName}>{machine.machineName}</li>
         ))}
-      </ul>
+      </ul> */}
 
       {machineList.map((machine) => (
         <MachineDisk
