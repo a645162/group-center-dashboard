@@ -57,6 +57,12 @@ const BasicFilter: React.FC<Props> = (props) => {
     });
   };
 
+  const onKeyUp = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      onClickSave();
+    }
+  };
+
   return (
     <div>
       {contextHolder}
@@ -87,6 +93,7 @@ const BasicFilter: React.FC<Props> = (props) => {
           placeholder={`${name}值`}
           defaultValue={defaultValue}
           onChange={onTextChange}
+          onKeyUp={onKeyUp}
         />
         <p>匹配模式：</p>
         <RadioGroupCheckBox

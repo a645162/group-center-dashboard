@@ -1,13 +1,20 @@
 import RunTimeComponent from '@/components/Time/RunTimeComponent';
 import VShow from '@/components/Vue/V-Show';
 import { convertFromMBToGB, getMemoryString } from '@/utils/Convert/MemorySize';
-import { BugOutlined, DatabaseOutlined, SyncOutlined } from '@ant-design/icons';
-import { Card, Divider, Space, Tag } from 'antd';
-import React, { useRef } from 'react';
+import {
+  BugOutlined,
+  DatabaseOutlined,
+  QuestionCircleOutlined,
+  SyncOutlined,
+} from '@ant-design/icons';
+import { Card, Divider, message, Popconfirm, Space, Tag } from 'antd';
+import React, { useRef, useState } from 'react';
 import GpuTaskDetailModal, {
   GpuTaskDetailModalHandles,
 } from './Detail/GpuTaskDetailModal';
 
+import { copyToClipboardPromise } from '@/utils/System/Clipboard';
+import { getTimeStrFromTimestamp } from '@/utils/Time/DateTimeUtils';
 import { FilterUseEffect, UseFilter } from './Filter';
 import './GpuTaskItem.less';
 
@@ -18,6 +25,9 @@ interface Props {
 
 const GpuTaskCardItem: React.FC<Props> = (props) => {
   const { index, taskInfo } = props;
+
+  const [openStartTime, setOpenStartTime] = useState(false);
+  const [messageApi, contextHolder] = message.useMessage();
 
   const modalFunctionRef = useRef<GpuTaskDetailModalHandles>(null);
 
@@ -36,17 +46,52 @@ const GpuTaskCardItem: React.FC<Props> = (props) => {
   const screenSessionString = taskInfo.screenSessionName
     ? `(${taskInfo.screenSessionName})`
     : '';
+  const cardTitle =
+    `[${index + 1}]` +
+    `${taskInfo.projectName}-${taskInfo.pyFileName}` +
+    screenSessionString;
 
   const isMultiGpu = taskInfo.worldSize > 1;
   const multiGpuString = `${taskInfo.localRank + 1}/${taskInfo.worldSize}`;
 
+  const startTimeString = getTimeStrFromTimestamp(taskInfo.startTimestamp);
+  const handleCopyStartTimeString = () => {
+    const text = startTimeString.trim();
+    if (text.length === 0) {
+      messageApi.open({
+        type: 'error',
+        content: '复制失败！',
+      });
+      return;
+    }
+
+    // 复制字符串到剪贴板
+    copyToClipboardPromise(text)
+      .then(() => {
+        messageApi.open({
+          type: 'success',
+          content: '复制成功！',
+        });
+      })
+      .catch(() => {
+        messageApi.open({
+          type: 'error',
+          content: '复制失败！',
+        });
+      });
+
+    // 关闭Tip
+    setOpenStartTime(false);
+  };
+
   return (
     <div>
+      {contextHolder}
       <GpuTaskDetailModal taskInfo={taskInfo} ref={modalFunctionRef} />
       <Space direction="vertical" size={16}>
         <Card
           size="small"
-          title={`[${index + 1}]${taskInfo.projectName}-${taskInfo.pyFileName}${screenSessionString}`}
+          title={cardTitle}
           extra={
             <a href="#" onClick={onClickShowDetail}>
               详细信息
@@ -93,7 +138,27 @@ const GpuTaskCardItem: React.FC<Props> = (props) => {
                   flex: 1, // 平分剩余空间
                 }}
               >
-                <RunTimeComponent startTime={taskInfo.startTimestamp} />
+                <Popconfirm
+                  placement="bottom"
+                  title="启动时间"
+                  description={startTimeString}
+                  okText="复制"
+                  cancelText="我知道了"
+                  icon={<QuestionCircleOutlined style={{ color: 'gray' }} />}
+                  open={openStartTime}
+                  onConfirm={handleCopyStartTimeString}
+                  onCancel={() => {
+                    setOpenStartTime(false);
+                  }}
+                >
+                  <div
+                    onClick={() => {
+                      setOpenStartTime(true);
+                    }}
+                  >
+                    <RunTimeComponent startTime={taskInfo.startTimestamp} />
+                  </div>
+                </Popconfirm>
               </div>
             </div>
 

@@ -5,6 +5,8 @@ import { green, orange, red } from '@ant-design/colors';
 import { Card, Progress, Space } from 'antd';
 import React, { useEffect, useState } from 'react';
 
+import styles from './GpuUsageCard.less';
+
 interface Props {
   apiUrl: string;
   gpuIndex: number;
@@ -118,14 +120,14 @@ const GpuUsageCard: React.FC<Props> = (props) => {
     const gpuMemoryTotalFormatted = getMemoryString(gpuMemoryTotalGiB);
 
     return (
-      <Space direction="vertical" size="middle" style={{ display: 'flex' }}>
+      <Space className={styles.space} direction="vertical" size="middle">
         {/* 左上 */}
-        <div>
+        <div className={styles.innerLine}>
           [{gpuIndex}]{gpuUsageInfo?.gpuName || ''}
         </div>
 
         {/* 左下 */}
-        <div>
+        <div className={styles.innerLine}>
           {gpuMemoryUsageFormatted}/{gpuMemoryTotalFormatted}GiB
         </div>
       </Space>
@@ -134,12 +136,18 @@ const GpuUsageCard: React.FC<Props> = (props) => {
 
   const rightContainer = (gpuUsageInfo: API.DashboardGpuUsageInfo) => {
     return (
-      <Space direction="vertical" size="middle" style={{ display: 'flex' }}>
+      <Space className={styles.space} direction="vertical" size="middle">
         {/* 右上 */}
-        <div>显存 {ProgressConponent(gpuUsageInfo?.memoryUsage)}</div>
+        <div className={styles.innerLine}>
+          <div className={styles.progressTitle}>显存</div>
+          {ProgressConponent(gpuUsageInfo?.memoryUsage)}
+        </div>
 
         {/* 右下 */}
-        <div>核心 {ProgressConponent(gpuUsageInfo?.coreUsage)}</div>
+        <div className={styles.innerLine}>
+          <div className={styles.progressTitle}>核心</div>
+          {ProgressConponent(gpuUsageInfo?.coreUsage)}
+        </div>
       </Space>
     );
   };
