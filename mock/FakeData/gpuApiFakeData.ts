@@ -3,7 +3,7 @@ import {
   getPreviousTimeStamp,
 } from '../../src/utils/Time/DateTimeUtils';
 
-import { getRandomInt } from './common';
+import { getRandomFloat, getRandomInt } from './common';
 
 const basicGpuUsageInfo = {
   result: 1,
@@ -56,9 +56,9 @@ export const generateGpuUsageInfo = (gpuName: string) => {
 
   finalGpuUsageInfo.gpuName = gpuName;
 
-  finalGpuUsageInfo.coreUsage = Math.floor(Math.random() * 100);
-  finalGpuUsageInfo.memoryUsage = Math.floor(Math.random() * 100);
-  finalGpuUsageInfo.gpuTemperature = Math.floor(Math.random() * 85);
+  finalGpuUsageInfo.coreUsage = getRandomFloat(100, 0);
+  finalGpuUsageInfo.memoryUsage = getRandomFloat(100, 0);
+  finalGpuUsageInfo.gpuTemperature = getRandomFloat(85, 0);
 
   finalGpuUsageInfo.gpuPowerUsage = Math.floor(
     Math.random() * finalGpuUsageInfo.gpuTDP,

@@ -57,6 +57,15 @@ const useGpuUsageInfo = (apiUrl: string, gpuIndex: number) => {
 };
 
 const ProgressConponent = (percent: number) => {
+  // 转换为整数
+  let finalPercentage = Math.floor(percent);
+  if (finalPercentage > 100) {
+    finalPercentage = 100;
+  }
+  if (finalPercentage < 0) {
+    finalPercentage = 0;
+  }
+
   const calculateColorIndex = (
     percent: number,
     max: number = 8,
@@ -89,11 +98,11 @@ const ProgressConponent = (percent: number) => {
   // format = {(percent) => `${percent} Days`}
   return (
     <Progress
-      percent={percent}
+      percent={finalPercentage}
       steps={10}
       size="small"
-      strokeColor={computeColor(percent)}
-      format={(percent) => `${percent}`.padStart(2, '0') + '%'}
+      strokeColor={computeColor(finalPercentage)}
+      format={(finalPercentage) => `${finalPercentage}`.padStart(2, '0') + '%'}
     />
   );
 };
