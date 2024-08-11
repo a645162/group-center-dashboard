@@ -8,6 +8,7 @@ import GpuTaskDetailModal, {
   GpuTaskDetailModalHandles,
 } from './Detail/GpuTaskDetailModal';
 
+import { FilterUseEffect, UseFilter } from './Filter';
 import './GpuTaskItem.less';
 
 interface Props {
@@ -19,6 +20,14 @@ const GpuTaskCardItem: React.FC<Props> = (props) => {
   const { index, taskInfo } = props;
 
   const modalFunctionRef = useRef<GpuTaskDetailModalHandles>(null);
+
+  FilterUseEffect();
+
+  const filterResult = UseFilter(taskInfo);
+
+  if (!filterResult) {
+    return <></>;
+  }
 
   const onClickShowDetail = () => {
     modalFunctionRef.current?.tryToShowModal();

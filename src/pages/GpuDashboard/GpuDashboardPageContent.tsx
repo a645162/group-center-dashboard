@@ -6,6 +6,8 @@ import GpuDashboard from '@/components/Machine/GpuDashboard';
 import MachineSelector from '@/components/Machine/MachineSelector';
 import VShow from '@/components/Vue/V-Show';
 import { getLatestRunGpu, setLatestRunGpu } from '@/data/cookies/Gpu';
+import { Flex } from 'antd';
+import GpuTaskFilterPanel from './GpuTaskFilterPanel';
 
 interface Props {
   name?: string;
@@ -110,12 +112,16 @@ const GpuDashboardPageContent: React.FC<Props> = (props) => {
         ))}
       </ul> */}
 
-      <MachineSelector
-        machineList={machineList}
-        onMachineChange={onSelectedMachineChange}
-        multipleMachine={true}
-        tryToSelectMachineList={tryToSelectedMachineList}
-      />
+      <Flex gap="middle" vertical={false}>
+        <MachineSelector
+          machineList={machineList}
+          onMachineChange={onSelectedMachineChange}
+          multipleMachine={true}
+          tryToSelectMachineList={tryToSelectedMachineList}
+        />
+
+        <GpuTaskFilterPanel />
+      </Flex>
 
       {GpuDashboardWithNoContent(selectedMachineState)}
     </div>
