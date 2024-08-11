@@ -1,4 +1,5 @@
 import { useGpuTaskFilterUserStore } from '@/data/store/modules/filter/GpuTaskFilterUser';
+import { MatchStringFilter } from '@/data/store/modules/filter/utils';
 import { useEffect } from 'react';
 
 export const UserFilterUseEffect = () => {
@@ -14,19 +15,5 @@ export const CheckUserFilter = (
   const userNameEng = useGpuTaskFilterUserStore((state) => state.userNameEng);
   const isFuzzyMatch = useGpuTaskFilterUserStore((state) => state.isFuzzyMatch);
 
-  if (userNameEng === '') {
-    return true;
-  }
-
-  if (isFuzzyMatch) {
-    if (taskInfo.name.includes(userNameEng)) {
-      return true;
-    }
-  } else {
-    if (taskInfo.name === userNameEng) {
-      return true;
-    }
-  }
-
-  return false;
+  return MatchStringFilter(taskInfo.name, userNameEng, isFuzzyMatch);
 };

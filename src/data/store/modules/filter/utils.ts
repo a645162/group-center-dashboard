@@ -1,4 +1,4 @@
-export const MatchString = (
+export const MatchStringFilter = (
   originString: string,
   searchString: string,
   isFuzzyMatch: boolean = false,
@@ -14,4 +14,4 @@ export const MatchString = (
   }
 };
 
-export default { MatchString };
+export default { MatchStringFilter };
