@@ -8,11 +8,11 @@ interface Props {
   defaultValue: string;
   defaultIsFuzzyMatch: boolean;
 
-  onValueChange: (value: string, isFuzzyMatch: boolean) => void;
+  onSave: (value: string, isFuzzyMatch: boolean) => void;
 }
 
 const BasicFilter: React.FC<Props> = (props) => {
-  const { name, defaultValue, defaultIsFuzzyMatch, onValueChange } = props;
+  const { name, defaultValue, defaultIsFuzzyMatch, onSave } = props;
 
   const [open, setOpen] = useState(false);
 
@@ -37,7 +37,7 @@ const BasicFilter: React.FC<Props> = (props) => {
     messageApi.info(`取消修改(${name})`);
   };
   const onClickSave = () => {
-    onValueChange(value, isFuzzyMatch);
+    onSave(value, isFuzzyMatch);
 
     setOpen(false);
 
@@ -46,8 +46,8 @@ const BasicFilter: React.FC<Props> = (props) => {
       content: `修改成功(${name})`,
     });
   };
-  const onClickUnset = () => {
-    onValueChange('', isFuzzyMatch);
+  const onClickUnSet = () => {
+    onSave('', isFuzzyMatch);
 
     setOpen(false);
 
@@ -80,7 +80,7 @@ const BasicFilter: React.FC<Props> = (props) => {
           <Button key="back" onClick={onClickCancel}>
             不保存
           </Button>,
-          <Button key="link" type="default" onClick={onClickUnset}>
+          <Button key="link" type="default" onClick={onClickUnSet}>
             关闭过滤器
           </Button>,
           <Button key="submit" type="primary" onClick={onClickSave}>
@@ -94,6 +94,7 @@ const BasicFilter: React.FC<Props> = (props) => {
           defaultValue={defaultValue}
           onChange={onTextChange}
           onKeyUp={onKeyUp}
+          value={value}
         />
         <p>匹配模式：</p>
         <RadioGroupCheckBox

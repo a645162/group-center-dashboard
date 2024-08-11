@@ -1,20 +1,24 @@
 import BasicFilter from '@/components/Machine/GpuDashboard/Filter/BasicFilter';
 import { useGpuTaskFilterProjectNameStore } from '@/data/store/modules/filter/GpuTaskFilterProjectName';
-import { useGpuTaskFilterUserStore } from '@/data/store/modules/filter/GpuTaskFilterUser';
+import { useGpuTaskFilterUserNameStore } from '@/data/store/modules/filter/GpuTaskFilterUserName';
 import { Flex } from 'antd';
 import React from 'react';
 
 function UserNameFilter() {
-  const userNameEng = useGpuTaskFilterUserStore((state) => state.userNameEng);
-  const isFuzzyMatch = useGpuTaskFilterUserStore((state) => state.isFuzzyMatch);
-  const setUserNameEng = useGpuTaskFilterUserStore(
+  const userNameEng = useGpuTaskFilterUserNameStore(
+    (state) => state.userNameEng,
+  );
+  const isFuzzyMatch = useGpuTaskFilterUserNameStore(
+    (state) => state.isFuzzyMatch,
+  );
+  const setUserNameEng = useGpuTaskFilterUserNameStore(
     (state) => state.setUserNameEng,
   );
-  const setIsFuzzyMatch = useGpuTaskFilterUserStore(
+  const setIsFuzzyMatch = useGpuTaskFilterUserNameStore(
     (state) => state.setIsFuzzyMatch,
   );
 
-  const onValueChange = (value: string, isFuzzyMatch: boolean) => {
+  const onSave = (value: string, isFuzzyMatch: boolean) => {
     setUserNameEng(value);
     setIsFuzzyMatch(isFuzzyMatch);
   };
@@ -26,7 +30,7 @@ function UserNameFilter() {
           name="用户名过滤"
           defaultValue={userNameEng}
           defaultIsFuzzyMatch={isFuzzyMatch}
-          onValueChange={onValueChange}
+          onSave={onSave}
         />
       </Flex>
     </div>
@@ -40,15 +44,15 @@ function ProjectNameFilter() {
   const isFuzzyMatch = useGpuTaskFilterProjectNameStore(
     (state) => state.isFuzzyMatch,
   );
-  const setUserNameEng = useGpuTaskFilterProjectNameStore(
+  const setProjectName = useGpuTaskFilterProjectNameStore(
     (state) => state.setProjectName,
   );
   const setIsFuzzyMatch = useGpuTaskFilterProjectNameStore(
     (state) => state.setIsFuzzyMatch,
   );
 
-  const onValueChange = (value: string, isFuzzyMatch: boolean) => {
-    setUserNameEng(value);
+  const onSave = (value: string, isFuzzyMatch: boolean) => {
+    setProjectName(value);
     setIsFuzzyMatch(isFuzzyMatch);
   };
 
@@ -59,7 +63,7 @@ function ProjectNameFilter() {
           name="工程名过滤"
           defaultValue={projectName}
           defaultIsFuzzyMatch={isFuzzyMatch}
-          onValueChange={onValueChange}
+          onSave={onSave}
         />
       </Flex>
     </div>

@@ -4,7 +4,7 @@ interface IGpuTaskFilterProjectNameStore {
   projectName: string;
   isFuzzyMatch: boolean;
 
-  setProjectName: (userNameEng: string) => void;
+  setProjectName: (projectName: string) => void;
   setIsFuzzyMatch: (isFuzzyMatch: boolean) => void;
   toggleFuzzyMatch: () => void;
 }
@@ -14,7 +14,7 @@ export const useGpuTaskFilterProjectNameStore =
     projectName: '',
     isFuzzyMatch: true,
 
-    setProjectName: (userNameEng) => set({ projectName: userNameEng }),
+    setProjectName: (projectName) => set({ projectName }),
     setIsFuzzyMatch: (isFuzzyMatch) => set({ isFuzzyMatch }),
     toggleFuzzyMatch: () =>
       set((state) => ({ isFuzzyMatch: !state.isFuzzyMatch })),

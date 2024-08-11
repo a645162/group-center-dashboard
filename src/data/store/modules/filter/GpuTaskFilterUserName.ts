@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 
-interface IGpuTaskFilterUserStore {
+interface IGpuTaskFilterUserNameStore {
   userNameEng: string;
   isFuzzyMatch: boolean;
 
@@ -9,8 +9,8 @@ interface IGpuTaskFilterUserStore {
   toggleFuzzyMatch: () => void;
 }
 
-export const useGpuTaskFilterUserStore = create<IGpuTaskFilterUserStore>()(
-  (set) => ({
+export const useGpuTaskFilterUserNameStore =
+  create<IGpuTaskFilterUserNameStore>()((set) => ({
     userNameEng: '',
     isFuzzyMatch: true,
 
@@ -18,5 +18,4 @@ export const useGpuTaskFilterUserStore = create<IGpuTaskFilterUserStore>()(
     setIsFuzzyMatch: (isFuzzyMatch) => set({ isFuzzyMatch }),
     toggleFuzzyMatch: () =>
       set((state) => ({ isFuzzyMatch: !state.isFuzzyMatch })),
-  }),
-);
+  }));

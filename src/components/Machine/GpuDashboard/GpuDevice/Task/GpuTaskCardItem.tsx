@@ -26,7 +26,9 @@ interface Props {
 const GpuTaskCardItem: React.FC<Props> = (props) => {
   const { index, taskInfo } = props;
 
-  const [openStartTime, setOpenStartTime] = useState(false);
+  const [openStartTimePopConfirm, setOpenStartTimePopConfirm] = useState(false);
+  const [openUserFilterPopConfirm, setOpenUserFilterPopConfirm] =
+    useState(false);
   const [messageApi, contextHolder] = message.useMessage();
 
   const modalFunctionRef = useRef<GpuTaskDetailModalHandles>(null);
@@ -81,7 +83,22 @@ const GpuTaskCardItem: React.FC<Props> = (props) => {
       });
 
     // 关闭Tip
-    setOpenStartTime(false);
+    setOpenStartTimePopConfirm(false);
+  };
+
+  const setUserFilterPopConfirmText = `您是否需要将用户名过滤器设置为:${taskInfo.name}`;
+  const handleSetUserFilter = () => {
+    // const setUserNameFilter = useGpuTaskFilterUserNameStore(
+    //   (state) => state.setUserNameEng,
+    // );
+    // setUserNameFilter(taskInfo.name);
+
+    setOpenUserFilterPopConfirm(false);
+
+    messageApi.open({
+      type: 'success',
+      content: '设置完毕！',
+    });
   };
 
   return (
@@ -117,7 +134,27 @@ const GpuTaskCardItem: React.FC<Props> = (props) => {
                   flex: 1, // 平分剩余空间
                 }}
               >
-                <div>{taskInfo.name}</div>
+                <Popconfirm
+                  placement="bottom"
+                  title="用户名过滤器"
+                  description={setUserFilterPopConfirmText}
+                  okText="好的!"
+                  cancelText="什么都不做"
+                  icon={<QuestionCircleOutlined style={{ color: 'gray' }} />}
+                  open={openUserFilterPopConfirm}
+                  onConfirm={handleSetUserFilter}
+                  onCancel={() => {
+                    setOpenUserFilterPopConfirm(false);
+                  }}
+                >
+                  <div
+                    onClick={() => {
+                      setOpenUserFilterPopConfirm(true);
+                    }}
+                  >
+                    <div>{taskInfo.name}</div>
+                  </div>
+                </Popconfirm>
               </div>
 
               {/* 中间的垂直分割线 */}
@@ -145,15 +182,15 @@ const GpuTaskCardItem: React.FC<Props> = (props) => {
                   okText="复制"
                   cancelText="我知道了"
                   icon={<QuestionCircleOutlined style={{ color: 'gray' }} />}
-                  open={openStartTime}
+                  open={openStartTimePopConfirm}
                   onConfirm={handleCopyStartTimeString}
                   onCancel={() => {
-                    setOpenStartTime(false);
+                    setOpenStartTimePopConfirm(false);
                   }}
                 >
                   <div
                     onClick={() => {
-                      setOpenStartTime(true);
+                      setOpenStartTimePopConfirm(true);
                     }}
                   >
                     <RunTimeComponent startTime={taskInfo.startTimestamp} />
