@@ -25,7 +25,8 @@
     "@umijs/max": "^4.3.12",
     "antd": "^5.20.0",
     "axios": "^1.7.3",
-    "typescript-cookie": "^1.0.6"
+    "typescript-cookie": "^1.0.6",
+    "zustand": "^4.5.4"
   },
   "devDependencies": {
     "@types/react": "^18.3.3",

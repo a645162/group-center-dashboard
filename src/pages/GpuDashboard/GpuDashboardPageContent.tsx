@@ -4,6 +4,8 @@ import { getPublicMachineList } from '@/services/group_center/frontEndMachineLis
 
 import GpuDashboard from '@/components/Machine/GpuDashboard';
 import MachineSelector from '@/components/Machine/MachineSelector';
+import VShow from '@/components/Vue/V-Show';
+import { getLatestRunGpu, setLatestRunGpu } from '@/data/cookies/Gpu';
 
 interface Props {
   name?: string;
@@ -27,14 +29,21 @@ const useMachineListState = () => {
 };
 
 const GpuDashboardWithNoContent = (
-  selectedMachineState: API.FrontEndMachine | null,
+  machineList: API.FrontEndMachine[] | null,
 ) => {
-  if (selectedMachineState) {
+  if (machineList) {
     return (
-      <GpuDashboard
-        name={selectedMachineState.machineName}
-        apiUrl={selectedMachineState.machineUrl}
-      />
+      <VShow v-show={machineList !== undefined && machineList.length > 0}>
+        <div style={{ display: 'flex', flexWrap: 'wrap' }}>
+          {machineList.map((machine) => (
+            <GpuDashboard
+              key={machine.machineName}
+              name={machine.machineName}
+              apiUrl={machine.machineUrl}
+            />
+          ))}
+        </div>
+      </VShow>
     );
   } else {
     return <></>;
@@ -46,8 +55,44 @@ const GpuDashboardPageContent: React.FC<Props> = (props) => {
 
   const machineList = useMachineListState();
 
-  const [selectedMachineState, setSelectedMachineState] =
-    useState<API.FrontEndMachine | null>(null);
+  const [selectedMachineState, setSelectedMachineState] = useState<
+    API.FrontEndMachine[] | null
+  >(null);
+
+  const [tryToSelectedMachineList, setTryToSelectedMachineList] = useState<
+    API.FrontEndMachine[]
+  >([]);
+
+  useEffect(() => {
+    getLatestRunGpu().then((latestMachineList: API.FrontEndMachine[]) => {
+      // Check `latestMachineList` is in `machineList`
+      // console.log('latestMachineList:', latestMachineList);
+      const finalSelectedMachineList = machineList.filter((machine) => {
+        for (let i = 0; i < latestMachineList.length; i++) {
+          if (machine.machineName === latestMachineList[i].machineName) {
+            return true;
+          }
+        }
+        return false;
+      });
+      // console.log('finalSelectedMachineList:', finalSelectedMachineList);
+
+      setTryToSelectedMachineList(finalSelectedMachineList);
+      setSelectedMachineState(finalSelectedMachineList);
+    });
+  }, [machineList]);
+
+  const onSelectedMachineChange = (machineList: API.FrontEndMachine[]) => {
+    setLatestRunGpu(machineList)
+      .then(() => {
+        console.log('setLatestRunGpu success');
+      })
+      .catch((error: any) => {
+        console.log('error:', error);
+      });
+
+    setSelectedMachineState(machineList);
+  };
 
   if (!machineList) {
     return (
@@ -67,7 +112,9 @@ const GpuDashboardPageContent: React.FC<Props> = (props) => {
 
       <MachineSelector
         machineList={machineList}
-        onMachineChange={setSelectedMachineState}
+        onMachineChange={onSelectedMachineChange}
+        multipleMachine={true}
+        tryToSelectMachineList={tryToSelectedMachineList}
       />
 
       {GpuDashboardWithNoContent(selectedMachineState)}
