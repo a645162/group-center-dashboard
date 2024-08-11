@@ -1,9 +1,9 @@
+import LinerDividerLayout from '@/components/Public/Layout/LinerDividerLayout';
 import { getGpuUsageInfo } from '@/services/agent/GpuInfo';
-import { green, orange, red } from '@ant-design/colors';
-import { Card, Divider, Progress } from 'antd';
-import React, { useEffect, useState } from 'react';
-
 import { convertFromMBToGB, getMemoryString } from '@/utils/Convert/MemorySize';
+import { green, orange, red } from '@ant-design/colors';
+import { Card, Progress, Space } from 'antd';
+import React, { useEffect, useState } from 'react';
 
 interface Props {
   apiUrl: string;
@@ -54,35 +54,36 @@ const useGpuUsageInfo = (apiUrl: string, gpuIndex: number) => {
   return gpuUsageInfo;
 };
 
-const calculateColorIndex = (
-  percent: number,
-  max: number = 8,
-  min: number = 3,
-) => {
-  const maxValue = max > min ? max : min;
-  const minValue = max > min ? min : max;
-
-  return Math.floor(((maxValue - minValue) * percent) / 100 + minValue);
-};
-const computeColor = (percent: number) => {
-  const threshold1 = 40,
-    threshold2 = 80;
-  if (percent < threshold1) {
-    return green[calculateColorIndex(percent / threshold1, 8, 3)];
-  } else if (percent >= threshold1 && percent < threshold2) {
-    return orange[
-      (calculateColorIndex((percent - threshold1) / (threshold2 - threshold1)),
-      8,
-      5)
-    ];
-  } else {
-    return red[
-      calculateColorIndex((percent - threshold2) / (100 - threshold2), 8, 5)
-    ];
-  }
-};
-
 const ProgressConponent = (percent: number) => {
+  const calculateColorIndex = (
+    percent: number,
+    max: number = 8,
+    min: number = 3,
+  ) => {
+    const maxValue = max > min ? max : min;
+    const minValue = max > min ? min : max;
+
+    return Math.floor(((maxValue - minValue) * percent) / 100 + minValue);
+  };
+  const computeColor = (percent: number) => {
+    const threshold1 = 40,
+      threshold2 = 80;
+    if (percent < threshold1) {
+      return green[calculateColorIndex(percent / threshold1, 8, 3)];
+    } else if (percent >= threshold1 && percent < threshold2) {
+      return orange[
+        (calculateColorIndex(
+          (percent - threshold1) / (threshold2 - threshold1),
+        ),
+        8,
+        5)
+      ];
+    } else {
+      return red[
+        calculateColorIndex((percent - threshold2) / (100 - threshold2), 8, 5)
+      ];
+    }
+  };
   // format = {(percent) => `${percent} Days`}
   return (
     <Progress
@@ -105,48 +106,51 @@ const GpuUsageCard: React.FC<Props> = (props) => {
     gpuUsageInfo?.memoryUsage || 0,
   );
 
-  const gpuMemoryUsageFormatted = getMemoryString(gpuMemoryUsageGiB);
-  const gpuMemoryTotalFormatted = getMemoryString(gpuMemoryTotalGiB);
-
   if (!gpuUsageInfo) {
     return <div>Loading......</div>;
   }
 
+  const leftContainer = (
+    gpuIndex: number,
+    gpuUsageInfo: API.DashboardGpuUsageInfo,
+  ) => {
+    const gpuMemoryUsageFormatted = getMemoryString(gpuMemoryUsageGiB);
+    const gpuMemoryTotalFormatted = getMemoryString(gpuMemoryTotalGiB);
+
+    return (
+      <Space direction="vertical" size="middle" style={{ display: 'flex' }}>
+        {/* 左上 */}
+        <div>
+          [{gpuIndex}]{gpuUsageInfo?.gpuName || ''}
+        </div>
+
+        {/* 左下 */}
+        <div>
+          {gpuMemoryUsageFormatted}/{gpuMemoryTotalFormatted}GiB
+        </div>
+      </Space>
+    );
+  };
+
+  const rightContainer = (gpuUsageInfo: API.DashboardGpuUsageInfo) => {
+    return (
+      <Space direction="vertical" size="middle" style={{ display: 'flex' }}>
+        {/* 右上 */}
+        <div>显存 {ProgressConponent(gpuUsageInfo?.memoryUsage)}</div>
+
+        {/* 右下 */}
+        <div>核心 {ProgressConponent(gpuUsageInfo?.coreUsage)}</div>
+      </Space>
+    );
+  };
+
+  const leftContent = leftContainer(gpuIndex, gpuUsageInfo);
+  const rightContent = rightContainer(gpuUsageInfo);
+
   return (
     <div className="gpu-usage-card">
       <Card style={{ minWidth: 300 }}>
-        <div style={{ display: 'flex', alignItems: 'center' }}>
-          {/* 左侧容器 */}
-          <div
-            style={{
-              display: 'flex',
-              flexDirection: 'column',
-              marginRight: '16px',
-            }}
-          >
-            {/* 左上 */}
-            <div>
-              [{gpuIndex}]{gpuUsageInfo?.gpuName || ''}
-            </div>
-
-            {/* 左下 */}
-            <div>
-              {gpuMemoryUsageFormatted}/{gpuMemoryTotalFormatted}GiB
-            </div>
-          </div>
-
-          {/* 中间的垂直分割线 */}
-          <Divider type="vertical" />
-
-          {/* 右侧容器 */}
-          <div style={{ display: 'flex', flexDirection: 'column' }}>
-            {/* 右上 */}
-            <div>显存 {ProgressConponent(gpuUsageInfo?.memoryUsage)}</div>
-
-            {/* 右下 */}
-            <div>核心 {ProgressConponent(gpuUsageInfo?.coreUsage)}</div>
-          </div>
-        </div>
+        <LinerDividerLayout leftChild={leftContent} rightChild={rightContent} />
       </Card>
     </div>
   );
