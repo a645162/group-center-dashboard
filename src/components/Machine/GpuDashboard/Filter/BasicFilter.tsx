@@ -1,4 +1,4 @@
-import RadioGroupCheckBox from '@/components/Basic/RadioGroupCheckBox';
+import RadioGroupCheckBox from '@/components/Public/Basic/RadioGroupCheckBox';
 import { Button, Input, message, Modal } from 'antd';
 import React, { useState } from 'react';
 

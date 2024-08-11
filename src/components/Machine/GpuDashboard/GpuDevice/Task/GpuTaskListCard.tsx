@@ -1,3 +1,4 @@
+import VShow from '@/components/Vue/V-Show';
 import { getGpuTaskInfo } from '@/services/agent/GpuInfo';
 import React, { useEffect, useState } from 'react';
 import GpuTaskCardItem from './GpuTaskCardItem';
@@ -33,14 +34,27 @@ const GpuTaskListCard: React.FC<Props> = (props) => {
 
   const gpuTaskList = useGpuTaskListState(apiUrl, gpuIndex);
 
+  if (!gpuTaskList) {
+    return (
+      <>
+        <div>暂无任务</div>
+      </>
+    );
+  }
+
+  // const gpuTaskFiltedList = gpuTaskList?.filter((gpuTask) => {
+  // 	return UseFilter(gpuTask);
+  // });
+
   return (
     <div>
-      {gpuTaskList &&
-        Array.from({ length: gpuTaskList?.length || 0 }, (_, i) => (
+      <VShow v-show={gpuTaskList.length > 0}>
+        {Array.from({ length: gpuTaskList?.length || 0 }, (_, i) => (
           <div key={i}>
             <GpuTaskCardItem index={i} taskInfo={gpuTaskList?.[i]} />
           </div>
         ))}
+      </VShow>
     </div>
   );
 };
