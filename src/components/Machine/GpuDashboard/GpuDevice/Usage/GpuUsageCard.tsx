@@ -1,3 +1,4 @@
+import DisableSelectDiv from '@/components/Public/Layout/DisableSelectDiv';
 import LinerDividerLayout from '@/components/Public/Layout/LinerDividerLayout';
 import { getGpuUsageInfo } from '@/services/agent/GpuInfo';
 import { convertFromMBToGB, getMemoryString } from '@/utils/Convert/MemorySize';
@@ -145,19 +146,21 @@ const GpuUsageCard: React.FC<Props> = (props) => {
 
   const rightContainer = (gpuUsageInfo: API.DashboardGpuUsageInfo) => {
     return (
-      <Space className={styles.space} direction="vertical" size="middle">
-        {/* 右上 */}
-        <div className={styles.innerLine}>
-          <div className={styles.progressTitle}>显存</div>
-          {ProgressConponent(gpuUsageInfo?.memoryUsage)}
-        </div>
+      <DisableSelectDiv>
+        <Space className={styles.space} direction="vertical" size="middle">
+          {/* 右上 */}
+          <div className={styles.innerLine}>
+            <div className={styles.progressTitle}>显存</div>
+            {ProgressConponent(gpuUsageInfo?.memoryUsage)}
+          </div>
 
-        {/* 右下 */}
-        <div className={styles.innerLine}>
-          <div className={styles.progressTitle}>核心</div>
-          {ProgressConponent(gpuUsageInfo?.coreUsage)}
-        </div>
-      </Space>
+          {/* 右下 */}
+          <div className={styles.innerLine}>
+            <div className={styles.progressTitle}>核心</div>
+            {ProgressConponent(gpuUsageInfo?.coreUsage)}
+          </div>
+        </Space>
+      </DisableSelectDiv>
     );
   };
 
