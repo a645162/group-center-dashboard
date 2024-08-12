@@ -33,6 +33,20 @@ declare namespace API {
     succeed?: boolean;
   };
 
+  type DataDashBoardSite = {
+    name: string;
+    url: string;
+    iconUrl: string;
+    supportQrCode: boolean;
+  };
+
+  type DataDashBoardSiteClass = {
+    className: string;
+    classIconUrl: string;
+    position: string;
+    sites: DataDashBoardSite[];
+  };
+
   type FrontEndMachine = {
     machineName: string;
     machineUrl: string;

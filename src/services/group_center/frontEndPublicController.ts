@@ -12,3 +12,14 @@ export async function getPublicMachineList(options?: { [key: string]: any }) {
     },
   );
 }
+
+/** Dashboard站点列表 GET /web/open/front_end/publicSiteClassList */
+export async function getPublicSiteClassList(options?: { [key: string]: any }) {
+  return request<API.DataDashBoardSiteClass[]>(
+    '/web/open/front_end/publicSiteClassList',
+    {
+      method: 'GET',
+      ...(options || {}),
+    },
+  );
+}

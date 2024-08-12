@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 
 import MachineDisk from '@/components/Machine/MachineInfo/Hardware/Disk/MachineDisk';
-import { getPublicMachineList } from '@/services/group_center/frontEndMachineListController';
+import { getPublicMachineList } from '@/services/group_center/frontEndPublicController';
 
 interface Props {
   name?: string;

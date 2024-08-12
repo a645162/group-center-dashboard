@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 
-import { getPublicMachineList } from '@/services/group_center/frontEndMachineListController';
+import { getPublicMachineList } from '@/services/group_center/frontEndPublicController';
 
 import GpuDashboard from '@/components/Machine/GpuDashboard';
 import MachineSelector from '@/components/Machine/MachineSelector';
