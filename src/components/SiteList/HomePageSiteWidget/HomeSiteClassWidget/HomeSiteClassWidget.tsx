@@ -1,5 +1,8 @@
+import { Avatar, Card } from 'antd';
 import React from 'react';
 import HomeSiteItemWidget from './HomeSiteItemWidget/HomeSiteItemWidget';
+
+import styles from './HomeSiteClassWidget.less';
 
 interface Props {
   siteClassObject: API.DataDashBoardSiteClass;
@@ -8,16 +11,27 @@ interface Props {
 const HomeSiteClassWidget: React.FC<Props> = (props) => {
   const { siteClassObject } = props;
 
+  const ClassIcon = () => (
+    <Avatar
+      className={styles.avatar}
+      size={32}
+      src={siteClassObject.classIconUrl}
+    />
+  );
+
   return (
     <div>
-      <div>{siteClassObject.className}</div>
-      {siteClassObject.sites.map((siteObject) => {
-        return (
-          <div key={siteObject.name}>
-            <HomeSiteItemWidget siteObject={siteObject} />
-          </div>
-        );
-      })}
+      <Card title={siteClassObject.className} extra={<ClassIcon />}>
+        <div className={styles.containerDiv}>
+          {siteClassObject.sites.map((siteObject) => {
+            return (
+              <div key={siteObject.name}>
+                <HomeSiteItemWidget siteObject={siteObject} />
+              </div>
+            );
+          })}
+        </div>
+      </Card>
     </div>
   );
 };

@@ -10,11 +10,11 @@ const HomePage: React.FC = () => {
   return (
     <PageContainer ghost>
       <div className={styles.container}>
-        <div>
+        <div className={styles.helloDiv}>
           <Guide name={trim(name)} />
         </div>
 
-        <div style={{ width: '100%' }}>
+        <div className={styles.containerSiteList}>
           <HomePageSiteWidget />
         </div>
       </div>

@@ -12,7 +12,27 @@ const siteClassList = [
         supportQrCode: true,
       },
       {
-        name: 'Github',
+        name: 'GitHub',
+        url: 'https://github.com',
+        iconUrl: '/favicon.ico',
+        supportQrCode: true,
+      },
+    ],
+  },
+  {
+    classIconUrl: '/favicon.ico',
+    className: 'Extra',
+    position: 'default',
+
+    sites: [
+      {
+        name: '百度',
+        url: 'https://www.baidu.com',
+        iconUrl: '/favicon.ico',
+        supportQrCode: true,
+      },
+      {
+        name: 'GitHub',
         url: 'https://github.com',
         iconUrl: '/favicon.ico',
         supportQrCode: true,
