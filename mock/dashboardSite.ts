@@ -16,13 +16,13 @@ const generateSite = () => {
       };
 };
 
-const generateSiteClass = (index: number, count: number = 3) => {
+const generateSiteClass = (index: number, siteCount: number = 3) => {
   return {
     classIconUrl: '/favicon.ico',
     className: `Class ${index}`,
     position: 'default',
     index: index,
-    sites: Array.from({ length: count }, generateSite),
+    sites: Array.from({ length: siteCount }, generateSite),
   };
 };
 

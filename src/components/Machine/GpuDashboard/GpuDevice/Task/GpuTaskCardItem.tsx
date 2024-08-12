@@ -16,7 +16,7 @@ import GpuTaskDetailModal, {
 import { copyToClipboardPromise } from '@/utils/System/Clipboard';
 import { getTimeStrFromTimestamp } from '@/utils/Time/DateTimeUtils';
 import { FilterUseEffect, UseFilter } from './Filter';
-import './GpuTaskItem.less';
+import styles from './GpuTaskCardItem.less';
 
 interface Props {
   index: number;
@@ -199,7 +199,7 @@ const GpuTaskCardItem: React.FC<Props> = (props) => {
               </div>
             </div>
 
-            <div className="div-tags">
+            <div className={styles.divTags}>
               <Tag icon={<DatabaseOutlined />} color="default">
                 {getMemoryString(convertFromMBToGB(taskInfo.gpuMemoryUsage))}GB
               </Tag>

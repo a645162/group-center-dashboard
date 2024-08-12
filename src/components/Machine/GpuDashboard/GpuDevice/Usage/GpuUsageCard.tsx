@@ -3,7 +3,7 @@ import LinerDividerLayout from '@/components/Public/Layout/LinerDividerLayout';
 import { getGpuUsageInfo } from '@/services/agent/GpuInfo';
 import { convertFromMBToGB, getMemoryString } from '@/utils/Convert/MemorySize';
 import { green, orange, red } from '@ant-design/colors';
-import { Card, Progress, Space } from 'antd';
+import { Card, Progress, Skeleton, Space } from 'antd';
 import React, { useEffect, useState } from 'react';
 
 import styles from './GpuUsageCard.less';
@@ -119,7 +119,15 @@ const GpuUsageCard: React.FC<Props> = (props) => {
   );
 
   if (!gpuUsageInfo) {
-    return <div>Loading......</div>;
+    return (
+      <div>
+        <Card style={{ minWidth: 300 }}>
+          <div>
+            <Skeleton />
+          </div>
+        </Card>
+      </div>
+    );
   }
 
   const leftContainer = (
@@ -168,7 +176,7 @@ const GpuUsageCard: React.FC<Props> = (props) => {
   const rightContent = rightContainer(gpuUsageInfo);
 
   return (
-    <div className="gpu-usage-card">
+    <div>
       <Card style={{ minWidth: 300 }}>
         <LinerDividerLayout leftChild={leftContent} rightChild={rightContent} />
       </Card>

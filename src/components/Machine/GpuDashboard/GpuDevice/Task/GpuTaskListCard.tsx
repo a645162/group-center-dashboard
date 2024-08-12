@@ -1,7 +1,9 @@
 import VShow from '@/components/Vue/V-Show';
 import { getGpuTaskInfo } from '@/services/agent/GpuInfo';
+import { Skeleton } from 'antd';
 import React, { useEffect, useState } from 'react';
 import GpuTaskCardItem from './GpuTaskCardItem';
+import styles from './GpuTaskListCard.less';
 
 interface Props {
   apiUrl: string;
@@ -36,9 +38,9 @@ const GpuTaskListCard: React.FC<Props> = (props) => {
 
   if (!gpuTaskList) {
     return (
-      <>
-        <div>暂无任务</div>
-      </>
+      <div>
+        <Skeleton />
+      </div>
     );
   }
 
@@ -50,7 +52,7 @@ const GpuTaskListCard: React.FC<Props> = (props) => {
     <div>
       <VShow v-show={gpuTaskList.length > 0}>
         {Array.from({ length: gpuTaskList?.length || 0 }, (_, i) => (
-          <div key={i}>
+          <div className={styles.gpuTaskItemDiv} key={i}>
             <GpuTaskCardItem index={i} taskInfo={gpuTaskList?.[i]} />
           </div>
         ))}

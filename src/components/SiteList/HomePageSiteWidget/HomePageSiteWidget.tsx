@@ -32,7 +32,7 @@ const HomePageSiteWidget: React.FC = () => {
     <div className={styles.mainDiv}>
       <div>
         {sortedSiteClassList.map((item) => (
-          <div key={item.className}>
+          <div className={styles.parentDiv} key={item.className}>
             <HomeSiteClassWidget siteClassObject={item} />
           </div>
         ))}
