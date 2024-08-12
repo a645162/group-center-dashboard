@@ -25,9 +25,18 @@ importers:
       axios:
         specifier: ^1.7.3
         version: 1.7.3
+      react-live-clock:
+        specifier: ^6.1.23-beta
+        version: 6.1.23-beta(react-moment@1.1.3(moment@2.30.1)(prop-types@15.8.1)(react@18.3.1))(react@18.3.1)
+      typed.js:
+        specifier: ^2.1.0
+        version: 2.1.0
       typescript-cookie:
         specifier: ^1.0.6
         version: 1.0.6
+      zustand:
+        specifier: ^4.5.4
+        version: 4.5.4(@types/react@18.3.3)(react@18.3.1)
     devDependencies:
       '@types/react':
         specifier: ^18.3.3
@@ -7938,6 +7947,12 @@ packages:
       }
     hasBin: true
 
+  moment-timezone@0.5.45:
+    resolution:
+      {
+        integrity: sha512-HIWmqA86KcmCAhnMAN0wuDOARV/525R2+lOLotuGFzn4HO+FH+/645z2wx0Dt3iDv6/p61SIvKnDstISainhLQ==,
+      }
+
   moment@2.30.1:
     resolution:
       {
@@ -10152,11 +10167,30 @@ packages:
         integrity: sha512-fBASbA6LnOU9dOU2eW7aQ8xmYBSXUIWr+UmF9b1efZBazGNO+rcXT/icdKnYm2pTwcRylVUYwW7H1PHfLekVzA==,
       }
 
+  react-live-clock@6.1.23-beta:
+    resolution:
+      {
+        integrity: sha512-SoWF0aHcEyXseRQiopJVl6HQw+6n7GpcgWlnaPvL+CyaivCW52vCkXOIhw4JU6Cj3ZQTcqDbLdMByh0DIhQpgA==,
+      }
+    peerDependencies:
+      react: ^16.14.0 || ^17 || ^18
+      react-moment: 1.1.3
+
   react-merge-refs@1.1.0:
     resolution:
       {
         integrity: sha512-alTKsjEL0dKH/ru1Iyn7vliS2QRcBp9zZPGoWxUOvRGWPUYgjo+V01is7p04It6KhgrzhJGnIj9GgX8W4bZoCQ==,
       }
+
+  react-moment@1.1.3:
+    resolution:
+      {
+        integrity: sha512-8EPvlUL8u6EknPp1ISF5MQ3wx2OHJVXIP/iZc4wRh3iV3XozftZERDv9ANZeAtMlhNNQHdFoqcZHFUkBSTONfA==,
+      }
+    peerDependencies:
+      moment: ^2.29.0
+      prop-types: ^15.7.0
+      react: ^16.0 || ^17.0.0 || ^18.0.0
 
   react-redux@5.1.2:
     resolution:
@@ -11757,6 +11791,12 @@ packages:
       }
     engines: { node: '>= 0.4' }
 
+  typed.js@2.1.0:
+    resolution:
+      {
+        integrity: sha512-bDuXEf7YcaKN4g08NMTUM6G90XU25CK3bh6U0THC/Mod/QPKlEt9g/EjvbYB8x2Qwr2p6J6I3NrsoYaVnY6wsQ==,
+      }
+
   typedarray-to-buffer@3.1.5:
     resolution:
       {
@@ -12341,6 +12381,24 @@ packages:
       {
         integrity: sha512-XBx9AXhXktjUqnepgTiE5flcKIYWi/rme0Eaj+5Y0lftuGBq+jyRu/md4WnuxqgP1ubdpNCsYEYPxrzVHD8d6g==,
       }
+
+  zustand@4.5.4:
+    resolution:
+      {
+        integrity: sha512-/BPMyLKJPtFEvVL0E9E9BTUM63MNyhPGlvxk1XjrfWTUlV+BR8jufjsovHzrtR6YNcBEcL7cMHovL1n9xHawEg==,
+      }
+    engines: { node: '>=12.7.0' }
+    peerDependencies:
+      '@types/react': '>=16.8'
+      immer: '>=9.0.6'
+      react: '>=16.8'
+    peerDependenciesMeta:
+      '@types/react':
+        optional: true
+      immer:
+        optional: true
+      react:
+        optional: true
 
   zwitch@1.0.5:
     resolution:
@@ -18523,6 +18581,10 @@ snapshots:
     dependencies:
       commander: 12.1.0
 
+  moment-timezone@0.5.45:
+    dependencies:
+      moment: 2.30.1
+
   moment@2.30.1: {}
 
   ms@2.0.0: {}
@@ -20137,7 +20199,20 @@ snapshots:
 
   react-lifecycles-compat@3.0.4: {}
 
+  react-live-clock@6.1.23-beta(react-moment@1.1.3(moment@2.30.1)(prop-types@15.8.1)(react@18.3.1))(react@18.3.1):
+    dependencies:
+      moment: 2.30.1
+      moment-timezone: 0.5.45
+      react: 18.3.1
+      react-moment: 1.1.3(moment@2.30.1)(prop-types@15.8.1)(react@18.3.1)
+
   react-merge-refs@1.1.0: {}
+
+  react-moment@1.1.3(moment@2.30.1)(prop-types@15.8.1)(react@18.3.1):
+    dependencies:
+      moment: 2.30.1
+      prop-types: 15.8.1
+      react: 18.3.1
 
   react-redux@5.1.2(react@18.3.1)(redux@3.7.2):
     dependencies:
@@ -21270,6 +21345,8 @@ snapshots:
       is-typed-array: 1.1.13
       possible-typed-array-names: 1.0.0
 
+  typed.js@2.1.0: {}
+
   typedarray-to-buffer@3.1.5:
     dependencies:
       is-typedarray: 1.0.0
@@ -21664,5 +21741,12 @@ snapshots:
       zod: 3.23.8
 
   zod@3.23.8: {}
+
+  zustand@4.5.4(@types/react@18.3.3)(react@18.3.1):
+    dependencies:
+      use-sync-external-store: 1.2.0(react@18.3.1)
+    optionalDependencies:
+      '@types/react': 18.3.3
+      react: 18.3.1
 
   zwitch@1.0.5: {}

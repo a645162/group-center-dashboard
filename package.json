@@ -25,6 +25,8 @@
     "@umijs/max": "^4.3.12",
     "antd": "^5.20.0",
     "axios": "^1.7.3",
+    "react-live-clock": "^6.1.23-beta",
+    "typed.js": "^2.1.0",
     "typescript-cookie": "^1.0.6",
     "zustand": "^4.5.4"
   },
