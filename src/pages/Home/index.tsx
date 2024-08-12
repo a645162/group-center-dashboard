@@ -1,4 +1,5 @@
 import Guide from '@/components/Guide';
+import HomePageSiteWidget from '@/components/SiteList/HomePageSiteWidget/HomePageSiteWidget';
 import { trim } from '@/utils/format';
 import { PageContainer } from '@ant-design/pro-components';
 import { useModel } from '@umijs/max';
@@ -9,7 +10,13 @@ const HomePage: React.FC = () => {
   return (
     <PageContainer ghost>
       <div className={styles.container}>
-        <Guide name={trim(name)} />
+        <div>
+          <Guide name={trim(name)} />
+        </div>
+
+        <div style={{ width: '100%' }}>
+          <HomePageSiteWidget />
+        </div>
       </div>
     </PageContainer>
   );
