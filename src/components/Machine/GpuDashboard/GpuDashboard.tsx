@@ -2,6 +2,8 @@ import { getGpuCount } from '@/services/agent/GpuInfo';
 import React, { useEffect, useState } from 'react';
 import GpuDevice from './GpuDevice';
 
+import styles from './GpuDashboard.less';
+
 interface Props {
   name: string;
   apiUrl: string;
@@ -40,9 +42,7 @@ const GpuDashboard: React.FC<Props> = (props) => {
 
   return (
     <div>
-      <h1>
-        {name}({gpuCountState}卡)
-      </h1>
+      <h1 className={styles.title}>{name}</h1>
       <div style={gpuInfoStyle}>
         {Array.from({ length: gpuCountState }, (_, i) => (
           <GpuDevice key={i} apiUrl={apiUrl} gpuIndex={i} />

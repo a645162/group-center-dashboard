@@ -4,10 +4,20 @@ import { convertFromMBToGB, getMemoryString } from '@/utils/Convert/MemorySize';
 import {
   BugOutlined,
   DatabaseOutlined,
+  DownOutlined,
   QuestionCircleOutlined,
   SyncOutlined,
 } from '@ant-design/icons';
-import { Card, Divider, message, Popconfirm, Space, Tag } from 'antd';
+import {
+  Card,
+  Divider,
+  Dropdown,
+  MenuProps,
+  message,
+  Popconfirm,
+  Space,
+  Tag,
+} from 'antd';
 import React, { useRef, useState } from 'react';
 import GpuTaskDetailModal, {
   GpuTaskDetailModalHandles,
@@ -101,6 +111,24 @@ const GpuTaskCardItem: React.FC<Props> = (props) => {
     });
   };
 
+  const moreMenuItems: MenuProps['items'] = [
+    {
+      key: '1',
+      label: <a onClick={onClickShowDetail}>详细信息</a>,
+    },
+  ];
+  const MoreMenu = () => (
+    <>
+      <Dropdown menu={{ items: moreMenuItems }}>
+        <a onClick={(e) => e.preventDefault()}>
+          <Space>
+            <DownOutlined />
+          </Space>
+        </a>
+      </Dropdown>
+    </>
+  );
+
   return (
     <div>
       {contextHolder}
@@ -109,11 +137,7 @@ const GpuTaskCardItem: React.FC<Props> = (props) => {
         <Card
           size="small"
           title={cardTitle}
-          extra={
-            <a href="#" onClick={onClickShowDetail}>
-              详细信息
-            </a>
-          }
+          extra={<MoreMenu />}
           style={{ width: 300 }}
         >
           <div>
