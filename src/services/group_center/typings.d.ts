@@ -44,6 +44,7 @@ declare namespace API {
     className: string;
     classIconUrl: string;
     position: string;
+    index: number;
     sites: DataDashBoardSite[];
   };
 

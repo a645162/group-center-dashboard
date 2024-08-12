@@ -25,10 +25,13 @@ const useSiteClassListState = () => {
 const HomePageSiteWidget: React.FC = () => {
   const siteClassList = useSiteClassListState();
 
+  // 升序排序
+  const sortedSiteClassList = siteClassList.sort((a, b) => a.index - b.index);
+
   return (
     <div className={styles.mainDiv}>
       <div>
-        {siteClassList.map((item) => (
+        {sortedSiteClassList.map((item) => (
           <div key={item.className}>
             <HomeSiteClassWidget siteClassObject={item} />
           </div>
