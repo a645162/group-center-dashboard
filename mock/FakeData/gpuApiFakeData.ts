@@ -3,7 +3,7 @@ import {
   getPreviousTimeStamp,
 } from '../../src/utils/Time/DateTimeUtils';
 
-import { getRandomFloat, getRandomInt } from './common';
+import { getRandomBool, getRandomFloat, getRandomInt } from './common';
 
 const basicGpuUsageInfo = {
   result: 1,
@@ -31,6 +31,7 @@ const basicTaskDict = {
   gpuMemoryUsageMax: 17760,
   worldSize: 0,
   localRank: 0,
+  topPythonPid: -1,
   condaEnv: 'khm3.8',
   screenSessionName: 'khm',
   pythonVersion: '3.8.16',
@@ -67,18 +68,8 @@ export const generateGpuUsageInfo = (gpuName: string) => {
   return finalGpuUsageInfo;
 };
 
-export const generateGpuTaskInfo = (maxTaskCount: number) => {
+export const generateGpuTaskInfo = (taskCount: number) => {
   let taskList = [];
-
-  let taskCount = maxTaskCount;
-
-  const minTaskCount = 1;
-
-  if (taskCount < 0) {
-    taskCount = 3;
-  }
-
-  taskCount = getRandomInt(taskCount, minTaskCount);
 
   for (let i = 0; i < taskCount; i++) {
     let currentTask = { ...basicTaskDict };
@@ -92,7 +83,6 @@ export const generateGpuTaskInfo = (maxTaskCount: number) => {
       currentTask.screenSessionName = '';
     }
 
-    currentTask.worldSize = getRandomInt(2);
     currentTask.startTimestamp = getPreviousTimeStamp(
       getCurrentTimeStamp(),
       getRandomInt(24),
@@ -101,6 +91,36 @@ export const generateGpuTaskInfo = (maxTaskCount: number) => {
 
     taskList.push(currentTask);
   }
+
+  return taskList;
+};
+
+const generateGpuTaskInfoMultiGpu = (devicesCount: number) => {
+  const multiGpuTaskList = generateGpuTaskInfo(devicesCount);
+
+  const topPythonPid = getRandomInt(1000, 65535);
+
+  for (let i = 0; i < devicesCount; i++) {
+    multiGpuTaskList[i].localRank = i;
+    multiGpuTaskList[i].worldSize = devicesCount;
+    multiGpuTaskList[i].topPythonPid = topPythonPid;
+  }
+
+  return multiGpuTaskList;
+};
+
+export const generateTaskInfoResponse = (
+  taskCount: number,
+  devicesCount: number = 2,
+) => {
+  const eachMaxCount = getRandomInt(taskCount, 1);
+  const singleGpuTaskList = generateGpuTaskInfo(eachMaxCount);
+
+  const multiGpuTaskList = getRandomBool()
+    ? generateGpuTaskInfoMultiGpu(devicesCount)
+    : [];
+
+  const taskList = [...singleGpuTaskList, ...multiGpuTaskList];
 
   const taskInfoResponse = {
     result: taskCount,

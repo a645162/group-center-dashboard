@@ -19,7 +19,7 @@ const generateDiskUsage = (mountPoint: string, isSSD: boolean = false) => {
 
   // Clone Template
   // let data = diskTemplate;
-  let data = JSON.parse(JSON.stringify(diskTemplate));
+  let data = { ...diskTemplate };
 
   data.mountPoint = mountPoint;
 

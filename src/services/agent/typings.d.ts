@@ -60,6 +60,8 @@ declare namespace API {
 
     worldSize: number;
     localRank: number;
+    topPythonPid: number;
+
     condaEnv: string;
     screenSessionName: string;
 

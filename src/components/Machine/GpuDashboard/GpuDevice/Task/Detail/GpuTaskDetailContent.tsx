@@ -101,6 +101,10 @@ const GpuTaskDetailModal: React.FC<Props> = (props) => {
             <br />
             多卡任务索引:{taskInfo.localRank} ({taskInfo.localRank + 1} /{' '}
             {taskInfo.worldSize})
+            <br />
+            <VShow v-show={taskInfo.topPythonPid > 0}>
+              <div>主进程PID:{taskInfo.topPythonPid}</div>{' '}
+            </VShow>
           </div>
         </VShow>
 
