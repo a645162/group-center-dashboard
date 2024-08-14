@@ -24,6 +24,7 @@
     "@ant-design/pro-components": "^2.7.15",
     "@umijs/max": "^4.3.12",
     "antd": "^5.20.1",
+    "antd-style": "^3.6.2",
     "axios": "^1.7.3",
     "react-live-clock": "^6.1.23-beta",
     "typed.js": "^2.1.0",

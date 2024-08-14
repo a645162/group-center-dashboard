@@ -6,7 +6,7 @@ export default defineConfig({
   favicons: ['/favicon.ico'],
   // links: [{ rel: 'icon', href: '/assets/favicon.ico' }],
   plugins: ['@umijs/max-plugin-openapi'],
-  antd: {},
+  antd: { configProvider: {} },
   access: {},
   model: {},
   initialState: {},
