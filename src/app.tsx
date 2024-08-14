@@ -2,6 +2,7 @@
 import logoImg from '@/assets/logo.svg';
 import type { RuntimeAntdConfig, RunTimeLayoutConfig } from '@umijs/max';
 import { theme } from 'antd';
+import ThemeSwitch from './components/UI/ThemeSwitch';
 import { GetSystemTheme } from './utils/AntD5/AntD5DarkMode';
 
 // 全局初始化数据配置，用于 Layout 用户信息和权限初始化
@@ -35,6 +36,12 @@ export const layout: RunTimeLayoutConfig = () => {
     menu: {
       locale: false,
     },
+    actionsRender: () => [
+      <div key="0">
+        <ThemeSwitch />
+      </div>,
+    ],
+    // footerRender: () => <Footer />,
     childrenRender: (children) => {
       // if (initialState?.loading) return <PageLoading />;
       return <>{children}</>;
