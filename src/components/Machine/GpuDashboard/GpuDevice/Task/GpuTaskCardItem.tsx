@@ -6,7 +6,6 @@ import {
   DatabaseOutlined,
   DownOutlined,
   QuestionCircleOutlined,
-  SyncOutlined,
 } from '@ant-design/icons';
 import {
   Card,
@@ -25,6 +24,7 @@ import GpuTaskDetailModal, {
 
 import { copyToClipboardPromise } from '@/utils/System/Clipboard';
 import { getTimeStrFromTimestamp } from '@/utils/Time/DateTimeUtils';
+import MultiGpuTag from './Component/MultiGpuTag';
 import { FilterUseEffect, UseFilter } from './Filter';
 import styles from './GpuTaskCardItem.less';
 
@@ -62,9 +62,6 @@ const GpuTaskCardItem: React.FC<Props> = (props) => {
     `[${index + 1}]` +
     `${taskInfo.projectName}-${taskInfo.pyFileName}` +
     screenSessionString;
-
-  const isMultiGpu = taskInfo.worldSize > 1;
-  const multiGpuString = `${taskInfo.localRank + 1}/${taskInfo.worldSize}`;
 
   const startTimeString = getTimeStrFromTimestamp(taskInfo.startTimestamp);
   const handleCopyStartTimeString = () => {
@@ -233,12 +230,7 @@ const GpuTaskCardItem: React.FC<Props> = (props) => {
                   调试
                 </Tag>
               </VShow>
-
-              <VShow v-show={isMultiGpu}>
-                <Tag icon={<SyncOutlined spin />} color="default">
-                  多卡{multiGpuString}
-                </Tag>
-              </VShow>
+              <MultiGpuTag taskInfo={taskInfo} />
             </div>
           </div>
         </Card>
