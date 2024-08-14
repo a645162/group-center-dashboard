@@ -14,6 +14,7 @@ import {
   MenuProps,
   message,
   Popconfirm,
+  Popover,
   Space,
   Tag,
 } from 'antd';
@@ -62,6 +63,19 @@ const GpuTaskCardItem: React.FC<Props> = (props) => {
     `[${index + 1}]` +
     `${taskInfo.projectName}-${taskInfo.pyFileName}` +
     screenSessionString;
+
+  const currentGpuMemoryString = getMemoryString(
+    convertFromMBToGB(taskInfo.gpuMemoryUsage),
+  );
+  const maxGpuMemoryString = getMemoryString(
+    convertFromMBToGB(taskInfo.gpuMemoryUsageMax),
+  );
+  const popoverContentGpuMemory = (
+    <div style={{ textAlign: 'center' }}>
+      <p>{`当前显存占用: ${currentGpuMemoryString} GiB`}</p>
+      <p>{`最大显存占用: ${maxGpuMemoryString} GiB`}</p>
+    </div>
+  );
 
   const startTimeString = getTimeStrFromTimestamp(taskInfo.startTimestamp);
   const handleCopyStartTimeString = () => {
@@ -221,14 +235,26 @@ const GpuTaskCardItem: React.FC<Props> = (props) => {
             </div>
 
             <div className={styles.divTags}>
-              <Tag icon={<DatabaseOutlined />} color="default">
-                {getMemoryString(convertFromMBToGB(taskInfo.gpuMemoryUsage))}GB
-              </Tag>
+              <Popover
+                placement="bottom"
+                title="显存使用情况"
+                content={popoverContentGpuMemory}
+              >
+                <Tag icon={<DatabaseOutlined />} color="default">
+                  {currentGpuMemoryString}GB
+                </Tag>
+              </Popover>
 
               <VShow v-show={taskInfo.debugMode}>
-                <Tag icon={<BugOutlined />} color="processing">
-                  调试
-                </Tag>
+                <Popover
+                  placement="bottom"
+                  title="调试模式"
+                  content="当前代码正在被调试器调试"
+                >
+                  <Tag icon={<BugOutlined />} color="processing">
+                    调试
+                  </Tag>
+                </Popover>
               </VShow>
               <MultiGpuTag taskInfo={taskInfo} />
             </div>
