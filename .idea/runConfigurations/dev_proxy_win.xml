@@ -1,9 +1,9 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="dev" type="js.build_tools.npm" folderName="Run" nameIsGenerated="true">
+  <configuration default="false" name="dev-proxy-win" type="js.build_tools.npm" folderName="Run">
     <package-json value="$PROJECT_DIR$/package.json" />
     <command value="run" />
     <scripts>
-      <script value="dev" />
+      <script value="dev-proxy-win" />
     </scripts>
     <node-interpreter value="project" />
     <envs />

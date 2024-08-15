@@ -1,9 +1,9 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="dev" type="js.build_tools.npm" folderName="Run" nameIsGenerated="true">
+  <configuration default="false" name="openapi-win" type="js.build_tools.npm" folderName="Dev">
     <package-json value="$PROJECT_DIR$/package.json" />
     <command value="run" />
     <scripts>
-      <script value="dev" />
+      <script value="openapi-win" />
     </scripts>
     <node-interpreter value="project" />
     <envs />
