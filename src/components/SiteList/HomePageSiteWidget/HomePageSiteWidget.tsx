@@ -31,8 +31,8 @@ const HomePageSiteWidget: React.FC = () => {
   return (
     <div className={styles.mainDiv}>
       <div>
-        {sortedSiteClassList.map((item) => (
-          <div className={styles.parentDiv} key={item.className}>
+        {sortedSiteClassList.map((item, index) => (
+          <div className={styles.parentDiv} key={index + '_' + item.className}>
             <HomeSiteClassWidget siteClassObject={item} />
           </div>
         ))}

@@ -23,9 +23,9 @@ const HomeSiteClassWidget: React.FC<Props> = (props) => {
     <div>
       <Card title={siteClassObject.className} extra={<ClassIcon />}>
         <div className={styles.containerDiv}>
-          {siteClassObject.sites.map((siteObject) => {
+          {siteClassObject.sites.map((siteObject, index) => {
             return (
-              <div key={siteObject.name}>
+              <div key={index + '_' + siteObject.name}>
                 <HomeSiteItemWidget siteObject={siteObject} />
               </div>
             );
