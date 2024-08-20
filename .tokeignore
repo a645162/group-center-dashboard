@@ -1,5 +1,8 @@
 node_modules/
+
 src/.umi/
+src/.umi-production/
+
 .husky/
 
 Resource/
