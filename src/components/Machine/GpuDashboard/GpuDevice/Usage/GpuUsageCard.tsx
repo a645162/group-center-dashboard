@@ -40,15 +40,24 @@ const useGpuMemoryDetail = (gpuMemoryTotalMB: number, memoryUsage: number) => {
 const useGpuUsageInfo = (apiUrl: string, gpuIndex: number) => {
   const [gpuUsageInfo, setGpuUsageInfo] = useState<API.DashboardGpuUsageInfo>();
 
+  const updateGpuUsageInfo = () => {
+    getGpuUsageInfo(apiUrl, gpuIndex)
+      .then((data) => {
+        setGpuUsageInfo(data);
+      })
+      .catch((error: any) => {
+        console.log('error:', error);
+      });
+  };
+
+  // 初始执行一次
+  useEffect(() => {
+    updateGpuUsageInfo();
+  }, []);
+
   useEffect(() => {
     const intervalId = setInterval(() => {
-      getGpuUsageInfo(apiUrl, gpuIndex)
-        .then((data) => {
-          setGpuUsageInfo(data);
-        })
-        .catch((error: any) => {
-          console.log('error:', error);
-        });
+      updateGpuUsageInfo();
     }, 2000); // 每隔2秒执行一次
 
     return () => clearInterval(intervalId); // 在组件卸载时清除定时器
