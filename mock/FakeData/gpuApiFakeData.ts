@@ -44,12 +44,10 @@ const basicTaskDict = {
 };
 
 export const generateGpuCountResponse = (gpuCount: number) => {
-  const gpuCountResponse = {
+  return {
     result: gpuCount,
     gpuCount: gpuCount,
   };
-
-  return gpuCountResponse;
 };
 
 export const generateGpuUsageInfo = (gpuName: string) => {
@@ -60,6 +58,14 @@ export const generateGpuUsageInfo = (gpuName: string) => {
   finalGpuUsageInfo.coreUsage = getRandomFloat(100, 0);
   finalGpuUsageInfo.memoryUsage = getRandomFloat(100, 0);
   finalGpuUsageInfo.gpuTemperature = getRandomFloat(85, 0);
+
+  if (finalGpuUsageInfo.coreUsage > 90) {
+    finalGpuUsageInfo.coreUsage = 100;
+  }
+
+  if (finalGpuUsageInfo.memoryUsage > 90) {
+    finalGpuUsageInfo.memoryUsage = 100;
+  }
 
   finalGpuUsageInfo.gpuPowerUsage = Math.floor(
     Math.random() * finalGpuUsageInfo.gpuTDP,
@@ -122,10 +128,8 @@ export const generateTaskInfoResponse = (
 
   const taskList = [...singleGpuTaskList, ...multiGpuTaskList];
 
-  const taskInfoResponse = {
+  return {
     result: taskCount,
     taskList: taskList,
   };
-
-  return taskInfoResponse;
 };

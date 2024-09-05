@@ -66,7 +66,7 @@ const useGpuUsageInfo = (apiUrl: string, gpuIndex: number) => {
   return gpuUsageInfo;
 };
 
-const ProgressConponent = (percent: number) => {
+const ProgressComponent = (percent: number) => {
   // 转换为整数
   let finalPercentage = Math.floor(percent);
   if (finalPercentage > 100) {
@@ -93,11 +93,11 @@ const ProgressConponent = (percent: number) => {
       return green[calculateColorIndex(percent / threshold1, 8, 3)];
     } else if (percent >= threshold1 && percent < threshold2) {
       return orange[
-        (calculateColorIndex(
+        calculateColorIndex(
           (percent - threshold1) / (threshold2 - threshold1),
-        ),
-        8,
-        5)
+          8,
+          5,
+        )
       ];
     } else {
       return red[
@@ -105,15 +105,30 @@ const ProgressConponent = (percent: number) => {
       ];
     }
   };
+
+  const getPercentageString = (percent: number | undefined) => {
+    if (percent === undefined) {
+      return '0%';
+    }
+
+    return `${percent}`.padStart(2, '0') + '%';
+  };
+
   // format = {(percent) => `${percent} Days`}
   return (
-    <Progress
-      percent={finalPercentage}
-      steps={10}
-      size="small"
-      strokeColor={computeColor(finalPercentage)}
-      format={(finalPercentage) => `${finalPercentage}`.padStart(2, '0') + '%'}
-    />
+    <div className={styles.gpuUsagePercent}>
+      <Progress
+        percent={finalPercentage}
+        steps={10}
+        size="small"
+        strokeColor={computeColor(finalPercentage)}
+        format={(finalPercentage) => getPercentageString(finalPercentage)}
+        showInfo={false}
+      />
+      <div className={styles.gpuUsagePercentText}>
+        <div>{getPercentageString(finalPercentage)}</div>
+      </div>
+    </div>
   );
 };
 
@@ -168,13 +183,13 @@ const GpuUsageCard: React.FC<Props> = (props) => {
           {/* 右上 */}
           <div className={styles.innerLine}>
             <div className={styles.progressTitle}>显存</div>
-            {ProgressConponent(gpuUsageInfo?.memoryUsage)}
+            {ProgressComponent(gpuUsageInfo?.memoryUsage)}
           </div>
 
           {/* 右下 */}
           <div className={styles.innerLine}>
             <div className={styles.progressTitle}>核心</div>
-            {ProgressConponent(gpuUsageInfo?.coreUsage)}
+            {ProgressComponent(gpuUsageInfo?.coreUsage)}
           </div>
         </Space>
       </DisableSelectDiv>

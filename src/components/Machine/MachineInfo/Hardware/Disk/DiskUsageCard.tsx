@@ -28,9 +28,11 @@ const computeColor = (percent: number) => {
     return green[calculateColorIndex(percent / threshold1, 8, 3)];
   } else if (percent >= threshold1 && percent < threshold2) {
     return orange[
-      (calculateColorIndex((percent - threshold1) / (threshold2 - threshold1)),
-      8,
-      5)
+      calculateColorIndex(
+        (percent - threshold1) / (threshold2 - threshold1),
+        8,
+        5,
+      )
     ];
   } else {
     return red[
@@ -39,7 +41,7 @@ const computeColor = (percent: number) => {
   }
 };
 
-const ProgressConponent = (percent: number) => {
+const ProgressComponent = (percent: number) => {
   // format = {(percent) => `${percent} Days`}
   return (
     <Progress
@@ -68,7 +70,7 @@ const DiskUsageCard: React.FC<Props> = (props) => {
   return (
     <div className="disk-usage-card" style={divStyle}>
       <Card size="small" title={cardTitle} style={cardStyle}>
-        {ProgressConponent(diskUsage.usedPercentage)}
+        {ProgressComponent(diskUsage.usedPercentage)}
         <div>已用: {diskUsage.usedStr}</div>
         <div>可用: {diskUsage.freeStr}</div>
         <div>总共: {diskUsage.totalStr}</div>
