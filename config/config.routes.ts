@@ -23,6 +23,12 @@ const prodRoutes = [
     component: './DiskDashboard',
     icon: 'DatabaseOutlined',
   },
+  {
+    name: 'Report',
+    path: '/report',
+    component: './Report',
+    icon: 'DatabaseOutlined',
+  },
 ];
 
 const devRoutes = isDev

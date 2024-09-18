@@ -27,14 +27,17 @@
     "@ant-design/colors": "^7.1.0",
     "@ant-design/icons": "^5.4.0",
     "@ant-design/pro-components": "^2.7.18",
+    "@szhsin/react-menu": "^4.2.2",
     "@umijs/max": "^4.3.20",
     "antd": "^5.20.6",
     "antd-style": "^3.6.3",
     "axios": "^1.7.7",
     "es-toolkit": "^1.19.0",
     "react-live-clock": "6.1.23-beta",
+    "react-number-format": "^5.4.2",
     "typed.js": "^2.1.0",
     "typescript-cookie": "^1.0.6",
+    "ua-parser-js": "^1.0.39",
     "zustand": "^4.5.5"
   },
   "devDependencies": {
