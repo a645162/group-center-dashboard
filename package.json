@@ -4,6 +4,7 @@
   "author": "Haomin Kong <a645162@qq.com>",
   "scripts": {
     "build": "max build",
+    "check": "eslint",
     "dev": "max dev",
     "dev-proxy": "cross-env ENABLE_PROXY=true max dev",
     "dev-proxy-win": "set ENABLE_PROXY=true && max dev",
@@ -42,6 +43,8 @@
     "@types/react-dom": "^18.3.0",
     "@umijs/max-plugin-openapi": "^2.0.3",
     "cross-env": "^7.0.3",
+    "eslint": "^9.10.0",
+    "eslint-plugin-react": "^7.36.1",
     "husky": "^9.1.6",
     "lint-staged": "^15.2.10",
     "npm-check-updates": "^17.1.2",
