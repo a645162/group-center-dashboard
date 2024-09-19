@@ -23,8 +23,17 @@ import GpuTaskDetailModal, {
   GpuTaskDetailModalHandles,
 } from './Detail/GpuTaskDetailModal';
 
+import { GetIsDarkMode } from '@/utils/AntD5/AntD5DarkMode';
 import { copyToClipboardPromise } from '@/utils/System/Clipboard';
 import { getTimeStrFromTimestamp } from '@/utils/Time/DateTimeUtils';
+import {
+  ControlledMenu as ContextMenu,
+  MenuDivider as ContextMenuDivider,
+  MenuItem as ContextMenuItem,
+} from '@szhsin/react-menu';
+import '@szhsin/react-menu/dist/index.css';
+import '@szhsin/react-menu/dist/theme-dark.css';
+import '@szhsin/react-menu/dist/transitions/zoom.css';
 import MultiGpuTag from './Component/MultiGpuTag';
 import { FilterUseEffect, UseFilter } from './Filter';
 import styles from './GpuTaskCardItem.less';
@@ -140,9 +149,31 @@ const GpuTaskCardItem: React.FC<Props> = (props) => {
     </>
   );
 
+  const [isContextMenuOpen, setContextMenuOpen] = useState(false);
+  const [contextMenuAnchorPoint, setContextMenuAnchorPoint] = useState({
+    x: 0,
+    y: 0,
+  });
+
+  const isDark = GetIsDarkMode();
+
   return (
     <div>
       {contextHolder}
+      <ContextMenu
+        anchorPoint={contextMenuAnchorPoint}
+        state={isContextMenuOpen ? 'open' : 'closed'}
+        menuStyle={{
+          zIndex: 1000,
+        }}
+        theming={isDark ? 'dark' : undefined}
+        direction="right"
+        onClose={() => setContextMenuOpen(false)}
+      >
+        <ContextMenuItem disabled>{taskInfo.projectName}</ContextMenuItem>
+        <ContextMenuDivider />
+        <ContextMenuItem onClick={onClickShowDetail}>详细信息</ContextMenuItem>
+      </ContextMenu>
       <GpuTaskDetailModal taskInfo={taskInfo} ref={modalFunctionRef} />
       <Space direction="vertical" size={16}>
         <Card
@@ -150,6 +181,14 @@ const GpuTaskCardItem: React.FC<Props> = (props) => {
           title={cardTitle}
           extra={<MoreMenu />}
           style={{ width: 300 }}
+          onContextMenu={(e) => {
+            if (typeof document.hasFocus === 'function' && !document.hasFocus())
+              return;
+
+            e.preventDefault();
+            setContextMenuAnchorPoint({ x: e.clientX, y: e.clientY });
+            setContextMenuOpen(true);
+          }}
         >
           <div>
             <div
