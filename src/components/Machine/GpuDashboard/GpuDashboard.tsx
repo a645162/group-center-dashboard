@@ -36,16 +36,14 @@ const GpuDashboard: React.FC<Props> = (props) => {
     return <div>暂无GPU</div>;
   }
 
-  const gpuInfoStyle = {
-    display: 'flex',
-  };
-
   return (
     <div>
       <h1 className={styles.title}>{name}</h1>
-      <div style={gpuInfoStyle}>
+      <div className={styles.gpuInfoList}>
         {Array.from({ length: gpuCountState }, (_, i) => (
-          <GpuDevice key={i} apiUrl={apiUrl} gpuIndex={i} />
+          <div key={i} className={styles.gpuInfoItem}>
+            <GpuDevice apiUrl={apiUrl} gpuIndex={i} />
+          </div>
         ))}
       </div>
     </div>

@@ -201,7 +201,7 @@ const GpuUsageCard: React.FC<Props> = (props) => {
 
   return (
     <div>
-      <Card style={{ minWidth: 300 }}>
+      <Card className={styles.gpuUsageCard}>
         <LinerDividerLayout leftChild={leftContent} rightChild={rightContent} />
       </Card>
     </div>

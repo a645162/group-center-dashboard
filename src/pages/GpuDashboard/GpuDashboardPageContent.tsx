@@ -7,6 +7,7 @@ import MachineSelector from '@/components/Machine/MachineSelector';
 import VShow from '@/components/Vue/V-Show';
 import { getLatestRunGpu, setLatestRunGpu } from '@/data/cookies/Gpu';
 import { Flex } from 'antd';
+import styles from './GpuDashboardPageContent.less';
 import GpuTaskFilterPanel from './GpuTaskFilterPanel';
 
 interface Props {
@@ -36,13 +37,14 @@ const GpuDashboardWithNoContent = (
   if (machineList) {
     return (
       <VShow v-show={machineList !== undefined && machineList.length > 0}>
-        <div style={{ display: 'flex', flexWrap: 'wrap' }}>
+        <div className={styles.machineDiv}>
           {machineList.map((machine) => (
-            <GpuDashboard
-              key={machine.machineName}
-              name={machine.machineName}
-              apiUrl={machine.machineUrl}
-            />
+            <div key={machine.machineName} className={styles.machineItem}>
+              <GpuDashboard
+                name={machine.machineName}
+                apiUrl={machine.machineUrl}
+              />
+            </div>
           ))}
         </div>
       </VShow>
