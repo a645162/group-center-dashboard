@@ -2,6 +2,7 @@ import { getDiskUsage } from '@/services/agent/MachineInfo';
 import { Card } from 'antd';
 import React, { useEffect, useState } from 'react';
 import DiskUsageCard from './DiskUsageCard';
+import styles from './MachineDisk.less';
 
 interface Props {
   name: string;
@@ -25,16 +26,14 @@ const useDiskUsageState = (apiUrl: string) => {
 };
 
 const cardContent = (mountPointList: API.MachineDiskUsage[]) => {
-  const divStyle = {
-    display: 'flex',
-  };
-
   return mountPointList.length === 0 ? (
     <div>暂无任何硬盘挂载点</div>
   ) : (
-    <div style={divStyle}>
+    <div className={styles.diskList}>
       {mountPointList.map((diskUsage, index) => (
-        <DiskUsageCard key={index} diskUsage={diskUsage} />
+        <div key={index} className={styles.diskItem}>
+          <DiskUsageCard diskUsage={diskUsage} />
+        </div>
       ))}
     </div>
   );

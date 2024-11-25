@@ -6,6 +6,7 @@ import {
 } from '@ant-design/icons';
 import { Card, Progress, Tag } from 'antd';
 import React from 'react';
+import styles from './DiskUsageCard.less';
 
 interface Props {
   diskUsage: API.MachineDiskUsage;
@@ -58,23 +59,14 @@ const DiskUsageCard: React.FC<Props> = (props) => {
 
   const cardTitle = `${diskUsage.mountPoint}(${diskUsage.purpose})`;
 
-  const divStyle = {
-    margin: '4px',
-    paddingLeft: '4px',
-  };
-
-  const cardStyle = {
-    minWidth: 100,
-  };
-
   return (
-    <div className="disk-usage-card" style={divStyle}>
-      <Card size="small" title={cardTitle} style={cardStyle}>
+    <div className={styles.cardParentDiv}>
+      <Card size="small" title={cardTitle} className={styles.card}>
         {ProgressComponent(diskUsage.usedPercentage)}
         <div>已用: {diskUsage.usedStr}</div>
         <div>可用: {diskUsage.freeStr}</div>
         <div>总共: {diskUsage.totalStr}</div>
-        <div style={{ paddingTop: '4px' }}>
+        <div className={styles.detailDiv}>
           <VShow v-show={diskUsage.triggerHighPercentageUsed}>
             <Tag icon={<ExclamationCircleOutlined />} color="warning">
               已用高占比
