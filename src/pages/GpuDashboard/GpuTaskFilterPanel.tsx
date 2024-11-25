@@ -3,7 +3,7 @@ import { useGpuTaskFilterProjectNameStore } from '@/data/store/modules/filter/Gp
 import { useGpuTaskFilterUserNameStore } from '@/data/store/modules/filter/GpuTaskFilterUserName';
 import { Flex } from 'antd';
 import React from 'react';
-
+import styles from './GpuTaskFilterPanel.less';
 function UserNameFilter() {
   const userNameEng = useGpuTaskFilterUserNameStore(
     (state) => state.userNameEng,
@@ -72,10 +72,10 @@ function ProjectNameFilter() {
 const GpuTaskFilterPanel: React.FC = () => {
   return (
     <div>
-      <Flex gap="small" vertical={false}>
-        <div>{UserNameFilter()}</div>
-        <div>{ProjectNameFilter()}</div>
-      </Flex>
+      <div className={styles.fillterContainer}>
+        <div className={styles.fillterItem}>{UserNameFilter()}</div>
+        <div className={styles.fillterItem}>{ProjectNameFilter()}</div>
+      </div>
     </div>
   );
 };

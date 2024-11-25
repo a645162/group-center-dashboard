@@ -6,7 +6,6 @@ import GpuDashboard from '@/components/Machine/GpuDashboard';
 import MachineSelector from '@/components/Machine/MachineSelector';
 import VShow from '@/components/Vue/V-Show';
 import { getLatestRunGpu, setLatestRunGpu } from '@/data/cookies/Gpu';
-import { Flex } from 'antd';
 import styles from './GpuDashboardPageContent.less';
 import GpuTaskFilterPanel from './GpuTaskFilterPanel';
 
@@ -114,16 +113,20 @@ const GpuDashboardPageContent: React.FC<Props> = (props) => {
         ))}
       </ul> */}
 
-      <Flex gap="middle" vertical={false}>
-        <MachineSelector
-          machineList={machineList}
-          onMachineChange={onSelectedMachineChange}
-          multipleMachine={true}
-          tryToSelectMachineList={tryToSelectedMachineList}
-        />
+      <div className={styles.topBarDiv}>
+        <div className={styles.topBarItem}>
+          <MachineSelector
+            machineList={machineList}
+            onMachineChange={onSelectedMachineChange}
+            multipleMachine={true}
+            tryToSelectMachineList={tryToSelectedMachineList}
+          />
+        </div>
 
-        <GpuTaskFilterPanel />
-      </Flex>
+        <div className={styles.topBarItem}>
+          <GpuTaskFilterPanel />
+        </div>
+      </div>
 
       {GpuDashboardWithNoContent(selectedMachineState)}
     </div>

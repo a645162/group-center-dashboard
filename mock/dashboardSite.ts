@@ -34,6 +34,6 @@ const generateSiteClassList = (count: number = 5, eachMaxCount = 3) => {
 
 export default {
   'GET /web/open/front_end/publicSiteClassList': (req: any, res: any) => {
-    res.json(generateSiteClassList());
+    res.json(generateSiteClassList(10, 10));
   },
 };
