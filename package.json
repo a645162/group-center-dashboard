@@ -28,8 +28,8 @@
     "@ant-design/icons": "^5.5.1",
     "@ant-design/pro-components": "^2.8.2",
     "@szhsin/react-menu": "^4.2.3",
-    "@umijs/max": "^4.3.34",
-    "antd": "^5.22.1",
+    "@umijs/max": "^4.3.35",
+    "antd": "^5.22.2",
     "antd-style": "^3.7.1",
     "axios": "^1.7.7",
     "es-toolkit": "^1.27.0",
@@ -51,13 +51,13 @@
     "husky": "^9.1.7",
     "lint-staged": "^15.2.10",
     "npm-check-updates": "^17.1.11",
-    "nrm": "^1.3.1",
+    "nrm": "^1.4.0",
     "prettier": "^3.3.3",
     "prettier-plugin-organize-imports": "^4.1.0",
-    "prettier-plugin-packagejson": "^2.5.3",
+    "prettier-plugin-packagejson": "^2.5.6",
     "tailwindcss": "^3.4.15",
     "tokei": "^0.3.5",
     "ts-node": "^10.9.2",
-    "typescript": "^5.6.3"
+    "typescript": "^5.7.2"
   }
 }
