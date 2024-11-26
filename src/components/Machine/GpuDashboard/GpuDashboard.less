@@ -1,23 +1,36 @@
 .title {
-  margin-top: 4px;
-  margin-bottom: 4px;
+  width: auto;
+  margin: 4px;
+  padding-left: 16px;
+  padding-right: 16px;
   font-weight: 400;
 
   // 水平居中
   text-align: center;
 }
 
+.noGpuDiv {
+  width: auto;
+  padding-top: 16px;
+
+  // 水平居中
+  text-align: center;
+}
+
 .gpuInfoList {
+  width: auto;
   // background-color: lightblue;
 
   display: flex;
   flex-wrap: wrap;
-  justify-content: space-between;
+  justify-content: flex-start;
 
   /* 或者用 flex-start, flex-end, center 来调整子元素的对齐方式 */
 }
 
 .gpuInfoItem {
+  width: min-content;
+
   // background-color: pink;
 
   // width: calc((100% / 3) - 16px);

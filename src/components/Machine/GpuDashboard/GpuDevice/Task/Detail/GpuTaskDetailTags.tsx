@@ -26,25 +26,33 @@ const GpuTaskDetailTags: React.FC<Props> = (props) => {
     <>
       <div className={styles.divTags}>
         <VShow v-show={taskInfo.name}>
-          <Tag icon={<UserOutlined />} color="default">
+          <Tag className={styles.tag} icon={<UserOutlined />} color="default">
             {taskInfo.name}
           </Tag>
         </VShow>
 
         <VShow v-show={taskInfo.cudaVersion}>
-          <Tag icon={<VideoCameraOutlined />} color="default">
+          <Tag
+            className={styles.tag}
+            icon={<VideoCameraOutlined />}
+            color="default"
+          >
             CUDA {cudaVersionShort}
           </Tag>
         </VShow>
 
         <VShow v-show={taskInfo.pythonVersion}>
-          <Tag icon={<PythonOutlined />} color="default">
+          <Tag className={styles.tag} icon={<PythonOutlined />} color="default">
             Python {taskInfo.pythonVersion}
           </Tag>
         </VShow>
 
         <VShow v-show={taskInfo.screenSessionName}>
-          <Tag icon={<FundProjectionScreenOutlined />} color="default">
+          <Tag
+            className={styles.tag}
+            icon={<FundProjectionScreenOutlined />}
+            color="default"
+          >
             {taskInfo.screenSessionName}
           </Tag>
         </VShow>

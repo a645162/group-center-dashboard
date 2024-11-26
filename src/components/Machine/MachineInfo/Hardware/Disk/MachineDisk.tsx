@@ -45,7 +45,7 @@ const MachineDisk: React.FC<Props> = (props) => {
   const diskUsageState = useDiskUsageState(apiUrl);
 
   return (
-    <div className="gpu-usage-card">
+    <div className={styles.deviceCardDiv}>
       <Card size="default" title={name}>
         {cardContent(diskUsageState)}
       </Card>

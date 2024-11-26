@@ -1,3 +1,7 @@
+.pageContentDiv {
+  justify-items: center;
+}
+
 .topBarDiv {
   display: flex;
 
@@ -17,11 +21,25 @@
 }
 
 .machineDiv {
-  //   background-color: lightblue;
+  // background-color: lightblue;
   width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+
+  // align-items: center;
 }
 
 .machineItem {
-  //   background-color: pink;
-  width: 100%;
+  // background-color: pink;
+  // width: max-content;
+  width: auto;
+
+  // @media (max-width: 768px) {
+  //   width: auto;
+  // }
+
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  margin: 4px;
 }

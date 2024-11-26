@@ -48,9 +48,9 @@ const GpuDashboardWithNoContent = (
         </div>
       </VShow>
     );
-  } else {
-    return <></>;
   }
+
+  return <></>;
 };
 
 const GpuDashboardPageContent: React.FC<Props> = (props) => {
@@ -106,7 +106,7 @@ const GpuDashboardPageContent: React.FC<Props> = (props) => {
   }
 
   return (
-    <div>
+    <div className={styles.pageContentDiv}>
       {/* <ul>
         {machineList.map((machine) => (
           <li key={machine.machineName}>{machine.machineName}</li>

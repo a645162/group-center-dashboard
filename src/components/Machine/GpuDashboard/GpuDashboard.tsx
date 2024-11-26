@@ -32,13 +32,17 @@ const GpuDashboard: React.FC<Props> = (props) => {
 
   const gpuCountState = useGpuCountState(apiUrl);
 
-  if (gpuCountState === 0) {
-    return <div>暂无GPU</div>;
-  }
+  const gpuInfoContent = () => {
+    if (gpuCountState === 0) {
+      return (
+        <div className={styles.noGpuDiv}>
+          <p>暂无GPU???</p>
+          <p>请报告管理员！</p>
+        </div>
+      );
+    }
 
-  return (
-    <div>
-      <h1 className={styles.title}>{name}</h1>
+    return (
       <div className={styles.gpuInfoList}>
         {Array.from({ length: gpuCountState }, (_, i) => (
           <div key={i} className={styles.gpuInfoItem}>
@@ -46,6 +50,14 @@ const GpuDashboard: React.FC<Props> = (props) => {
           </div>
         ))}
       </div>
+    );
+  };
+
+  return (
+    <div>
+      <h1 className={styles.title}>{name}</h1>
+
+      {gpuInfoContent()}
     </div>
   );
 };
