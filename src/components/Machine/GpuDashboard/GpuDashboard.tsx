@@ -36,8 +36,10 @@ const GpuDashboard: React.FC<Props> = (props) => {
     if (gpuCountState === 0) {
       return (
         <div className={styles.noGpuDiv}>
-          <p>暂无GPU???</p>
-          <p>请报告管理员！</p>
+          <p>未检测到GPU?!</p>
+          <p>
+            请报告<b>管理员</b>！
+          </p>
         </div>
       );
     }

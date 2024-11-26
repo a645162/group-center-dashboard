@@ -23,6 +23,7 @@ import GpuTaskDetailModal, {
   GpuTaskDetailModalHandles,
 } from './Detail/GpuTaskDetailModal';
 
+import DisableSelectDiv from '@/components/Public/Layout/DisableSelectDiv';
 import { GetIsDarkMode } from '@/utils/AntD5/AntD5DarkMode';
 import { copyToClipboardPromise } from '@/utils/System/Clipboard';
 import { getTimeStrFromTimestamp } from '@/utils/Time/DateTimeUtils';
@@ -174,131 +175,139 @@ const GpuTaskCardItem: React.FC<Props> = (props) => {
         <ContextMenuDivider />
         <ContextMenuItem onClick={onClickShowDetail}>详细信息</ContextMenuItem>
       </ContextMenu>
+
+      {/* Gpu Task Detail Modal */}
       <GpuTaskDetailModal taskInfo={taskInfo} ref={modalFunctionRef} />
+
       <Space direction="vertical" size={16}>
-        <Card
-          size="small"
-          title={cardTitle}
-          extra={<MoreMenu />}
-          style={{ width: 300 }}
-          onContextMenu={(e) => {
-            if (typeof document.hasFocus === 'function' && !document.hasFocus())
-              return;
+        <DisableSelectDiv>
+          <Card
+            className={styles.taskItemCard}
+            size="small"
+            title={cardTitle}
+            extra={<MoreMenu />}
+            onContextMenu={(e) => {
+              if (
+                typeof document.hasFocus === 'function' &&
+                !document.hasFocus()
+              )
+                return;
 
-            e.preventDefault();
-            setContextMenuAnchorPoint({ x: e.clientX, y: e.clientY });
-            setContextMenuOpen(true);
-          }}
-        >
-          <div>
-            <div
-              style={{
-                display: 'flex',
-                width: '100%', // 确保填充满父级容器
-                alignItems: 'center', // 确保所有子元素垂直居中
-              }}
-            >
-              {/* 左侧容器 */}
+              e.preventDefault();
+              setContextMenuAnchorPoint({ x: e.clientX, y: e.clientY });
+              setContextMenuOpen(true);
+            }}
+          >
+            <div>
               <div
                 style={{
                   display: 'flex',
-                  justifyContent: 'center', // 水平居中
-                  alignItems: 'center', // 垂直居中
-                  flexDirection: 'column',
-                  flex: 1, // 平分剩余空间
+                  width: '100%', // 确保填充满父级容器
+                  alignItems: 'center', // 确保所有子元素垂直居中
                 }}
               >
-                <Popconfirm
-                  placement="bottom"
-                  title="用户名过滤器"
-                  description={setUserFilterPopConfirmText}
-                  okText="好的!"
-                  cancelText="什么都不做"
-                  icon={<QuestionCircleOutlined style={{ color: 'gray' }} />}
-                  open={openUserFilterPopConfirm}
-                  onConfirm={handleSetUserFilter}
-                  onCancel={() => {
-                    setOpenUserFilterPopConfirm(false);
+                {/* 左侧容器 */}
+                <div
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'center', // 水平居中
+                    alignItems: 'center', // 垂直居中
+                    flexDirection: 'column',
+                    flex: 1, // 平分剩余空间
                   }}
                 >
-                  <div
-                    onClick={() => {
-                      setOpenUserFilterPopConfirm(true);
+                  <Popconfirm
+                    placement="bottom"
+                    title="用户名过滤器"
+                    description={setUserFilterPopConfirmText}
+                    okText="好的!"
+                    cancelText="什么都不做"
+                    icon={<QuestionCircleOutlined style={{ color: 'gray' }} />}
+                    open={openUserFilterPopConfirm}
+                    onConfirm={handleSetUserFilter}
+                    onCancel={() => {
+                      setOpenUserFilterPopConfirm(false);
                     }}
                   >
-                    <div>{taskInfo.name}</div>
-                  </div>
-                </Popconfirm>
-              </div>
+                    <div
+                      onClick={() => {
+                        setOpenUserFilterPopConfirm(true);
+                      }}
+                    >
+                      <div>{taskInfo.name}</div>
+                    </div>
+                  </Popconfirm>
+                </div>
 
-              {/* 中间的垂直分割线 */}
-              <Divider
-                type="vertical"
-                style={{
-                  margin: '0 0px', // 分割线两侧的间隔
-                }}
-              />
+                {/* 中间的垂直分割线 */}
+                <Divider
+                  type="vertical"
+                  style={{
+                    margin: '0 0px', // 分割线两侧的间隔
+                  }}
+                />
 
-              {/* 右侧容器 */}
-              <div
-                style={{
-                  display: 'flex',
-                  justifyContent: 'center', // 水平居中
-                  alignItems: 'center', // 垂直居中
-                  flexDirection: 'column',
-                  flex: 1, // 平分剩余空间
-                }}
-              >
-                <Popconfirm
-                  placement="bottom"
-                  title="启动时间"
-                  description={startTimeString}
-                  okText="复制"
-                  cancelText="我知道了"
-                  icon={<QuestionCircleOutlined style={{ color: 'gray' }} />}
-                  open={openStartTimePopConfirm}
-                  onConfirm={handleCopyStartTimeString}
-                  onCancel={() => {
-                    setOpenStartTimePopConfirm(false);
+                {/* 右侧容器 */}
+                <div
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'center', // 水平居中
+                    alignItems: 'center', // 垂直居中
+                    flexDirection: 'column',
+                    flex: 1, // 平分剩余空间
                   }}
                 >
-                  <div
-                    onClick={() => {
-                      setOpenStartTimePopConfirm(true);
+                  <Popconfirm
+                    placement="bottom"
+                    title="启动时间"
+                    description={startTimeString}
+                    okText="复制"
+                    cancelText="我知道了"
+                    icon={<QuestionCircleOutlined style={{ color: 'gray' }} />}
+                    open={openStartTimePopConfirm}
+                    onConfirm={handleCopyStartTimeString}
+                    onCancel={() => {
+                      setOpenStartTimePopConfirm(false);
                     }}
                   >
-                    <RunTimeComponent startTime={taskInfo.startTimestamp} />
-                  </div>
-                </Popconfirm>
+                    <div
+                      onClick={() => {
+                        setOpenStartTimePopConfirm(true);
+                      }}
+                    >
+                      <RunTimeComponent startTime={taskInfo.startTimestamp} />
+                    </div>
+                  </Popconfirm>
+                </div>
               </div>
-            </div>
 
-            <div className={styles.divTags}>
-              <Popover
-                placement="bottom"
-                title="显存使用情况"
-                content={popoverContentGpuMemory}
-              >
-                <Tag icon={<DatabaseOutlined />} color="default">
-                  {currentGpuMemoryString}GB
-                </Tag>
-              </Popover>
-
-              <VShow v-show={taskInfo.debugMode}>
+              <div className={styles.divTags}>
                 <Popover
                   placement="bottom"
-                  title="调试模式"
-                  content="当前代码正在被调试器调试"
+                  title="显存使用情况"
+                  content={popoverContentGpuMemory}
                 >
-                  <Tag icon={<BugOutlined />} color="processing">
-                    调试
+                  <Tag icon={<DatabaseOutlined />} color="default">
+                    {currentGpuMemoryString}GB
                   </Tag>
                 </Popover>
-              </VShow>
-              <MultiGpuTag taskInfo={taskInfo} />
+
+                <VShow v-show={taskInfo.debugMode}>
+                  <Popover
+                    placement="bottom"
+                    title="调试模式"
+                    content="当前代码正在被调试器调试"
+                  >
+                    <Tag icon={<BugOutlined />} color="processing">
+                      调试
+                    </Tag>
+                  </Popover>
+                </VShow>
+                <MultiGpuTag taskInfo={taskInfo} />
+              </div>
             </div>
-          </div>
-        </Card>
+          </Card>
+        </DisableSelectDiv>
       </Space>
     </div>
   );

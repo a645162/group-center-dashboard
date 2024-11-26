@@ -44,52 +44,79 @@ const GpuTaskDetailModal: React.FC<Props> = (props) => {
     <>
       <div>
         <VShow v-show={taskInfo.name}>
-          <div>用户:{taskInfo.name}</div>
+          <div>
+            <b>用户: </b>
+            {taskInfo.name}
+          </div>
         </VShow>
 
         <VShow v-show={taskInfo.screenSessionName}>
-          <div>Screen会话名称:{taskInfo.screenSessionName}</div>
+          <div>
+            <b>Screen会话名称: </b>
+            {taskInfo.screenSessionName}
+          </div>
         </VShow>
 
-        <div>启动时间:{getTimeStrFromTimestamp(taskInfo.startTimestamp)}</div>
+        <div>
+          <b>启动时间: </b>
+          {getTimeStrFromTimestamp(taskInfo.startTimestamp)}
+        </div>
 
         <TextDivider />
 
         <VShow v-show={taskInfo.projectName}>
-          <div>项目名称:{taskInfo.projectName}</div>
+          <div>
+            <b>项目名称: </b>
+            {taskInfo.projectName}
+          </div>
         </VShow>
 
         <VShow v-show={taskInfo.pyFileName}>
-          <div>Python文件名:{taskInfo.pyFileName}</div>
+          <div>
+            <b>Python文件名: </b>
+            {taskInfo.pyFileName}
+          </div>
         </VShow>
 
         <VShow v-show={taskInfo.projectDirectory}>
-          <div>项目目录路径:{taskInfo.projectDirectory}</div>
+          <div>
+            <b>项目目录路径: </b>
+            {taskInfo.projectDirectory}
+          </div>
         </VShow>
 
         <VShow v-show={taskInfo.pythonVersion}>
-          <div>Python版本:{taskInfo.pythonVersion}</div>
+          <div>
+            <b>Python版本: </b>
+            {taskInfo.pythonVersion}
+          </div>
         </VShow>
 
         <VShow v-show={taskInfo.condaEnv}>
-          <div>Conda虚拟环境名:{taskInfo.condaEnv}</div>
+          <div>
+            <b>Conda虚拟环境名: </b>
+            {taskInfo.condaEnv}
+          </div>
         </VShow>
 
         <VShow v-show={systemMainMemoryString(taskInfo)}>
-          <div>系统主存(内存):{systemMainMemoryString(taskInfo)}</div>
+          <div>
+            <b>系统主存(内存): </b>
+            {systemMainMemoryString(taskInfo)}
+          </div>
         </VShow>
 
         <TextDivider />
 
         <VShow v-show={taskInfo.gpuMemoryUsage}>
           <div>
-            当前显存使用:
+            <b>当前显存使用: </b>
             {getMemoryString(convertFromMBToGB(taskInfo.gpuMemoryUsage))}GiB
           </div>
         </VShow>
         {taskInfo.gpuMemoryUsageMax && (
           <div>
-            最大显存占用:
+            <b>最大显存占用: </b>
             {getMemoryString(convertFromMBToGB(taskInfo.gpuMemoryUsageMax))}GiB
           </div>
         )}
@@ -97,34 +124,55 @@ const GpuTaskDetailModal: React.FC<Props> = (props) => {
         {/* 多卡 */}
         <VShow v-show={taskInfo.worldSize > 1}>
           <div>
-            GPU使用数量:{taskInfo.worldSize}
+            <b>GPU使用数量: </b>
+            {taskInfo.worldSize}
             <br />
-            多卡任务索引:{taskInfo.localRank} ({taskInfo.localRank + 1} /{' '}
+            <b>多卡任务索引: </b>
+            {taskInfo.localRank} ({taskInfo.localRank + 1} /{' '}
             {taskInfo.worldSize})
             <br />
             <VShow v-show={taskInfo.topPythonPid > 0}>
-              <div>主进程PID:{taskInfo.topPythonPid}</div>{' '}
+              <div>
+                <b>主进程PID: </b>
+                {taskInfo.topPythonPid}
+              </div>{' '}
             </VShow>
           </div>
         </VShow>
 
         <VShow v-show={taskInfo.driverVersion}>
-          <div>Driver Version:{taskInfo.driverVersion}</div>
+          <div>
+            <b>Driver Version: </b>
+            {taskInfo.driverVersion}
+          </div>
         </VShow>
         <VShow v-show={taskInfo.cudaRoot}>
-          <div>CUDA Root:{taskInfo.cudaRoot}</div>
+          <div>
+            <b>CUDA Root: </b>
+            {taskInfo.cudaRoot}
+          </div>
         </VShow>
         <VShow v-show={taskInfo.cudaVersion}>
-          <div>CUDA Version:{taskInfo.cudaVersion}</div>
+          <div>
+            <b>CUDA Version: </b>
+            {taskInfo.cudaVersion}
+          </div>
         </VShow>
         <VShow v-show={taskInfo.cudaVisibleDevices}>
-          <div>CUDA Visible Devices:{taskInfo.cudaVisibleDevices}</div>
+          <div>
+            <b>CUDA Visible Devices: </b>
+            {taskInfo.cudaVisibleDevices}
+          </div>
         </VShow>
 
         <TextDivider />
 
         <VShow v-show={taskInfo.command}>
-          <div>命令行:{taskInfo.command}</div>
+          <div>
+            <b>命令行:</b>
+            <br />
+            {taskInfo.command}
+          </div>
         </VShow>
       </div>
     </>

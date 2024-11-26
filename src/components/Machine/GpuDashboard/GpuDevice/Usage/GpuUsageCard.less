@@ -1,6 +1,7 @@
 .gpuUsageCard {
   width: auto;
-  min-width: 300px;
+  min-width: 280px;
+  max-width: 280px;
 }
 
 .space {
@@ -21,6 +22,13 @@
 .progressTitle {
   padding-left: 8px;
   margin-right: 8px;
+  white-space: nowrap;
+
+  // /* 可选：防止内容溢出容器 */
+  // overflow: hidden;
+
+  // /* 可选：当内容溢出时显示省略号 */
+  // text-overflow: ellipsis;
 }
 
 .gpuUsagePercent {
