@@ -8,11 +8,19 @@ def remove_node_modules():
         # Remove
         shutil.rmtree(node_module_path)
 
+def update(without_regex=""):
+    if without_regex:
+        os.system(f"bun run ncu -x \"{without_regex}\" -u")
+        os.system(f"bun run ncu -f \"{without_regex}\" -t minor -u")
+    else:
+        os.system("bun run ncu -u")
 
 # Install dependencies
 os.system("bun i")
 # Upgrade dependencies
-os.system("bun run ncu -u")
+update("/tailwindcss/")
+# os.system('bun run ncu -x "/tailwindcss/" -u')
+# os.system('bun run ncu -f "/tailwindcss/" -t minor -u')
 # Reinstall dependencies
 os.system("bun i")
 
