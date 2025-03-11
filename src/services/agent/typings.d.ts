@@ -78,6 +78,8 @@ declare namespace API {
     cudaVisibleDevices: string;
 
     driverVersion: string;
+
+    userEnvEpoch: string;
   }
   interface DashboardGpuTaskItemInfoResponse {
     result: number;

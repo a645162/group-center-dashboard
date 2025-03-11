@@ -3,6 +3,7 @@ import VShow from '@/components/Vue/V-Show';
 import { convertFromMBToGB, getMemoryString } from '@/utils/Convert/MemorySize';
 import {
   BugOutlined,
+  ClockCircleOutlined,
   DatabaseOutlined,
   DownOutlined,
   QuestionCircleOutlined,
@@ -303,7 +304,14 @@ const GpuTaskCardItem: React.FC<Props> = (props) => {
                     </Tag>
                   </Popover>
                 </VShow>
+
                 <MultiGpuTag taskInfo={taskInfo} />
+
+                <VShow v-show={taskInfo.userEnvEpoch.length > 0}>
+                  <Tag icon={<ClockCircleOutlined />} color="processing">
+                    {taskInfo.userEnvEpoch}
+                  </Tag>
+                </VShow>
               </div>
             </div>
           </Card>
