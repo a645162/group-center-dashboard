@@ -71,9 +71,9 @@ const GpuTaskCardItem: React.FC<Props> = (props) => {
     ? `(${taskInfo.screenSessionName})`
     : '';
   const cardTitle =
-    `[${index + 1}]` +
-    `${taskInfo.projectName}-${taskInfo.pyFileName}` +
-    screenSessionString;
+    `[${index + 1}] ` +
+    screenSessionString +
+    `${taskInfo.projectName}-${taskInfo.pyFileName}`;
 
   const currentGpuMemoryString = getMemoryString(
     convertFromMBToGB(taskInfo.gpuMemoryUsage),
