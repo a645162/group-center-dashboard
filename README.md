@@ -2,6 +2,10 @@
 
 ## Getting Started
 
+![Screenshot](Doc/docs/assets/screenshot.png)
+
+![Screenshot Detail](Doc/docs/assets/screenshot_detail.png)
+
 ## Notices
 
 You can use `pnpm` and `WebPack` on Windows.
