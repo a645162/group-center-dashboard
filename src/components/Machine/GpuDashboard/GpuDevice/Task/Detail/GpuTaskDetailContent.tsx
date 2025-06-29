@@ -174,6 +174,55 @@ const GpuTaskDetailModal: React.FC<Props> = (props) => {
             {taskInfo.command}
           </div>
         </VShow>
+
+        <VShow
+          v-show={
+            taskInfo.zeroAlreadyAlertedGpuUsage ||
+            taskInfo.zeroAlreadyAlertedCpuUsage
+          }
+        >
+          <TextDivider />
+
+          <div>
+            <b>零占用率监控信息:</b>
+          </div>
+
+          <div style={{ marginLeft: '20px' }}>
+            <VShow v-show={taskInfo.zeroAlreadyAlertedCpuUsage}>
+              <div>
+                <b>CPU空占用警告次数: </b>
+                {taskInfo.zeroTotalCpuAlertCount}次
+              </div>
+            </VShow>
+
+            <VShow v-show={taskInfo.zeroAlreadyAlertedGpuUsage}>
+              <div>
+                <b>GPU空占用警告次数: </b>
+                {taskInfo.zeroTotalGpuAlertCount}次
+              </div>
+            </VShow>
+
+            <div>
+              <b>当前CPU使用率: </b>
+              {taskInfo.cpuPercent}%
+            </div>
+
+            <div>
+              <b>当前GPU利用率: </b>
+              {taskInfo.gpuUtilization}%
+            </div>
+
+            <div>
+              <b>最大连续零占用次数: </b>
+              {taskInfo.zeroMaxConsecutiveCount}次
+            </div>
+
+            <div>
+              <b>检测间隔: </b>
+              {taskInfo.zeroDetectionIntervalSeconds}秒
+            </div>
+          </div>
+        </VShow>
       </div>
     </>
   );

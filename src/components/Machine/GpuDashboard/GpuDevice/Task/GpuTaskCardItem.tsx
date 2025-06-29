@@ -4,9 +4,11 @@ import { convertFromMBToGB, getMemoryString } from '@/utils/Convert/MemorySize';
 import {
   BugOutlined,
   ClockCircleOutlined,
+  CloseCircleOutlined,
   DatabaseOutlined,
   DownOutlined,
   QuestionCircleOutlined,
+  WarningOutlined,
 } from '@ant-design/icons';
 import {
   Card,
@@ -159,6 +161,10 @@ const GpuTaskCardItem: React.FC<Props> = (props) => {
 
   const isDark = GetIsDarkMode();
 
+  // 判断是否为僵尸进程
+  const isZombieProcess =
+    taskInfo.zeroAlreadyAlertedGpuUsage && taskInfo.zeroAlreadyAlertedCpuUsage;
+
   return (
     <div>
       {contextHolder}
@@ -187,6 +193,14 @@ const GpuTaskCardItem: React.FC<Props> = (props) => {
             size="small"
             title={cardTitle}
             extra={<MoreMenu />}
+            styles={{
+              header: {
+                color: isZombieProcess ? '#ff4d4f' : undefined,
+              },
+              body: {
+                color: isZombieProcess ? '#ff4d4f' : undefined,
+              },
+            }}
             onContextMenu={(e) => {
               if (
                 typeof document.hasFocus === 'function' &&
@@ -199,7 +213,7 @@ const GpuTaskCardItem: React.FC<Props> = (props) => {
               setContextMenuOpen(true);
             }}
           >
-            <div>
+            <div style={{ color: isZombieProcess ? '#ff4d4f' : undefined }}>
               <div
                 style={{
                   display: 'flex',
@@ -288,7 +302,11 @@ const GpuTaskCardItem: React.FC<Props> = (props) => {
                   title="显存使用情况"
                   content={popoverContentGpuMemory}
                 >
-                  <Tag icon={<DatabaseOutlined />} color="default">
+                  <Tag
+                    icon={<DatabaseOutlined />}
+                    color="default"
+                    style={{ color: isZombieProcess ? '#ff4d4f' : undefined }}
+                  >
                     {currentGpuMemoryString}GB
                   </Tag>
                 </Popover>
@@ -301,6 +319,57 @@ const GpuTaskCardItem: React.FC<Props> = (props) => {
                   >
                     <Tag icon={<BugOutlined />} color="processing">
                       调试
+                    </Tag>
+                  </Popover>
+                </VShow>
+
+                <VShow
+                  v-show={
+                    taskInfo.zeroAlreadyAlertedGpuUsage &&
+                    taskInfo.zeroAlreadyAlertedCpuUsage
+                  }
+                >
+                  <Popover
+                    placement="bottom"
+                    title="[错误] 僵尸进程"
+                    content="GPU和CPU使用率均连续为零，疑似僵尸进程，请及时杀死！"
+                  >
+                    <Tag icon={<CloseCircleOutlined />} color="error">
+                      僵尸进程!
+                    </Tag>
+                  </Popover>
+                </VShow>
+
+                <VShow
+                  v-show={
+                    taskInfo.zeroAlreadyAlertedCpuUsage &&
+                    !taskInfo.zeroAlreadyAlertedGpuUsage
+                  }
+                >
+                  <Popover
+                    placement="bottom"
+                    title="[警告] CPU 空占用"
+                    content="CPU使用率连续为零，已触发警告！"
+                  >
+                    <Tag icon={<WarningOutlined />} color="warning">
+                      CPU 空占用
+                    </Tag>
+                  </Popover>
+                </VShow>
+
+                <VShow
+                  v-show={
+                    taskInfo.zeroAlreadyAlertedGpuUsage &&
+                    !taskInfo.zeroAlreadyAlertedCpuUsage
+                  }
+                >
+                  <Popover
+                    placement="bottom"
+                    title="[警告] GPU 空占用"
+                    content="GPU使用率连续为零，已触发警告！"
+                  >
+                    <Tag icon={<WarningOutlined />} color="warning">
+                      GPU 空占用
                     </Tag>
                   </Popover>
                 </VShow>
