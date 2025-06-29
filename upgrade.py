@@ -11,6 +11,8 @@ def remove_node_modules():
 def update(without_regex=""):
     if without_regex:
         os.system(f"bun run ncu -x \"{without_regex}\" -u")
+        
+        # bun run ncu -f "/tailwindcss/" -t minor -u
         os.system(f"bun run ncu -f \"{without_regex}\" -t minor -u")
     else:
         os.system("bun run ncu -u")

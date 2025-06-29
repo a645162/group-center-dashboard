@@ -80,6 +80,19 @@ declare namespace API {
     driverVersion: string;
 
     userEnvEpoch: string;
+
+    // 零占用率监控相关字段
+    cpuPercent: number; // Python: round(process_obj.cpu_percent, 1)
+    gpuUtilization: number; // Python: round(process_obj.gpu_utilization, 1)
+
+    zeroTotalGpuAlertCount: number; // Python: process_obj.total_gpu_zero_alert_count
+    zeroTotalCpuAlertCount: number; // Python: process_obj.total_cpu_zero_alert_count
+
+    zeroAlreadyAlertedGpuUsage: boolean; // Python: process_obj.already_has_alerted_zero_gpu_usage
+    zeroAlreadyAlertedCpuUsage: boolean; // Python: process_obj.already_has_alerted_zero_cpu_usage
+
+    zeroMaxConsecutiveCount: number; // Python: process_obj.max_consecutive_zero_count
+    zeroDetectionIntervalSeconds: number; // Python: detection_interval_seconds
   }
   interface DashboardGpuTaskItemInfoResponse {
     result: number;
