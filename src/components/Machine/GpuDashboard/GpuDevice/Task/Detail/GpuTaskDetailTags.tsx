@@ -1,5 +1,6 @@
 import VShow from '@/components/Vue/V-Show';
 import {
+  ForkOutlined,
   FundProjectionScreenOutlined,
   PythonOutlined,
   UserOutlined,
@@ -54,6 +55,12 @@ const GpuTaskDetailTags: React.FC<Props> = (props) => {
             color="default"
           >
             {taskInfo.screenSessionName}
+          </Tag>
+        </VShow>
+
+        <VShow v-show={taskInfo.multiprocessingSpawn}>
+          <Tag className={styles.tag} icon={<ForkOutlined />} color="default">
+            <b>Multi-Process Spawn</b>
           </Tag>
         </VShow>
       </div>

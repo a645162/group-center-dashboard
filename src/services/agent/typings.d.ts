@@ -44,6 +44,7 @@ declare namespace API {
   }
   interface DashboardGpuTaskItemInfo {
     id: number;
+    pid: number;
     name: string;
 
     debugMode: boolean;
@@ -57,6 +58,8 @@ declare namespace API {
 
     gpuMemoryUsage: number;
     gpuMemoryUsageMax: number;
+
+    multiprocessingSpawn: boolean;
 
     worldSize: number;
     localRank: number;

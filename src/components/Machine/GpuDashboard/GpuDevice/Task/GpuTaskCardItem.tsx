@@ -7,6 +7,7 @@ import {
   CloseCircleOutlined,
   DatabaseOutlined,
   DownOutlined,
+  ForkOutlined,
   QuestionCircleOutlined,
   WarningOutlined,
 } from '@ant-design/icons';
@@ -319,6 +320,22 @@ const GpuTaskCardItem: React.FC<Props> = (props) => {
                   >
                     <Tag icon={<BugOutlined />} color="processing">
                       调试
+                    </Tag>
+                  </Popover>
+                </VShow>
+
+                <VShow v-show={taskInfo.multiprocessingSpawn}>
+                  <Popover
+                    placement="bottom"
+                    title="Multi-Process Spawn"
+                    content="这是一个multiprocessing.spawn进程，不是标准的DDP多卡任务。"
+                  >
+                    <Tag
+                      icon={<ForkOutlined />}
+                      color="default"
+                      style={{ color: isZombieProcess ? '#ff4d4f' : undefined }}
+                    >
+                      Spawn
                     </Tag>
                   </Popover>
                 </VShow>
