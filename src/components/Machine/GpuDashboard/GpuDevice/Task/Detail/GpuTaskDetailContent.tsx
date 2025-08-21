@@ -92,6 +92,13 @@ const GpuTaskDetailModal: React.FC<Props> = (props) => {
           </div>
         </VShow>
 
+        <VShow v-show={taskInfo.pythonBinPath}>
+          <div>
+            <b>Python Bin Path: </b>
+            {taskInfo.pythonBinPath}
+          </div>
+        </VShow>
+
         <VShow v-show={taskInfo.pythonVersion}>
           <div>
             <b>Python版本: </b>
@@ -170,6 +177,20 @@ const GpuTaskDetailModal: React.FC<Props> = (props) => {
           <div>
             <b>CUDA Visible Devices: </b>
             {taskInfo.cudaVisibleDevices}
+          </div>
+        </VShow>
+
+        <VShow v-show={taskInfo.torchVersion}>
+          <div>
+            <b>PyTorch Version: </b>
+            {taskInfo.torchVersion}
+          </div>
+        </VShow>
+
+        <VShow v-show={taskInfo.torchCudaVersion}>
+          <div>
+            <b>PyTorch CUDA Version: </b>
+            {taskInfo.torchCudaVersion}
           </div>
         </VShow>
 

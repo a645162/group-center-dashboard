@@ -68,7 +68,11 @@ declare namespace API {
     condaEnv: string;
     screenSessionName: string;
 
+    pythonBinPath: string;
     pythonVersion: string;
+
+    torchVersion: string;
+    torchCudaVersion: string;
 
     mainName: string;
 
