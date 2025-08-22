@@ -92,9 +92,62 @@ const GpuTaskDetailModal: React.FC<Props> = (props) => {
           </div>
         </VShow>
 
+        <TextDivider />
+
+        <VShow v-show={systemMainMemoryString(taskInfo)}>
+          <div>
+            <b>当前进程内存: </b>
+            {systemMainMemoryString(taskInfo)}
+          </div>
+        </VShow>
+
+        {/* <VShow v-show={systemMainMemoryString(taskInfo)}>
+          <div>
+            <b>进程树内存总量: </b>
+            {systemMainMemoryString(taskInfo)}
+          </div>
+        </VShow> */}
+
+        <VShow v-show={taskInfo.gpuMemoryUsage}>
+          <div>
+            <b>当前显存使用: </b>
+            {getMemoryString(convertFromMBToGB(taskInfo.gpuMemoryUsage))}GiB
+          </div>
+        </VShow>
+        {taskInfo.gpuMemoryUsageMax && (
+          <div>
+            <b>最大显存占用: </b>
+            {getMemoryString(convertFromMBToGB(taskInfo.gpuMemoryUsageMax))}GiB
+          </div>
+        )}
+
+        {/* 多卡 */}
+
+        <VShow v-show={taskInfo.worldSize > 1}>
+          <TextDivider />
+
+          <div>
+            <b>GPU使用数量: </b>
+            {taskInfo.worldSize}
+            <br />
+            <b>多卡任务索引: </b>
+            {taskInfo.localRank} ({taskInfo.localRank + 1} /{' '}
+            {taskInfo.worldSize})
+            <br />
+            <VShow v-show={taskInfo.topPythonPid > 0}>
+              <div>
+                <b>主进程PID: </b>
+                {taskInfo.topPythonPid}
+              </div>{' '}
+            </VShow>
+          </div>
+        </VShow>
+
+        <TextDivider />
+
         <VShow v-show={taskInfo.pythonBinPath}>
           <div>
-            <b>Python Bin Path: </b>
+            <b>Python解释器路径: </b>
             {taskInfo.pythonBinPath}
           </div>
         </VShow>
@@ -113,63 +166,21 @@ const GpuTaskDetailModal: React.FC<Props> = (props) => {
           </div>
         </VShow>
 
-        <VShow v-show={systemMainMemoryString(taskInfo)}>
-          <div>
-            <b>系统主存(内存): </b>
-            {systemMainMemoryString(taskInfo)}
-          </div>
-        </VShow>
-
-        <TextDivider />
-
-        <VShow v-show={taskInfo.gpuMemoryUsage}>
-          <div>
-            <b>当前显存使用: </b>
-            {getMemoryString(convertFromMBToGB(taskInfo.gpuMemoryUsage))}GiB
-          </div>
-        </VShow>
-        {taskInfo.gpuMemoryUsageMax && (
-          <div>
-            <b>最大显存占用: </b>
-            {getMemoryString(convertFromMBToGB(taskInfo.gpuMemoryUsageMax))}GiB
-          </div>
-        )}
-
-        {/* 多卡 */}
-
-        <VShow v-show={taskInfo.worldSize > 1}>
-          <div>
-            <b>GPU使用数量: </b>
-            {taskInfo.worldSize}
-            <br />
-            <b>多卡任务索引: </b>
-            {taskInfo.localRank} ({taskInfo.localRank + 1} /{' '}
-            {taskInfo.worldSize})
-            <br />
-            <VShow v-show={taskInfo.topPythonPid > 0}>
-              <div>
-                <b>主进程PID: </b>
-                {taskInfo.topPythonPid}
-              </div>{' '}
-            </VShow>
-          </div>
-        </VShow>
-
         <VShow v-show={taskInfo.driverVersion}>
           <div>
-            <b>Driver Version: </b>
+            <b>NVIDIA Driver Version: </b>
             {taskInfo.driverVersion}
           </div>
         </VShow>
         <VShow v-show={taskInfo.cudaRoot}>
           <div>
-            <b>CUDA Root: </b>
+            <b>CUDA Environment Root: </b>
             {taskInfo.cudaRoot}
           </div>
         </VShow>
         <VShow v-show={taskInfo.cudaVersion}>
           <div>
-            <b>CUDA Version: </b>
+            <b>CUDA Environment Version: </b>
             {taskInfo.cudaVersion}
           </div>
         </VShow>
