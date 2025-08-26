@@ -56,9 +56,8 @@ const GpuDashboard: React.FC<Props> = (props) => {
   };
 
   return (
-    <div>
+    <div id={`device-${name}`}>
       <h1 className={styles.title}>{name}</h1>
-
       {gpuInfoContent()}
     </div>
   );

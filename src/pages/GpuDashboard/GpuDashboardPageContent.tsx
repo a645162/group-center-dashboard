@@ -1,3 +1,5 @@
+import { CloseOutlined, MenuOutlined } from '@ant-design/icons';
+import { Anchor, Button } from 'antd';
 import React, { useEffect, useState } from 'react';
 
 import { getPublicMachineList } from '@/services/group_center/frontEndPublicController';
@@ -33,9 +35,75 @@ const useMachineListState = () => {
 const GpuDashboardWithNoContent = (
   machineList: API.FrontEndMachine[] | null,
 ) => {
+  // 根据屏幕方向设置默认显示状态
+  const [showAnchor, setShowAnchor] = useState(() => {
+    return window.innerWidth > window.innerHeight; // 横屏默认显示，竖屏默认隐藏
+  });
+
+  // 监听屏幕方向变化
+  useEffect(() => {
+    const handleResize = () => {
+      const isLandscape = window.innerWidth > window.innerHeight;
+      setShowAnchor(isLandscape);
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
   if (machineList) {
     return (
       <VShow v-show={machineList !== undefined && machineList.length > 0}>
+        {/* 切换按钮 */}
+        {machineList.length > 1 && (
+          <Button
+            type="primary"
+            shape="circle"
+            icon={showAnchor ? <CloseOutlined /> : <MenuOutlined />}
+            onClick={() => setShowAnchor(!showAnchor)}
+            style={{
+              position: 'fixed',
+              right: 20,
+              bottom: 20,
+              zIndex: 1001,
+              width: 50,
+              height: 50,
+              backgroundColor: 'rgba(24, 144, 255, 0.8)',
+              borderColor: 'rgba(24, 144, 255, 0.8)',
+              backdropFilter: 'blur(4px)',
+              boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+            }}
+          />
+        )}
+
+        {/* 浮动在右边的设备导航锚点 */}
+        {machineList.length > 1 && showAnchor && (
+          <Anchor
+            affix={true}
+            offsetTop={100}
+            style={{
+              position: 'fixed',
+              right: 20,
+              top: '50%',
+              transform: 'translateY(-50%)',
+              zIndex: 1000,
+              backgroundColor: 'rgba(255, 255, 255, 0.95)',
+              padding: '12px',
+              borderRadius: '8px',
+              boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+              border: '1px solid rgba(217, 217, 217, 0.8)',
+              backdropFilter: 'blur(8px)',
+              maxHeight: '60vh',
+              overflowY: 'auto',
+            }}
+            items={machineList.map((machine) => ({
+              key: machine.machineName,
+              href: `#device-${machine.machineName}`,
+              title: machine.machineName,
+            }))}
+          />
+        )}
+
         <div className={styles.machineDiv}>
           {machineList.map((machine) => (
             <div key={machine.machineName} className={styles.machineItem}>
