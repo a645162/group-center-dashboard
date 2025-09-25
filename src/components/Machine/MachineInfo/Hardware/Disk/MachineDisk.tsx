@@ -25,10 +25,12 @@ const useDiskUsageState = (apiUrl: string) => {
   return diskUsage;
 };
 
-const cardContent = (mountPointList: API.MachineDiskUsage[]) => {
-  return mountPointList.length === 0 ? (
-    <div>暂无任何硬盘挂载点</div>
-  ) : (
+const cardContent = (mountPointList: API.MachineDiskUsage[] | undefined) => {
+  if (!mountPointList || mountPointList.length === 0) {
+    return <div>暂无任何硬盘挂载点</div>;
+  }
+
+  return (
     <div className={styles.diskList}>
       {mountPointList.map((diskUsage, index) => (
         <div key={index} className={styles.diskItem}>
