@@ -2,7 +2,7 @@
 /* eslint-disable */
 import { request } from '@umijs/max';
 
-/** Web前端获取GPU列表 GET /web/open/front_end/publicMachineList */
+/** Get Public Machine List for Web Frontend Retrieve list of all machines with public information for web frontend display GET /web/open/front_end/publicMachineList */
 export async function getPublicMachineList(options?: { [key: string]: any }) {
   return request<API.FrontEndMachine[]>(
     '/web/open/front_end/publicMachineList',
@@ -13,7 +13,7 @@ export async function getPublicMachineList(options?: { [key: string]: any }) {
   );
 }
 
-/** Dashboard站点列表 GET /web/open/front_end/publicSiteClassList */
+/** Get Dashboard Site Class List Retrieve list of dashboard site classes for frontend configuration GET /web/open/front_end/publicSiteClassList */
 export async function getPublicSiteClassList(options?: { [key: string]: any }) {
   return request<API.DataDashBoardSiteClass[]>(
     '/web/open/front_end/publicSiteClassList',

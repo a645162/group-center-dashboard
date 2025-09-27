@@ -1,25 +1,40 @@
 // @ts-ignore
 /* eslint-disable */
-import { request } from '@umijs/max';
-
-/** Web前端获取GPU列表 GET /web/open/front_end/publicMachineList */
-export async function getPublicMachineList(options?: { [key: string]: any }) {
-  return request<API.FrontEndMachine[]>(
-    '/web/open/front_end/publicMachineList',
-    {
-      method: 'GET',
-      ...(options || {}),
-    },
-  );
-}
-
-/** Dashboard站点列表 GET /web/open/front_end/publicSiteClassList */
-export async function getPublicSiteClassList(options?: { [key: string]: any }) {
-  return request<API.DataDashBoardSiteClass[]>(
-    '/web/open/front_end/publicSiteClassList',
-    {
-      method: 'GET',
-      ...(options || {}),
-    },
-  );
-}
+// API 更新时间：
+// API 唯一标识：
+import * as clientConfigController from './clientConfigController';
+import * as clientHeartbeat from './clientHeartbeat';
+import * as customClientMessageController from './customClientMessageController';
+import * as dashboardStatistics from './dashboardStatistics';
+import * as diskWarningController from './diskWarningController';
+import * as frontendPublic from './frontendPublic';
+import * as gpuMonitorController from './gpuMonitorController';
+import * as gpuTask from './gpuTask';
+import * as gpuTaskQuery from './gpuTaskQuery';
+import * as ipController from './ipController';
+import * as machineStatus from './machineStatus';
+import * as monitorClientAuthController from './monitorClientAuthController';
+import * as programInfo from './programInfo';
+import * as proxyManagement from './proxyManagement';
+import * as reportPush from './reportPush';
+import * as restfulTest from './restfulTest';
+import * as sshKeyController from './sshKeyController';
+export default {
+  gpuTaskQuery,
+  dashboardStatistics,
+  restfulTest,
+  proxyManagement,
+  customClientMessageController,
+  gpuMonitorController,
+  clientHeartbeat,
+  diskWarningController,
+  gpuTask,
+  sshKeyController,
+  reportPush,
+  ipController,
+  frontendPublic,
+  programInfo,
+  monitorClientAuthController,
+  machineStatus,
+  clientConfigController,
+};

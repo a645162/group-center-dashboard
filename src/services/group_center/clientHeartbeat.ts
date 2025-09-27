@@ -2,12 +2,12 @@
 /* eslint-disable */
 import { request } from '@umijs/max';
 
-/** GPU任务变动 POST /api/client/gpu_task/info */
-export async function postGpuTaskInfo(
-  body: API.GpuTaskInfo,
+/** Agent心跳保活 POST /api/client/heartbeat */
+export async function processHeartbeat(
+  body: API.MachineHeartbeat,
   options?: { [key: string]: any },
 ) {
-  return request<API.ClientResponse>('/api/client/gpu_task/info', {
+  return request<API.ClientResponse>('/api/client/heartbeat', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',

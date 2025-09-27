@@ -32,7 +32,10 @@ if ret != 0:
     exit(ret)
 
 # Remove node_modules before running pnpm install
-remove_node_modules()
+# remove_node_modules()
+
+os.system("npm i")
+
 os.system("pnpm i")
 
 os.system("bun i")

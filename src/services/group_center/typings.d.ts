@@ -19,8 +19,8 @@ declare namespace API {
     ipAddress: string;
     rememberAuthIp: boolean;
     serverVersion: string;
-    authenticated?: boolean;
     succeed?: boolean;
+    authenticated?: boolean;
   };
 
   type ClientResponse = {
@@ -28,9 +28,9 @@ declare namespace API {
     isAuthenticated: boolean;
     haveError: boolean;
     isSucceed: boolean;
-    result: string;
-    authenticated?: boolean;
+    result?: Record<string, any>;
     succeed?: boolean;
+    authenticated?: boolean;
   };
 
   type DataDashBoardSite = {
@@ -56,9 +56,68 @@ declare namespace API {
     isGpu: boolean;
   };
 
+  type getCustomPeriodStatisticsParams = {
+    startTime: string;
+    endTime: string;
+  };
+
+  type getDeviceTaskStatsParams = {
+    /** Device name to get statistics for */
+    deviceName: string;
+  };
+
+  type getGpuStatisticsParams = {
+    /** Time period for statistics (default: ONE_WEEK) */
+    timePeriod?: string;
+  };
+
+  type getMachineStatusParams = {
+    /** English name of the machine */
+    nameEng: string;
+  };
+
+  type getProjectStatisticsParams = {
+    /** Time period for statistics (default: ONE_WEEK) */
+    timePeriod?: string;
+  };
+
+  type getProxyServerParams = {
+    /** English name of the proxy server */
+    nameEng: string;
+  };
+
+  type getRecentTasksParams = {
+    /** Number of hours to look back (default: 24) */
+    hours?: number;
+  };
+
+  type getServerStatisticsParams = {
+    /** Time period for statistics (default: ONE_WEEK) */
+    timePeriod?: string;
+  };
+
+  type getSleepAnalysisParams = {
+    timePeriod?: string;
+  };
+
   type getSshKeyFileParams = {
     filename: string;
     userNameEng: string;
+  };
+
+  type getTimeTrendStatisticsParams = {
+    /** Time period for trend analysis (default: ONE_WEEK) */
+    timePeriod?: string;
+  };
+
+  type getUserStatisticsParams = {
+    /** Time period for statistics (default: ONE_WEEK) */
+    timePeriod?: string;
+  };
+
+  type getUserTaskStatsParams = {
+    /** Username to get statistics for */
+    userName: string;
   };
 
   type GpuTaskInfo = {
@@ -85,6 +144,7 @@ declare namespace API {
     isMultiGpu: boolean;
     multiDeviceLocalRank: number;
     multiDeviceWorldSize: number;
+    topPythonPid: number;
     cudaRoot: string;
     cudaVersion: string;
     isDebugMode: boolean;
@@ -99,8 +159,17 @@ declare namespace API {
     pythonVersion: string;
     commandLine: string;
     condaEnvName: string;
+    totalGpuCount: number;
     debugMode?: boolean;
     multiGpu?: boolean;
+  };
+
+  type GpuTaskQueryRequest = {
+    filters: QueryFilter[];
+    timeRange?: TimeRange;
+    pagination: Pagination;
+    includeStatistics: boolean;
+    queryDescription: string;
   };
 
   type GroupUserConfig = {
@@ -110,6 +179,18 @@ declare namespace API {
     year: number;
     linuxUser: LinuxUser;
     webhook: AllWebHookUser;
+  };
+
+  type HardDiskUserUsage = {
+    serverName: string;
+    serverNameEng: string;
+    userName: string;
+  };
+
+  type HealthCheckResponse = {
+    success: boolean;
+    message: string;
+    results: Record<string, any>;
   };
 
   type LarkUser = {
@@ -129,6 +210,34 @@ declare namespace API {
     host: string;
   };
 
+  type MachineHeartbeat = {
+    timestamp: number;
+    serverNameEng: string;
+  };
+
+  type MachineMessage = {
+    serverName: string;
+    serverNameEng: string;
+    content: string;
+    at: string;
+  };
+
+  type MachineStatusResponse = {
+    name: string;
+    nameEng: string;
+    host: string;
+    position: string;
+    isGpu: boolean;
+    pingStatus: boolean;
+    agentStatus: boolean;
+    lastPingTime?: number;
+    lastHeartbeatTime?: number;
+    lastPingTimeFormatted?: string;
+    lastHeartbeatTimeFormatted?: string;
+    pingStatusText: string;
+    agentStatusText: string;
+  };
+
   type MachineUserMessage = {
     userName: string;
     content: string;
@@ -139,8 +248,165 @@ declare namespace API {
     property2: number;
   };
 
+  type Pagination = {
+    page: number;
+    pageSize: number;
+    sortBy:
+      | 'ID'
+      | 'TASK_USER'
+      | 'PROJECT_NAME'
+      | 'SERVER_NAME_ENG'
+      | 'TASK_START_TIME'
+      | 'TASK_FINISH_TIME'
+      | 'TASK_RUNNING_TIME_IN_SECONDS'
+      | 'GPU_USAGE_PERCENT'
+      | 'GPU_MEMORY_PERCENT'
+      | 'TASK_GPU_MEMORY_GB';
+    sortOrder: 'ASC' | 'DESC';
+    offset: number;
+    sortColumn: string;
+    sortDirection: string;
+  };
+
   type postSshFileUploadParams = {
     userNameEng: string;
+  };
+
+  type ProxyServerInfo = {
+    name: string;
+    nameEng: string;
+    type: string;
+    host: string;
+    port: number;
+    priority: number;
+    enable: boolean;
+    requiresAuth: boolean;
+    isAvailable: boolean;
+    lastCheckTime?: number;
+    responseTime?: number;
+    successRate: number;
+    totalChecks: number;
+    lastError?: string;
+    healthCheckEnabled: boolean;
+    healthCheckInterval: number;
+    healthCheckTimeout: number;
+    testUrls: string[];
+  };
+
+  type ProxyServerResponse = {
+    success: boolean;
+    message: string;
+    server?: ProxyServerInfo;
+  };
+
+  type ProxyServersResponse = {
+    success: boolean;
+    message: string;
+    servers: ProxyServerInfo[];
+    totalCount: number;
+    availableCount: number;
+  };
+
+  type ProxyStatusInfo = {
+    totalProxies: number;
+    availableProxies: number;
+    availabilityRate: number;
+    averageResponseTime?: number;
+    lastCheckTime: number;
+    isConfigEnabled: boolean;
+    summaryDescription: string;
+  };
+
+  type ProxyStatusResponse = {
+    success: boolean;
+    message: string;
+    status: ProxyStatusInfo;
+    configEnabled: boolean;
+    configFileExists: boolean;
+  };
+
+  type QueryFilter = {
+    field:
+      | 'ID'
+      | 'TASK_USER'
+      | 'PROJECT_NAME'
+      | 'SERVER_NAME_ENG'
+      | 'TASK_TYPE'
+      | 'TASK_STATUS'
+      | 'MESSAGE_TYPE'
+      | 'IS_DEBUG_MODE'
+      | 'IS_MULTI_GPU'
+      | 'MULTI_DEVICE_WORLD_SIZE'
+      | 'MULTI_DEVICE_LOCAL_RANK'
+      | 'GPU_USAGE_PERCENT'
+      | 'GPU_MEMORY_PERCENT'
+      | 'TASK_GPU_MEMORY_GB'
+      | 'TASK_GPU_ID'
+      | 'TASK_GPU_NAME'
+      | 'TASK_START_TIME'
+      | 'TASK_FINISH_TIME'
+      | 'TASK_RUNNING_TIME_IN_SECONDS'
+      | 'PYTHON_VERSION'
+      | 'CUDA_VERSION'
+      | 'CONDA_ENV_NAME'
+      | 'SCREEN_SESSION_NAME'
+      | 'COMMAND_LINE'
+      | 'PROJECT_DIRECTORY'
+      | 'PY_FILE_NAME';
+    operator:
+      | 'EQUALS'
+      | 'NOT_EQUALS'
+      | 'LIKE'
+      | 'GREATER_THAN'
+      | 'LESS_THAN'
+      | 'GREATER_EQUAL'
+      | 'LESS_EQUAL'
+      | 'BETWEEN';
+    value: Record<string, any>;
+    logic: 'AND' | 'OR';
+    description: string;
+  };
+
+  type queryGpuTasksSimpleParams = {
+    /** Username for filtering tasks */
+    userName?: string;
+    /** Project name (supports fuzzy matching) */
+    projectName?: string;
+    /** Device name for filtering */
+    deviceName?: string;
+    /** Task type filter */
+    taskType?: string;
+    /** Filter by multi-GPU tasks (true/false) */
+    isMultiGpu?: boolean;
+    /** Start time for time range filtering (ISO format) */
+    startTime?: string;
+    /** End time for time range filtering (ISO format) */
+    endTime?: string;
+    /** Page number for pagination (default: 1) */
+    page?: number;
+    /** Page size for pagination (default: 20) */
+    pageSize?: number;
+    /** Sort field (default: TASK_START_TIME) */
+    sortBy?:
+      | 'ID'
+      | 'TASK_USER'
+      | 'PROJECT_NAME'
+      | 'SERVER_NAME_ENG'
+      | 'TASK_START_TIME'
+      | 'TASK_FINISH_TIME'
+      | 'TASK_RUNNING_TIME_IN_SECONDS'
+      | 'GPU_USAGE_PERCENT'
+      | 'GPU_MEMORY_PERCENT'
+      | 'TASK_GPU_MEMORY_GB';
+    /** Sort direction (default: DESC) */
+    sortOrder?: 'ASC' | 'DESC';
+    /** Include statistics in response (default: false) */
+    includeStatistics?: boolean;
+  };
+
+  type ReloadConfigResponse = {
+    success: boolean;
+    message: string;
   };
 
   type SilentModeConfig = {
@@ -156,6 +422,13 @@ declare namespace API {
   type TimeHM = {
     hour: number;
     minute: number;
+  };
+
+  type TimeRange = {
+    startTime?: string;
+    endTime?: string;
+    endTimestamp?: number;
+    startTimestamp?: number;
   };
 
   type WeComUser = {
