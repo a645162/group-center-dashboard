@@ -1,29 +1,240 @@
-import { Card, Col, Row, Statistic } from 'antd';
-import React from 'react';
+import { getGpuStatistics } from '@/services/group_center/dashboardStatistics';
+import { Column, Pie } from '@ant-design/charts';
+import { Alert, Card, Col, Empty, Row, Spin, Statistic } from 'antd';
+import React, { useEffect, useState } from 'react';
 
 interface GpuUsageChartProps {
   timePeriod: string;
 }
 
-// 模拟数据 - 实际项目中会从接口获取
-const mockGpuData = {
-  averageUsage: 68.5,
-  peakUsage: 92.3,
-  totalTasks: 1128,
-  activeGpus: 8,
-  usageByDevice: [
-    { name: 'GPU 0', usage: 75.2, memory: 12.4 },
-    { name: 'GPU 1', usage: 82.1, memory: 15.8 },
-    { name: 'GPU 2', usage: 45.3, memory: 8.2 },
-    { name: 'GPU 3', usage: 91.7, memory: 22.1 },
-    { name: 'GPU 4', usage: 68.9, memory: 11.5 },
-    { name: 'GPU 5', usage: 53.2, memory: 9.8 },
-    { name: 'GPU 6', usage: 79.4, memory: 14.3 },
-    { name: 'GPU 7', usage: 62.8, memory: 10.7 },
-  ],
-};
+interface GpuStat {
+  gpuName: string;
+  serverName: string;
+  totalUsageCount: number;
+  totalRuntime: number;
+  averageUsagePercent: number;
+  averageMemoryUsage: number;
+  totalMemoryUsage: number;
+  formattedAverageUsagePercent: number;
+  formattedAverageMemoryUsage: number;
+  formattedTotalMemoryUsage: number;
+}
+
+interface GpuStatisticsData {
+  averageUsage: number;
+  peakUsage: number;
+  totalTasks: number;
+  activeGpus: number;
+  usageByDevice: GpuStat[];
+}
 
 const GpuUsageChart: React.FC<GpuUsageChartProps> = ({ timePeriod }) => {
+  const [gpuData, setGpuData] = useState<GpuStatisticsData | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    fetchGpuStatistics();
+  }, [timePeriod]);
+
+  const fetchGpuStatistics = async () => {
+    try {
+      console.log(
+        'GpuUsageChart: Starting to fetch GPU statistics, timePeriod:',
+        timePeriod,
+      );
+      setLoading(true);
+      setError(null);
+
+      console.log('GpuUsageChart: Calling getGpuStatistics API with params:', {
+        timePeriod,
+      });
+      const response = await getGpuStatistics({ timePeriod });
+      console.log('GpuUsageChart: API response received:', response);
+
+      if (response.isSucceed && response.result) {
+        console.log('GpuUsageChart: API call successful, processing GPU data');
+        const gpuStats = response.result as GpuStat[];
+        console.log('GpuUsageChart: Raw GPU stats:', gpuStats);
+
+        const averageUsage =
+          gpuStats.length > 0
+            ? gpuStats.reduce((sum, gpu) => sum + gpu.averageUsagePercent, 0) /
+              gpuStats.length
+            : 0;
+        const peakUsage =
+          gpuStats.length > 0
+            ? Math.max(...gpuStats.map((gpu) => gpu.averageUsagePercent))
+            : 0;
+        const totalTasks = gpuStats.reduce(
+          (sum, gpu) => sum + gpu.totalUsageCount,
+          0,
+        );
+        const activeGpus = gpuStats.filter(
+          (gpu) => gpu.totalUsageCount > 0,
+        ).length;
+
+        console.log(
+          'GpuUsageChart: Calculated metrics - averageUsage:',
+          averageUsage,
+          'peakUsage:',
+          peakUsage,
+          'totalTasks:',
+          totalTasks,
+          'activeGpus:',
+          activeGpus,
+        );
+
+        setGpuData({
+          averageUsage,
+          peakUsage,
+          totalTasks,
+          activeGpus,
+          usageByDevice: gpuStats,
+        });
+        console.log('GpuUsageChart: GPU data set successfully');
+      } else {
+        console.error(
+          'GpuUsageChart: API call failed - response not successful:',
+          response,
+        );
+        setError('获取GPU统计数据失败');
+      }
+    } catch (err) {
+      console.error('GpuUsageChart: Failed to fetch GPU statistics:', err);
+      setError('网络错误，请稍后重试');
+    } finally {
+      console.log('GpuUsageChart: Loading state set to false');
+      setLoading(false);
+    }
+  };
+
+  const formatMemory = (gb: number): string => {
+    return `${gb.toFixed(1)} GB`;
+  };
+
+  // 准备饼图数据
+  const getPieChartData = () => {
+    if (!gpuData) return [];
+
+    return gpuData.usageByDevice.map((gpu) => ({
+      type: gpu.gpuName,
+      value: gpu.averageUsagePercent,
+      server: gpu.serverName,
+    }));
+  };
+
+  // 准备柱状图数据
+  const getColumnChartData = () => {
+    if (!gpuData) return [];
+
+    return gpuData.usageByDevice.map((gpu) => ({
+      gpu: gpu.gpuName,
+      usage: gpu.averageUsagePercent,
+      memory: gpu.averageMemoryUsage,
+      tasks: gpu.totalUsageCount,
+      server: gpu.serverName,
+    }));
+  };
+
+  // 饼图配置
+  const pieConfig = {
+    data: getPieChartData(),
+    angleField: 'value',
+    colorField: 'type',
+    radius: 0.8,
+    label: {
+      type: 'outer',
+      content: '{name} {percentage}',
+    },
+    interactions: [
+      {
+        type: 'element-active',
+      },
+    ],
+    tooltip: {
+      fields: ['type', 'value', 'server'],
+      formatter: (datum) => {
+        return { name: datum.type, value: `${(datum.value || 0).toFixed(1)}%` };
+      },
+    },
+    legend: {
+      position: 'bottom',
+    },
+  };
+
+  // 柱状图配置
+  const columnConfig = {
+    data: getColumnChartData(),
+    xField: 'gpu',
+    yField: 'usage',
+    seriesField: 'server',
+    isGroup: true,
+    columnStyle: {
+      radius: [4, 4, 0, 0],
+    },
+    label: {
+      position: 'top',
+      style: {
+        fill: '#000',
+      },
+      formatter: (datum) => `${(datum.usage || 0).toFixed(1)}%`,
+    },
+    tooltip: {
+      fields: ['gpu', 'usage', 'memory', 'tasks', 'server'],
+      formatter: (datum) => {
+        return {
+          name: `${datum.gpu} (${datum.server})`,
+          value: `使用率: ${(datum.usage || 0).toFixed(1)}%\n显存: ${(datum.memory || 0).toFixed(1)}%\n任务数: ${datum.tasks || 0}`,
+        };
+      },
+    },
+    xAxis: {
+      label: {
+        autoRotate: false,
+      },
+    },
+    yAxis: {
+      label: {
+        formatter: (v) => `${v}%`,
+      },
+    },
+  };
+
+  if (loading) {
+    return (
+      <div style={{ textAlign: 'center', padding: '50px 0' }}>
+        <Spin size="large" />
+        <div style={{ marginTop: 16 }}>加载GPU统计数据...</div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <Alert
+        message="数据加载失败"
+        description={error}
+        type="error"
+        showIcon
+        action={
+          <a onClick={fetchGpuStatistics} style={{ color: '#1890ff' }}>
+            重试
+          </a>
+        }
+      />
+    );
+  }
+
+  if (!gpuData || gpuData.usageByDevice.length === 0) {
+    return (
+      <Empty
+        description="暂无GPU统计数据"
+        image={Empty.PRESENTED_IMAGE_SIMPLE}
+      />
+    );
+  }
+
   return (
     <div>
       {/* 概览统计 */}
@@ -32,7 +243,7 @@ const GpuUsageChart: React.FC<GpuUsageChartProps> = ({ timePeriod }) => {
           <Card>
             <Statistic
               title="平均GPU使用率"
-              value={mockGpuData.averageUsage}
+              value={gpuData.averageUsage.toFixed(1)}
               precision={1}
               valueStyle={{ color: '#1890ff' }}
               suffix="%"
@@ -43,7 +254,7 @@ const GpuUsageChart: React.FC<GpuUsageChartProps> = ({ timePeriod }) => {
           <Card>
             <Statistic
               title="峰值使用率"
-              value={mockGpuData.peakUsage}
+              value={gpuData.peakUsage.toFixed(1)}
               precision={1}
               valueStyle={{ color: '#cf1322' }}
               suffix="%"
@@ -54,7 +265,7 @@ const GpuUsageChart: React.FC<GpuUsageChartProps> = ({ timePeriod }) => {
           <Card>
             <Statistic
               title="总任务数"
-              value={mockGpuData.totalTasks}
+              value={gpuData.totalTasks}
               valueStyle={{ color: '#52c41a' }}
             />
           </Card>
@@ -63,7 +274,7 @@ const GpuUsageChart: React.FC<GpuUsageChartProps> = ({ timePeriod }) => {
           <Card>
             <Statistic
               title="活跃GPU数量"
-              value={mockGpuData.activeGpus}
+              value={gpuData.activeGpus}
               valueStyle={{ color: '#722ed1' }}
             />
           </Card>
@@ -71,39 +282,56 @@ const GpuUsageChart: React.FC<GpuUsageChartProps> = ({ timePeriod }) => {
       </Row>
 
       {/* GPU设备使用情况 */}
-      <Card title="各GPU设备使用情况" style={{ marginBottom: 24 }}>
+      <Card
+        title="各GPU设备使用情况"
+        style={{ marginBottom: 24 }}
+        extra={
+          <span style={{ color: '#666', fontSize: '12px' }}>
+            时间范围: {timePeriod}
+          </span>
+        }
+      >
         <Row gutter={16}>
-          {mockGpuData.usageByDevice.map((gpu, index) => (
+          {gpuData.usageByDevice.map((gpu, index) => (
             <Col xs={24} sm={12} md={8} lg={6} key={index}>
               <Card size="small" style={{ marginBottom: 16 }}>
                 <div style={{ textAlign: 'center' }}>
                   <div
                     style={{
-                      fontSize: '16px',
+                      fontSize: '14px',
                       fontWeight: 'bold',
+                      marginBottom: 4,
+                    }}
+                  >
+                    {gpu.gpuName}
+                  </div>
+                  <div
+                    style={{
+                      fontSize: '12px',
+                      color: '#666',
                       marginBottom: 8,
                     }}
                   >
-                    {gpu.name}
+                    {gpu.serverName}
                   </div>
                   <div
                     style={{
                       fontSize: '24px',
                       fontWeight: 'bold',
                       color:
-                        gpu.usage > 80
+                        gpu.averageUsagePercent > 80
                           ? '#cf1322'
-                          : gpu.usage > 60
+                          : gpu.averageUsagePercent > 60
                             ? '#faad14'
                             : '#52c41a',
                     }}
                   >
-                    {gpu.usage}%
+                    {gpu.averageUsagePercent.toFixed(1)}%
                   </div>
                   <div
                     style={{ fontSize: '12px', color: '#666', marginTop: 4 }}
                   >
-                    显存: {gpu.memory} GB
+                    任务数: {gpu.totalUsageCount}
                   </div>
                 </div>
               </Card>
@@ -113,26 +341,32 @@ const GpuUsageChart: React.FC<GpuUsageChartProps> = ({ timePeriod }) => {
       </Card>
 
       {/* 使用率分布图表 */}
-      <Card title="使用率分布">
-        <div
-          style={{
-            height: 200,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            background: '#f5f5f5',
-            borderRadius: 6,
-          }}
-        >
-          <div style={{ textAlign: 'center', color: '#666' }}>
-            <div style={{ fontSize: '16px', marginBottom: 8 }}>图表区域</div>
-            <div style={{ fontSize: '12px' }}>
-              这里将显示GPU使用率的图表可视化
-            </div>
-            <div style={{ fontSize: '12px' }}>时间范围: {timePeriod}</div>
-          </div>
-        </div>
-      </Card>
+      <Row gutter={16}>
+        <Col xs={24} lg={12}>
+          <Card title="GPU使用率分布" style={{ marginBottom: 16 }}>
+            {getPieChartData().length > 0 ? (
+              <Pie {...pieConfig} />
+            ) : (
+              <Empty
+                description="暂无GPU使用率数据"
+                image={Empty.PRESENTED_IMAGE_SIMPLE}
+              />
+            )}
+          </Card>
+        </Col>
+        <Col xs={24} lg={12}>
+          <Card title="各GPU设备使用率对比" style={{ marginBottom: 16 }}>
+            {getColumnChartData().length > 0 ? (
+              <Column {...columnConfig} />
+            ) : (
+              <Empty
+                description="暂无GPU设备数据"
+                image={Empty.PRESENTED_IMAGE_SIMPLE}
+              />
+            )}
+          </Card>
+        </Col>
+      </Row>
     </div>
   );
 };
