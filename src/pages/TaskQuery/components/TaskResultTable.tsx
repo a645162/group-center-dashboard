@@ -1,6 +1,7 @@
 import { EyeOutlined } from '@ant-design/icons';
 import { Card, Table, Tag, Tooltip, Typography } from 'antd';
-import React from 'react';
+import React, { useRef } from 'react';
+import TaskDetailModal, { TaskDetailModalHandles } from './TaskDetailModal';
 
 const { Text } = Typography;
 
@@ -19,6 +20,16 @@ const TaskResultTable: React.FC<TaskResultTableProps> = ({
   queryParams,
   onParamsChange,
 }) => {
+  const detailModalRef = useRef<TaskDetailModalHandles>(null);
+  const [selectedTask, setSelectedTask] =
+    React.useState<API.GpuTaskInfo | null>(null);
+
+  const handleViewDetail = (task: API.GpuTaskInfo) => {
+    setSelectedTask(task);
+    if (detailModalRef.current) {
+      detailModalRef.current.tryToShowModal();
+    }
+  };
   const formatMemory = (memory: number) => {
     if (memory >= 1024) {
       return `${(memory / 1024).toFixed(1)} GB`;
@@ -27,16 +38,25 @@ const TaskResultTable: React.FC<TaskResultTableProps> = ({
   };
 
   const formatTime = (timestamp: number) => {
-    // Java时间戳是毫秒级的，直接使用
+    // 后端返回的时间戳是秒级的，需要乘以1000转换为毫秒级
     if (!timestamp || timestamp <= 0) {
       return '-';
     }
 
+    // 检查时间戳是否已经是毫秒级（大于10^12表示毫秒级）
+    const timestampMs = timestamp > 1e12 ? timestamp : timestamp * 1000;
+
     // 添加调试日志
-    console.log('时间戳格式化:', timestamp, new Date(timestamp));
+    console.log(
+      '时间戳格式化:',
+      timestamp,
+      '->',
+      timestampMs,
+      new Date(timestampMs),
+    );
 
     try {
-      return new Date(timestamp).toLocaleString('zh-CN');
+      return new Date(timestampMs).toLocaleString('zh-CN');
     } catch (error) {
       console.error('时间戳格式化错误:', timestamp, error);
       return '格式错误';
@@ -187,7 +207,10 @@ const TaskResultTable: React.FC<TaskResultTableProps> = ({
       fixed: 'right' as const,
       render: (_, record: API.GpuTaskInfo) => (
         <Tooltip title="查看详情">
-          <EyeOutlined style={{ color: '#1890ff', cursor: 'pointer' }} />
+          <EyeOutlined
+            style={{ color: '#1890ff', cursor: 'pointer' }}
+            onClick={() => handleViewDetail(record)}
+          />
         </Tooltip>
       ),
     },
@@ -209,25 +232,31 @@ const TaskResultTable: React.FC<TaskResultTableProps> = ({
   };
 
   return (
-    <Card title={`查询结果 (${total} 条)`} size="small">
-      <Table
-        columns={columns}
-        dataSource={data}
-        loading={loading}
-        rowKey="taskId"
-        scroll={{ x: 1300 }}
-        pagination={{
-          current: queryParams.page || 1,
-          pageSize: queryParams.pageSize || 20,
-          total: total,
-          showSizeChanger: true,
-          showQuickJumper: true,
-          showTotal: (total, range) =>
-            `第 ${range[0]}-${range[1]} 条，共 ${total} 条`,
-        }}
-        onChange={handleTableChange}
-      />
-    </Card>
+    <>
+      <Card title={`查询结果 (${total} 条)`} size="small">
+        <Table
+          columns={columns}
+          dataSource={data}
+          loading={loading}
+          rowKey="taskId"
+          scroll={{ x: 1300 }}
+          pagination={{
+            current: queryParams.page || 1,
+            pageSize: queryParams.pageSize || 20,
+            total: total,
+            showSizeChanger: true,
+            showQuickJumper: true,
+            showTotal: (total, range) =>
+              `第 ${range[0]}-${range[1]} 条，共 ${total} 条`,
+          }}
+          onChange={handleTableChange}
+        />
+      </Card>
+
+      {selectedTask && (
+        <TaskDetailModal ref={detailModalRef} taskInfo={selectedTask} />
+      )}
+    </>
   );
 };
 

@@ -24,9 +24,16 @@ const TaskQueryPage: React.FC = () => {
       console.log('查询结果:', result);
 
       if (result.isSucceed && result.result) {
-        // 根据API响应结构调整
+        // 根据API响应结构调整 - 后端返回的数据结构包含pagination
         const data = result.result.data || result.result.list || [];
-        const total = result.result.total || result.result.totalCount || 0;
+        const pagination = result.result.pagination;
+
+        // 使用pagination中的totalItems作为总数
+        const total =
+          pagination?.totalItems ||
+          result.result.total ||
+          result.result.totalCount ||
+          0;
 
         setQueryResults(Array.isArray(data) ? data : []);
         setTotalCount(total);
