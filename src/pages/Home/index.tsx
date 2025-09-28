@@ -1,4 +1,5 @@
 import Guide from '@/components/Guide';
+import { MachineStatusMonitor, ProxyMonitor } from '@/components/HomeMonitor';
 import HomePageSiteWidget from '@/components/SiteList/HomePageSiteWidget/HomePageSiteWidget';
 import { trim } from '@/utils/format';
 import { PageContainer } from '@ant-design/pro-components';
@@ -23,8 +24,19 @@ const HomePage: React.FC = () => {
           />
         </div>
 
+        {/* 预设网页 - 放在上面 */}
         <div className={styles.containerSiteList}>
           <HomePageSiteWidget />
+        </div>
+
+        {/* 监视面板 - 放在下面 */}
+        <div className={styles.monitorContainer}>
+          <div className={styles.monitorPanel}>
+            <MachineStatusMonitor refreshInterval={30000} />
+          </div>
+          <div className={styles.monitorPanel}>
+            <ProxyMonitor refreshInterval={30000} />
+          </div>
         </div>
       </div>
     </PageContainer>

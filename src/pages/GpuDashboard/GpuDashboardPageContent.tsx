@@ -2,7 +2,7 @@ import { CloseOutlined, MenuOutlined } from '@ant-design/icons';
 import { Anchor, Button } from 'antd';
 import React, { useEffect, useState } from 'react';
 
-import { getPublicMachineList } from '@/services/group_center/frontEndPublicController';
+import { getPublicMachineList } from '@/services/group_center/frontendPublic';
 
 import GpuDashboard from '@/components/Machine/GpuDashboard';
 import MachineSelector from '@/components/Machine/MachineSelector';

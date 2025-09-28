@@ -1,0 +1,93 @@
+.proxyMonitor {
+  height: 100%;
+
+  .statusSummary {
+    margin-bottom: 16px;
+    padding: 16px;
+    background: #fafafa;
+    border-radius: 6px;
+
+    :global(.ant-statistic) {
+      text-align: center;
+    }
+
+    :global(.ant-statistic-title) {
+      font-size: 12px;
+      color: #666;
+    }
+
+    :global(.ant-statistic-content) {
+      font-size: 20px;
+      font-weight: 600;
+    }
+  }
+
+  .serverItem {
+    width: 100%;
+
+    .serverHeader {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+
+      .serverName {
+        font-weight: 600;
+        font-size: 14px;
+      }
+
+      .successRate {
+        font-size: 12px;
+        color: #666;
+      }
+    }
+
+    .serverDetails {
+      margin-bottom: 8px;
+
+      .detailLabel {
+        display: inline-block;
+        width: 80px;
+        font-weight: 500;
+        color: #666;
+        font-size: 12px;
+      }
+    }
+  }
+
+  :global(.ant-list-item) {
+    padding: 12px 0;
+    border-bottom: 1px solid #f0f0f0;
+
+    &:last-child {
+      border-bottom: none;
+    }
+  }
+
+  :global(.ant-progress) {
+    margin-top: 4px;
+  }
+}
+
+// 响应式设计
+@media (max-width: 768px) {
+  .proxyMonitor {
+    .serverHeader {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 8px;
+    }
+
+    .statusSummary {
+      :global(.ant-space) {
+        flex-direction: column;
+        width: 100%;
+
+        :global(.ant-statistic) {
+          width: 100%;
+          margin-bottom: 8px;
+        }
+      }
+    }
+  }
+}

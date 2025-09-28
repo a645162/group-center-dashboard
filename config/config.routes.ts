@@ -24,6 +24,18 @@ const prodRoutes = [
     icon: 'DatabaseOutlined',
   },
   {
+    name: '任务查询',
+    path: '/task-query',
+    component: './TaskQuery',
+    icon: 'SearchOutlined',
+  },
+  {
+    name: '统计信息',
+    path: '/statistics',
+    component: './Statistics',
+    icon: 'BarChartOutlined',
+  },
+  {
     name: 'Report',
     path: '/report',
     component: './Report',

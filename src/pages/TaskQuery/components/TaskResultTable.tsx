@@ -1,0 +1,234 @@
+import { EyeOutlined } from '@ant-design/icons';
+import { Card, Table, Tag, Tooltip, Typography } from 'antd';
+import React from 'react';
+
+const { Text } = Typography;
+
+interface TaskResultTableProps {
+  data: API.GpuTaskInfo[];
+  loading: boolean;
+  total: number;
+  queryParams: API.queryGpuTasksSimpleParams;
+  onParamsChange: (params: API.queryGpuTasksSimpleParams) => void;
+}
+
+const TaskResultTable: React.FC<TaskResultTableProps> = ({
+  data,
+  loading,
+  total,
+  queryParams,
+  onParamsChange,
+}) => {
+  const formatMemory = (memory: number) => {
+    if (memory >= 1024) {
+      return `${(memory / 1024).toFixed(1)} GB`;
+    }
+    return `${memory} MB`;
+  };
+
+  const formatTime = (timestamp: number) => {
+    // Java时间戳是毫秒级的，直接使用
+    if (!timestamp || timestamp <= 0) {
+      return '-';
+    }
+
+    // 添加调试日志
+    console.log('时间戳格式化:', timestamp, new Date(timestamp));
+
+    try {
+      return new Date(timestamp).toLocaleString('zh-CN');
+    } catch (error) {
+      console.error('时间戳格式化错误:', timestamp, error);
+      return '格式错误';
+    }
+  };
+
+  const formatDuration = (seconds: number) => {
+    if (seconds < 60) {
+      return `${seconds}秒`;
+    } else if (seconds < 3600) {
+      return `${Math.floor(seconds / 60)}分钟`;
+    } else if (seconds < 86400) {
+      return `${Math.floor(seconds / 3600)}小时`;
+    } else {
+      return `${Math.floor(seconds / 86400)}天`;
+    }
+  };
+
+  const getStatusTag = (task: API.GpuTaskInfo) => {
+    const status = task.taskStatus;
+    const colorMap: Record<string, string> = {
+      RUNNING: 'blue',
+      COMPLETED: 'green',
+      FAILED: 'red',
+      CANCELLED: 'orange',
+      PENDING: 'default',
+    };
+
+    return <Tag color={colorMap[status] || 'default'}>{status}</Tag>;
+  };
+
+  const getTaskTypeTag = (task: API.GpuTaskInfo) => {
+    const type = task.taskType;
+    const colorMap: Record<string, string> = {
+      TRAINING: 'purple',
+      INFERENCE: 'cyan',
+      TESTING: 'gold',
+    };
+
+    return <Tag color={colorMap[type] || 'default'}>{type}</Tag>;
+  };
+
+  const columns = [
+    {
+      title: '任务ID',
+      dataIndex: 'taskId',
+      key: 'taskId',
+      width: 120,
+      render: (text: string) => (
+        <Text
+          copyable={{ text }}
+          style={{ fontFamily: 'monospace', fontSize: '12px' }}
+        >
+          {text.substring(0, 8)}...
+        </Text>
+      ),
+    },
+    {
+      title: '用户',
+      dataIndex: 'taskUser',
+      key: 'taskUser',
+      width: 100,
+    },
+    {
+      title: '项目',
+      dataIndex: 'projectName',
+      key: 'projectName',
+      width: 120,
+      render: (text: string) => text || '-',
+    },
+    {
+      title: '服务器',
+      dataIndex: 'serverName',
+      key: 'serverName',
+      width: 120,
+    },
+    {
+      title: 'GPU设备',
+      dataIndex: 'taskGpuName',
+      key: 'taskGpuName',
+      width: 100,
+      render: (text: string, record: API.GpuTaskInfo) => (
+        <div>
+          <div>{text}</div>
+          <div style={{ fontSize: '12px', color: '#666' }}>
+            ID: {record.taskGpuId}
+          </div>
+        </div>
+      ),
+    },
+    {
+      title: '任务类型',
+      dataIndex: 'taskType',
+      key: 'taskType',
+      width: 100,
+      render: (text: string, record: API.GpuTaskInfo) => getTaskTypeTag(record),
+    },
+    {
+      title: '状态',
+      dataIndex: 'taskStatus',
+      key: 'taskStatus',
+      width: 100,
+      render: (text: string, record: API.GpuTaskInfo) => getStatusTag(record),
+    },
+    {
+      title: '开始时间',
+      dataIndex: 'taskStartTime',
+      key: 'taskStartTime',
+      width: 160,
+      render: (timestamp: number) => formatTime(timestamp),
+      sorter: true,
+    },
+    {
+      title: '运行时长',
+      dataIndex: 'taskRunningTimeInSeconds',
+      key: 'taskRunningTimeInSeconds',
+      width: 100,
+      render: (seconds: number) => formatDuration(seconds),
+      sorter: true,
+    },
+    {
+      title: 'GPU使用率',
+      dataIndex: 'gpuUsagePercent',
+      key: 'gpuUsagePercent',
+      width: 100,
+      render: (percent: number) => `${percent}%`,
+      sorter: true,
+    },
+    {
+      title: '显存使用',
+      dataIndex: 'taskGpuMemoryGb',
+      key: 'taskGpuMemoryGb',
+      width: 100,
+      render: (memory: number, record: API.GpuTaskInfo) => (
+        <div>
+          <div>{formatMemory(memory * 1024)}</div>
+          <div style={{ fontSize: '12px', color: '#666' }}>
+            {record.gpuMemoryPercent}%
+          </div>
+        </div>
+      ),
+      sorter: true,
+    },
+    {
+      title: '操作',
+      key: 'action',
+      width: 80,
+      fixed: 'right' as const,
+      render: (_, record: API.GpuTaskInfo) => (
+        <Tooltip title="查看详情">
+          <EyeOutlined style={{ color: '#1890ff', cursor: 'pointer' }} />
+        </Tooltip>
+      ),
+    },
+  ];
+
+  const handleTableChange = (pagination: any, filters: any, sorter: any) => {
+    const newParams: API.queryGpuTasksSimpleParams = {
+      ...queryParams,
+      page: pagination.current,
+      pageSize: pagination.pageSize,
+    };
+
+    if (sorter.field) {
+      newParams.sortBy = sorter.field.toUpperCase();
+      newParams.sortOrder = sorter.order === 'ascend' ? 'ASC' : 'DESC';
+    }
+
+    onParamsChange(newParams);
+  };
+
+  return (
+    <Card title={`查询结果 (${total} 条)`} size="small">
+      <Table
+        columns={columns}
+        dataSource={data}
+        loading={loading}
+        rowKey="taskId"
+        scroll={{ x: 1300 }}
+        pagination={{
+          current: queryParams.page || 1,
+          pageSize: queryParams.pageSize || 20,
+          total: total,
+          showSizeChanger: true,
+          showQuickJumper: true,
+          showTotal: (total, range) =>
+            `第 ${range[0]}-${range[1]} 条，共 ${total} 条`,
+        }}
+        onChange={handleTableChange}
+      />
+    </Card>
+  );
+};
+
+export default TaskResultTable;

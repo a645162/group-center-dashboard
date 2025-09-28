@@ -1,0 +1,33 @@
+.taskQueryPage {
+  padding: 0;
+
+  .queryFormSection {
+    margin-bottom: 24px;
+
+    :global(.ant-card) {
+      box-shadow:
+        0 1px 2px -2px rgba(0, 0, 0, 16%),
+        0 3px 6px 0 rgba(0, 0, 0, 12%),
+        0 5px 12px 4px rgba(0, 0, 0, 9%);
+    }
+  }
+
+  .resultSection {
+    :global(.ant-card) {
+      box-shadow:
+        0 1px 2px -2px rgba(0, 0, 0, 16%),
+        0 3px 6px 0 rgba(0, 0, 0, 12%),
+        0 5px 12px 4px rgba(0, 0, 0, 9%);
+    }
+  }
+}
+
+// 响应式设计
+@media (max-width: 768px) {
+  .taskQueryPage {
+    .queryFormSection,
+    .resultSection {
+      margin-bottom: 16px;
+    }
+  }
+}

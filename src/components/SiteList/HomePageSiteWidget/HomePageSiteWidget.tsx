@@ -1,4 +1,4 @@
-import { getPublicSiteClassList } from '@/services/group_center';
+import { getPublicSiteClassList } from '@/services/group_center/frontendPublic';
 import React, { useEffect, useState } from 'react';
 import styles from './HomePageSiteWidget.less';
 import HomeSiteClassWidget from './HomeSiteClassWidget/HomeSiteClassWidget';
