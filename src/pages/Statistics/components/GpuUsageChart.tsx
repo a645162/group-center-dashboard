@@ -52,7 +52,7 @@ const GpuUsageChart: React.FC<GpuUsageChartProps> = ({ timePeriod }) => {
       const response = await getGpuStatistics({ timePeriod });
       console.log('GpuUsageChart: API response received:', response);
 
-      if (response.isSucceed && response.result) {
+      if (response.isSucceed && Array.isArray(response.result)) {
         console.log('GpuUsageChart: API call successful, processing GPU data');
         const gpuStats = response.result as GpuStat[];
         console.log('GpuUsageChart: Raw GPU stats:', gpuStats);
@@ -95,7 +95,7 @@ const GpuUsageChart: React.FC<GpuUsageChartProps> = ({ timePeriod }) => {
         console.log('GpuUsageChart: GPU data set successfully');
       } else {
         console.error(
-          'GpuUsageChart: API call failed - response not successful:',
+          'GpuUsageChart: API call failed - response not successful or result is not an array:',
           response,
         );
         setError('获取GPU统计数据失败');
@@ -129,11 +129,11 @@ const GpuUsageChart: React.FC<GpuUsageChartProps> = ({ timePeriod }) => {
     if (!gpuData) return [];
 
     return gpuData.usageByDevice.map((gpu) => ({
-      gpu: gpu.gpuName,
-      usage: gpu.averageUsagePercent,
-      memory: gpu.averageMemoryUsage,
-      tasks: gpu.totalUsageCount,
-      server: gpu.serverName,
+      gpu: gpu.gpuName || '未知GPU', // 默认值处理
+      usage: gpu.averageUsagePercent ?? 0, // 确保 usage 不为 null/undefined
+      memory: gpu.averageMemoryUsage ?? 0, // 确保 memory 不为 null/undefined
+      tasks: gpu.totalUsageCount ?? 0, // 确保 tasks 不为 null/undefined
+      server: gpu.serverName || '未知服务器', // 默认值处理
     }));
   };
 
@@ -154,7 +154,7 @@ const GpuUsageChart: React.FC<GpuUsageChartProps> = ({ timePeriod }) => {
     ],
     tooltip: {
       fields: ['type', 'value', 'server'],
-      formatter: (datum) => {
+      formatter: (datum: { type: string; value: number; server: string }) => {
         return { name: datum.type, value: `${(datum.value || 0).toFixed(1)}%` };
       },
     },
@@ -167,7 +167,7 @@ const GpuUsageChart: React.FC<GpuUsageChartProps> = ({ timePeriod }) => {
   const columnConfig = {
     data: getColumnChartData(),
     xField: 'gpu',
-    yField: 'usage',
+    yField: 'tasks', // 映射到任务数
     seriesField: 'server',
     isGroup: true,
     columnStyle: {
@@ -178,14 +178,18 @@ const GpuUsageChart: React.FC<GpuUsageChartProps> = ({ timePeriod }) => {
       style: {
         fill: '#000',
       },
-      formatter: (datum) => `${(datum.usage || 0).toFixed(1)}%`,
+      formatter: (datum: { tasks: number }) => `${datum.tasks || 0}`, // 确保任务数显示正确
     },
     tooltip: {
-      fields: ['gpu', 'usage', 'memory', 'tasks', 'server'],
-      formatter: (datum) => {
+      fields: ['gpu', 'tasks', 'server'],
+      formatter: (datum: {
+        gpu: string;
+        tasks: number | null | undefined; // 处理可能的 null 或 undefined
+        server: string;
+      }) => {
         return {
           name: `${datum.gpu} (${datum.server})`,
-          value: `使用率: ${(datum.usage || 0).toFixed(1)}%\n显存: ${(datum.memory || 0).toFixed(1)}%\n任务数: ${datum.tasks || 0}`,
+          value: `任务数: ${datum.tasks !== null && datum.tasks !== undefined ? datum.tasks : 0}`, // 确保任务数显示正确
         };
       },
     },
@@ -196,7 +200,7 @@ const GpuUsageChart: React.FC<GpuUsageChartProps> = ({ timePeriod }) => {
     },
     yAxis: {
       label: {
-        formatter: (v) => `${v}%`,
+        formatter: (v) => `${v}`, // 确保任务数显示为整数
       },
     },
   };
