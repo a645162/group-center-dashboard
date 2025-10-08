@@ -284,7 +284,7 @@ declare namespace API {
     isAvailable: boolean;
     lastCheckTime?: number;
     responseTime?: number;
-    successRate: number;
+    successRate: string;
     totalChecks: number;
     lastError?: string;
     healthCheckEnabled: boolean;
@@ -310,7 +310,7 @@ declare namespace API {
   type ProxyStatusInfo = {
     totalProxies: number;
     availableProxies: number;
-    availabilityRate: number;
+    availabilityRate: string;
     averageResponseTime?: number;
     lastCheckTime: number;
     isConfigEnabled: boolean;
@@ -427,8 +427,8 @@ declare namespace API {
   type TimeRange = {
     startTime?: string;
     endTime?: string;
-    endTimestamp?: number;
     startTimestamp?: number;
+    endTimestamp?: number;
   };
 
   type WeComUser = {

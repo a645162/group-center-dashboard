@@ -145,8 +145,7 @@ const ProxyMonitor: React.FC<ProxyMonitorProps> = ({
             />
             <Statistic
               title="可用率"
-              value={proxyStatus.availabilityRate?.toFixed(2)}
-              suffix="%"
+              value={proxyStatus.availabilityRate}
               valueStyle={{ color: '#faad14' }}
             />
             {proxyStatus.averageResponseTime && (
