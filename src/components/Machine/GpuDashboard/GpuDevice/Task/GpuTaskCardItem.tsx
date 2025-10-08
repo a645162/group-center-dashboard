@@ -40,16 +40,16 @@ import '@szhsin/react-menu/dist/index.css';
 import '@szhsin/react-menu/dist/theme-dark.css';
 import '@szhsin/react-menu/dist/transitions/zoom.css';
 import MultiGpuTag from './Component/MultiGpuTag';
-import { FilterUseEffect, UseFilter } from './Filter';
 import styles from './GpuTaskCardItem.less';
 
 interface Props {
   index: number;
   taskInfo: API.DashboardGpuTaskItemInfo;
+  shouldRender: boolean;
 }
 
 const GpuTaskCardItem: React.FC<Props> = (props) => {
-  const { index, taskInfo } = props;
+  const { index, taskInfo, shouldRender } = props;
 
   const [openStartTimePopConfirm, setOpenStartTimePopConfirm] = useState(false);
   const [openUserFilterPopConfirm, setOpenUserFilterPopConfirm] =
@@ -58,12 +58,9 @@ const GpuTaskCardItem: React.FC<Props> = (props) => {
 
   const modalFunctionRef = useRef<GpuTaskDetailModalHandles>(null);
 
-  FilterUseEffect();
-
-  const filterResult = UseFilter(taskInfo);
-
-  if (!filterResult) {
-    return <></>;
+  // 如果不需要渲染，直接返回 null（在调用任何 hooks 之前）
+  if (!shouldRender) {
+    return null;
   }
 
   const onClickShowDetail = () => {

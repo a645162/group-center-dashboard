@@ -3,6 +3,7 @@ import { getGpuTaskInfo } from '@/services/agent/GpuInfo';
 import { CheckIsDevMode } from '@/utils/node';
 import { Skeleton } from 'antd';
 import React, { useEffect, useState } from 'react';
+import { useFilter } from './Filter';
 import GpuTaskCardItem from './GpuTaskCardItem';
 import styles from './GpuTaskListCard.less';
 
@@ -59,6 +60,7 @@ const GpuTaskListCard: React.FC<Props> = (props) => {
   const { apiUrl, gpuIndex } = props;
 
   const gpuTaskList = useGpuTaskListState(apiUrl, gpuIndex);
+  const { checkFilter } = useFilter();
 
   if (!gpuTaskList) {
     return (
@@ -68,16 +70,21 @@ const GpuTaskListCard: React.FC<Props> = (props) => {
     );
   }
 
-  // const gpuTaskFiltedList = gpuTaskList?.filter((gpuTask) => {
-  // 	return UseFilter(gpuTask);
-  // });
+  // 在父组件中进行过滤检查，避免子组件中的 hooks 调用不一致
+  const filteredTaskList = gpuTaskList.filter((taskInfo) =>
+    checkFilter(taskInfo),
+  );
 
   return (
     <div>
-      <VShow v-show={gpuTaskList.length > 0}>
-        {Array.from({ length: gpuTaskList?.length || 0 }, (_, i) => (
+      <VShow v-show={filteredTaskList.length > 0}>
+        {filteredTaskList.map((taskInfo, i) => (
           <div className={styles.gpuTaskItemDiv} key={i}>
-            <GpuTaskCardItem index={i} taskInfo={gpuTaskList?.[i]} />
+            <GpuTaskCardItem
+              index={i}
+              taskInfo={taskInfo}
+              shouldRender={true}
+            />
           </div>
         ))}
       </VShow>

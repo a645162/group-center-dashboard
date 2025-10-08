@@ -1,16 +1,19 @@
-import { CheckProjectFilter, ProjectFilterUseEffect } from './ProjectFilter';
-import { CheckUserFilter, UserFilterUseEffect } from './UserFilter';
+import { useProjectFilter } from './ProjectFilter';
+import { useUserFilter } from './UserFilter';
 
-export const FilterUseEffect = () => {
-  UserFilterUseEffect();
-  ProjectFilterUseEffect();
-};
+// 移除无用的 FilterUseEffect，直接在组件中使用 hooks
+export const useFilter = () => {
+  const { checkUserFilter } = useUserFilter();
+  const { checkProjectFilter } = useProjectFilter();
 
-export const UseFilter = (taskInfo: API.DashboardGpuTaskItemInfo): boolean => {
-  let finalResult = true;
+  const checkFilter = (taskInfo: API.DashboardGpuTaskItemInfo): boolean => {
+    let finalResult = true;
 
-  finalResult = finalResult && CheckUserFilter(taskInfo);
-  finalResult = finalResult && CheckProjectFilter(taskInfo);
+    finalResult = finalResult && checkUserFilter(taskInfo);
+    finalResult = finalResult && checkProjectFilter(taskInfo);
 
-  return finalResult;
+    return finalResult;
+  };
+
+  return { checkFilter };
 };

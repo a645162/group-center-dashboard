@@ -1,8 +1,8 @@
 import { useGpuTaskFilterUserNameStore } from '@/data/store/modules/filter/GpuTaskFilterUserName';
 import { MatchStringFilter } from '@/data/store/modules/filter/utils';
-import { useEffect } from 'react';
 
-export const UserFilterUseEffect = () => {
+// 移除无用的 useEffect，直接在组件中使用 store
+export const useUserFilter = () => {
   const userNameEng = useGpuTaskFilterUserNameStore(
     (state) => state.userNameEng,
   );
@@ -10,18 +10,9 @@ export const UserFilterUseEffect = () => {
     (state) => state.isFuzzyMatch,
   );
 
-  useEffect(() => {}, [userNameEng, isFuzzyMatch]);
-};
+  const checkUserFilter = (taskInfo: API.DashboardGpuTaskItemInfo): boolean => {
+    return MatchStringFilter(taskInfo.name, userNameEng, isFuzzyMatch);
+  };
 
-export const CheckUserFilter = (
-  taskInfo: API.DashboardGpuTaskItemInfo,
-): boolean => {
-  const userNameEng = useGpuTaskFilterUserNameStore(
-    (state) => state.userNameEng,
-  );
-  const isFuzzyMatch = useGpuTaskFilterUserNameStore(
-    (state) => state.isFuzzyMatch,
-  );
-
-  return MatchStringFilter(taskInfo.name, userNameEng, isFuzzyMatch);
+  return { checkUserFilter, userNameEng, isFuzzyMatch };
 };

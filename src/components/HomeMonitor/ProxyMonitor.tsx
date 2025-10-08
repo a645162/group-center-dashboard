@@ -237,8 +237,8 @@ const ProxyMonitor: React.FC<ProxyMonitorProps> = ({
                   parseSuccessRate(server.successRate) > 90 // 比较数字
                     ? '#52c41a'
                     : parseSuccessRate(server.successRate) > 70
-                    ? '#faad14'
-                    : '#ff4d4f'
+                      ? '#faad14'
+                      : '#ff4d4f'
                 }
                 showInfo={false}
               />
