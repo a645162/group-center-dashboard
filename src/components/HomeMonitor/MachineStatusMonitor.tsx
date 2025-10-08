@@ -197,10 +197,10 @@ const MachineStatusMonitor: React.FC<MachineStatusMonitorProps> = ({
                   size="small"
                   style={{ width: '100%' }}
                 >
-                  <div>
+                  {/* <div>
                     <span className={styles.detailLabel}>主机地址:</span>
                     {machine.host}
-                  </div>
+                  </div> */}
                   <div>
                     <span className={styles.detailLabel}>最后Ping:</span>
                     {machine.lastPingTimeFormatted ||

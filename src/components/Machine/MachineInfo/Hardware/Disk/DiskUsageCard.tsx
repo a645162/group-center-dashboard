@@ -57,7 +57,10 @@ const ProgressComponent = (percent: number) => {
 const DiskUsageCard: React.FC<Props> = (props) => {
   const { diskUsage } = props;
 
-  const cardTitle = `${diskUsage.mountPoint}(${diskUsage.purpose})`;
+  const cardTitle = `${diskUsage.mountPoint}`;
+  if (!diskUsage.purpose && diskUsage.purpose !== 'unknown') {
+    cardTitle.concat(` (${diskUsage.purpose})`);
+  }
 
   return (
     <div className={styles.cardParentDiv}>
