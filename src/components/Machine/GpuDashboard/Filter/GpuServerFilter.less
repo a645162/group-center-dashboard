@@ -1,0 +1,116 @@
+.gpuServerFilter {
+  padding: 12px;
+  background: #fafafa;
+  border-radius: 8px;
+  border: 1px solid #d9d9d9;
+
+  .filterHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+
+    .filterTitle {
+      font-weight: 600;
+      color: #262626;
+      font-size: 14px;
+    }
+
+    .actionButton {
+      padding: 0;
+      height: auto;
+      font-size: 12px;
+      color: #1890ff;
+
+      &:hover {
+        color: #40a9ff;
+      }
+    }
+  }
+
+  .machineButtons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+
+    .machineButton {
+      transition: all 0.2s ease-in-out;
+      border-radius: 6px;
+      font-size: 12px;
+      height: 32px;
+      padding: 0 12px;
+
+      &.selected {
+        border: 2px solid #1890ff;
+        background-color: #1890ff;
+        color: white;
+        font-weight: 500;
+
+        &:hover {
+          border-color: #40a9ff;
+          background-color: #40a9ff;
+        }
+      }
+
+      &.unselected {
+        border: 1px solid #d9d9d9;
+        background-color: #f5f5f5;
+        color: #8c8c8c;
+
+        &:hover {
+          border-color: #bfbfbf;
+          background-color: #e8e8e8;
+          color: #595959;
+        }
+      }
+    }
+  }
+}
+
+// 暗色主题支持
+[data-theme='dark'] {
+  .gpuServerFilter {
+    background: #141414;
+    border-color: #434343;
+
+    .filterHeader {
+      .filterTitle {
+        color: #e8e8e8;
+      }
+
+      .actionButton {
+        color: #177ddc;
+
+        &:hover {
+          color: #3c9ae8;
+        }
+      }
+    }
+
+    .machineButtons {
+      .machineButton {
+        &.selected {
+          border-color: #177ddc;
+          background-color: #177ddc;
+
+          &:hover {
+            border-color: #3c9ae8;
+            background-color: #3c9ae8;
+          }
+        }
+
+        &.unselected {
+          border-color: #434343;
+          background-color: #1f1f1f;
+          color: #8c8c8c;
+
+          &:hover {
+            border-color: #595959;
+            background-color: #262626;
+            color: #bfbfbf;
+          }
+        }
+      }
+    }
+  }
+}

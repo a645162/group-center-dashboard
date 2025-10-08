@@ -105,6 +105,12 @@ const ProxyMonitor: React.FC<ProxyMonitorProps> = ({
     return new Date(timestamp).toLocaleString('zh-CN');
   };
 
+  const parseSuccessRate = (rate: string): number => {
+    // 去掉百分号并转换为数字，保留两位小数
+    const numericRate = parseFloat(rate.replace('%', ''));
+    return isNaN(numericRate) ? 0 : parseFloat(numericRate.toFixed(2));
+  };
+
   return (
     <Card
       title="代理服务器监视"
@@ -183,7 +189,7 @@ const ProxyMonitor: React.FC<ProxyMonitorProps> = ({
                     </Tag>
                   )}
                   <span className={styles.successRate}>
-                    成功率: {server.successRate}%
+                    成功率: {parseSuccessRate(server.successRate).toFixed(2)}%
                   </span>
                 </Space>
               </div>
@@ -225,14 +231,14 @@ const ProxyMonitor: React.FC<ProxyMonitorProps> = ({
 
               {/* 成功率进度条 */}
               <Progress
-                percent={server.successRate}
+                percent={parseSuccessRate(server.successRate)} // 转换为数字并保留两位小数
                 size="small"
                 strokeColor={
-                  server.successRate > 90
+                  parseSuccessRate(server.successRate) > 90 // 比较数字
                     ? '#52c41a'
-                    : server.successRate > 70
-                      ? '#faad14'
-                      : '#ff4d4f'
+                    : parseSuccessRate(server.successRate) > 70
+                    ? '#faad14'
+                    : '#ff4d4f'
                 }
                 showInfo={false}
               />

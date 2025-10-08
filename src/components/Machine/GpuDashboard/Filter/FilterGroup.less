@@ -1,0 +1,42 @@
+.filterGroupContainer {
+  margin-bottom: 16px;
+}
+
+.filterToggle {
+  margin-bottom: 12px;
+  display: flex;
+  justify-content: flex-start;
+}
+
+.filterCard {
+  .ant-card-body {
+    padding: 16px;
+  }
+}
+
+.filterSection {
+  margin-bottom: 16px;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.filterLabel {
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: rgba(0, 0, 0, 85%);
+  font-size: 14px;
+}
+
+// 暗色主题支持
+[data-theme='dark'] {
+  .filterLabel {
+    color: rgba(255, 255, 255, 85%);
+  }
+
+  .filterCard {
+    background: rgba(255, 255, 255, 4%);
+    border-color: rgba(255, 255, 255, 12%);
+  }
+}

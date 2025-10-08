@@ -5,11 +5,10 @@ import React, { useEffect, useState } from 'react';
 import { getPublicMachineList } from '@/services/group_center/frontendPublic';
 
 import GpuDashboard from '@/components/Machine/GpuDashboard';
-import MachineSelector from '@/components/Machine/MachineSelector';
+import { FilterGroup } from '@/components/Machine/GpuDashboard/Filter';
 import VShow from '@/components/Vue/V-Show';
 import { getLatestRunGpu, setLatestRunGpu } from '@/data/cookies/Gpu';
 import styles from './GpuDashboardPageContent.less';
-import GpuTaskFilterPanel from './GpuTaskFilterPanel';
 
 interface Props {
   name?: string;
@@ -32,10 +31,14 @@ const useMachineListState = () => {
   return machineList;
 };
 
-const GpuDashboardWithNoContent = (
-  machineList: API.FrontEndMachine[] | null,
-) => {
-  // 根据屏幕方向设置默认显示状态
+interface GpuDashboardWithNoContentProps {
+  machineList: API.FrontEndMachine[] | null;
+}
+
+const GpuDashboardWithNoContent: React.FC<GpuDashboardWithNoContentProps> = ({
+  machineList,
+}) => {
+  // 将hooks移到组件内部，确保在React函数组件中调用
   const [showAnchor, setShowAnchor] = useState(() => {
     return window.innerWidth > window.innerHeight; // 横屏默认显示，竖屏默认隐藏
   });
@@ -51,74 +54,74 @@ const GpuDashboardWithNoContent = (
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  if (machineList) {
-    return (
-      <VShow v-show={machineList !== undefined && machineList.length > 0}>
-        {/* 切换按钮 */}
-        {machineList.length > 1 && (
-          <Button
-            type="primary"
-            shape="circle"
-            icon={showAnchor ? <CloseOutlined /> : <MenuOutlined />}
-            onClick={() => setShowAnchor(!showAnchor)}
-            style={{
-              position: 'fixed',
-              right: 20,
-              bottom: 20,
-              zIndex: 1001,
-              width: 50,
-              height: 50,
-              backgroundColor: 'rgba(24, 144, 255, 0.8)',
-              borderColor: 'rgba(24, 144, 255, 0.8)',
-              backdropFilter: 'blur(4px)',
-              boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
-            }}
-          />
-        )}
-
-        {/* 浮动在右边的设备导航锚点 */}
-        {machineList.length > 1 && showAnchor && (
-          <Anchor
-            affix={true}
-            offsetTop={100}
-            style={{
-              position: 'fixed',
-              right: 20,
-              top: '50%',
-              transform: 'translateY(-50%)',
-              zIndex: 1000,
-              backgroundColor: 'rgba(255, 255, 255, 0.95)',
-              padding: '12px',
-              borderRadius: '8px',
-              boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
-              border: '1px solid rgba(217, 217, 217, 0.8)',
-              backdropFilter: 'blur(8px)',
-              maxHeight: '60vh',
-              overflowY: 'auto',
-            }}
-            items={machineList.map((machine) => ({
-              key: machine.machineName,
-              href: `#device-${machine.machineName}`,
-              title: machine.machineName,
-            }))}
-          />
-        )}
-
-        <div className={styles.machineDiv}>
-          {machineList.map((machine) => (
-            <div key={machine.machineName} className={styles.machineItem}>
-              <GpuDashboard
-                name={machine.machineName}
-                apiUrl={machine.machineUrl}
-              />
-            </div>
-          ))}
-        </div>
-      </VShow>
-    );
+  if (!machineList) {
+    return <></>;
   }
 
-  return <></>;
+  return (
+    <VShow v-show={machineList !== undefined && machineList.length > 0}>
+      {/* 切换按钮 */}
+      {machineList.length > 1 && (
+        <Button
+          type="primary"
+          shape="circle"
+          icon={showAnchor ? <CloseOutlined /> : <MenuOutlined />}
+          onClick={() => setShowAnchor(!showAnchor)}
+          style={{
+            position: 'fixed',
+            right: 20,
+            bottom: 20,
+            zIndex: 1001,
+            width: 50,
+            height: 50,
+            backgroundColor: 'rgba(24, 144, 255, 0.8)',
+            borderColor: 'rgba(24, 144, 255, 0.8)',
+            backdropFilter: 'blur(4px)',
+            boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+          }}
+        />
+      )}
+
+      {/* 浮动在右边的设备导航锚点 */}
+      {machineList.length > 1 && showAnchor && (
+        <Anchor
+          affix={true}
+          offsetTop={100}
+          style={{
+            position: 'fixed',
+            right: 20,
+            top: '50%',
+            transform: 'translateY(-50%)',
+            zIndex: 1000,
+            backgroundColor: 'rgba(255, 255, 255, 0.95)',
+            padding: '12px',
+            borderRadius: '8px',
+            boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+            border: '1px solid rgba(217, 217, 217, 0.8)',
+            backdropFilter: 'blur(8px)',
+            maxHeight: '60vh',
+            overflowY: 'auto',
+          }}
+          items={machineList.map((machine) => ({
+            key: machine.machineName,
+            href: `#device-${machine.machineName}`,
+            title: machine.machineName,
+          }))}
+        />
+      )}
+
+      <div className={styles.machineDiv}>
+        {machineList.map((machine) => (
+          <div key={machine.machineName} className={styles.machineItem}>
+            <GpuDashboard
+              name={machine.machineName}
+              apiUrl={machine.machineUrl}
+            />
+          </div>
+        ))}
+      </div>
+    </VShow>
+  );
 };
 
 const GpuDashboardPageContent: React.FC<Props> = (props) => {
@@ -165,7 +168,7 @@ const GpuDashboardPageContent: React.FC<Props> = (props) => {
     setSelectedMachineState(machineList);
   };
 
-  if (!machineList) {
+  if (!machineList || machineList.length === 0) {
     return (
       <>
         <h1>Trying to connect to server...</h1>
@@ -181,22 +184,14 @@ const GpuDashboardPageContent: React.FC<Props> = (props) => {
         ))}
       </ul> */}
 
-      <div className={styles.topBarDiv}>
-        <div className={styles.topBarItem}>
-          <MachineSelector
-            machineList={machineList}
-            onMachineChange={onSelectedMachineChange}
-            multipleMachine={true}
-            tryToSelectMachineList={tryToSelectedMachineList}
-          />
-        </div>
+      {/* 筛选器组 */}
+      <FilterGroup
+        machineList={machineList}
+        selectedMachines={selectedMachineState || []}
+        onSelectionChange={onSelectedMachineChange}
+      />
 
-        <div className={styles.topBarItem}>
-          <GpuTaskFilterPanel />
-        </div>
-      </div>
-
-      {GpuDashboardWithNoContent(selectedMachineState)}
+      <GpuDashboardWithNoContent machineList={selectedMachineState} />
     </div>
   );
 };
