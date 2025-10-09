@@ -77,6 +77,34 @@
   }
 }
 
+.filterSubSection {
+  margin-bottom: 16px;
+  padding: 12px;
+  background: rgba(255, 255, 255, 60%);
+  border-radius: 6px;
+  border: 1px solid rgba(0, 0, 0, 8%);
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.filterSubLabel {
+  font-weight: 500;
+  margin-bottom: 8px;
+  color: #595959;
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+
+  &::before {
+    content: '•';
+    font-size: 14px;
+    color: #1890ff;
+  }
+}
+
 // 移动端适配
 @media (max-width: 768px) {
   .filterGroupContainer {

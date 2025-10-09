@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 
 import GpuTaskFilterPanel from '@/pages/GpuDashboard/GpuTaskFilterPanel';
 import styles from './FilterGroup.less';
+import GpuCardFilter from './GpuCardFilter';
 import GpuServerFilter from './GpuServerFilter';
 
 interface FilterGroupProps {
@@ -40,11 +41,27 @@ const FilterGroup: React.FC<FilterGroupProps> = ({
             {/* GPU服务器筛选 */}
             <div className={styles.filterSection}>
               <div className={styles.filterLabel}>GPU服务器筛选</div>
-              <GpuServerFilter
-                machineList={machineList}
-                selectedMachines={selectedMachines}
-                onSelectionChange={onSelectionChange}
-              />
+              <Space
+                direction="vertical"
+                size="middle"
+                style={{ width: '100%' }}
+              >
+                {/* 按GPU服务器 */}
+                <div className={styles.filterSubSection}>
+                  <div className={styles.filterSubLabel}>按GPU服务器</div>
+                  <GpuServerFilter
+                    machineList={machineList}
+                    selectedMachines={selectedMachines}
+                    onSelectionChange={onSelectionChange}
+                  />
+                </div>
+
+                {/* 按卡筛选器 */}
+                <div className={styles.filterSubSection}>
+                  <div className={styles.filterSubLabel}>按卡筛选</div>
+                  <GpuCardFilter />
+                </div>
+              </Space>
             </div>
 
             {/* 任务筛选器（用户名和工程名过滤） */}

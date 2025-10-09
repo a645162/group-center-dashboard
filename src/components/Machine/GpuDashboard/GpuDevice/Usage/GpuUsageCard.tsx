@@ -11,6 +11,7 @@ import styles from './GpuUsageCard.less';
 interface Props {
   apiUrl: string;
   gpuIndex: number;
+  shouldShowByGpuName?: (gpuName: string | undefined) => boolean;
 }
 
 const useGpuMemoryDetail = (gpuMemoryTotalMB: number, memoryUsage: number) => {
@@ -133,7 +134,7 @@ const ProgressComponent = (percent: number) => {
 };
 
 const GpuUsageCard: React.FC<Props> = (props) => {
-  const { apiUrl, gpuIndex } = props;
+  const { apiUrl, gpuIndex, shouldShowByGpuName } = props;
 
   const gpuUsageInfo = useGpuUsageInfo(apiUrl, gpuIndex);
 
@@ -141,6 +142,11 @@ const GpuUsageCard: React.FC<Props> = (props) => {
     gpuUsageInfo?.gpuMemoryTotalMB || 0,
     gpuUsageInfo?.memoryUsage || 0,
   );
+
+  // 检查是否应该显示此GPU卡（基于卡名筛选）
+  const shouldShowCard = shouldShowByGpuName
+    ? shouldShowByGpuName(gpuUsageInfo?.gpuName)
+    : true;
 
   if (!gpuUsageInfo) {
     return (
@@ -152,6 +158,11 @@ const GpuUsageCard: React.FC<Props> = (props) => {
         </Card>
       </div>
     );
+  }
+
+  // 如果不应该显示此卡，返回null
+  if (!shouldShowCard) {
+    return null;
   }
 
   const leftContainer = (

@@ -1,4 +1,5 @@
 import BasicFilter from '@/components/Machine/GpuDashboard/Filter/BasicFilter';
+import GpuCardFilter from '@/components/Machine/GpuDashboard/Filter/GpuCardFilter';
 import MultiGpuFilter from '@/components/Machine/GpuDashboard/Filter/MultiGpuFilter';
 import { useGpuTaskFilterProjectNameStore } from '@/data/store/modules/filter/GpuTaskFilterProjectName';
 import { useGpuTaskFilterUserNameStore } from '@/data/store/modules/filter/GpuTaskFilterUserName';
@@ -78,6 +79,9 @@ const GpuTaskFilterPanel: React.FC = () => {
         <div className={styles.fillterItem}>{ProjectNameFilter()}</div>
         <div className={styles.fillterItem}>
           <MultiGpuFilter />
+        </div>
+        <div className={styles.fillterItem}>
+          <GpuCardFilter />
         </div>
       </div>
     </div>
