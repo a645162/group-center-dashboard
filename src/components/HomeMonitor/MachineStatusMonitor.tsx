@@ -4,7 +4,7 @@ import {
   DesktopOutlined,
   ReloadOutlined,
 } from '@ant-design/icons';
-import { Button, Card, List, Space, Statistic, Tag, Tooltip } from 'antd';
+import { Button, Card, Space, Statistic, Tag, Tooltip } from 'antd';
 import React, { useEffect, useState } from 'react';
 
 import {
@@ -173,50 +173,48 @@ const MachineStatusMonitor: React.FC<MachineStatusMonitorProps> = ({
         </div>
       )}
 
-      {/* 服务器列表 */}
-      <List
-        dataSource={machineStatus}
-        renderItem={(machine) => (
-          <List.Item className={styles[getMachineStatusColor(machine)]}>
-            <div className={styles.machineItem}>
-              <div className={styles.machineHeader}>
-                <Space>
-                  <span className={styles.machineName}>{machine.name}</span>
+      {/* 服务器卡片容器 */}
+      <div className={styles.machineCardsContainer}>
+        {machineStatus.map((machine) => (
+          <Card
+            key={machine.name}
+            size="small"
+            className={`${styles.machineCard} ${styles[getMachineStatusColor(machine)]}`}
+          >
+            <div className={styles.cardHeader}>
+              <span className={styles.machineName}>{machine.name}</span>
+              <span className={styles.machinePosition}>{machine.position}</span>
+            </div>
+
+            <div className={styles.cardContent}>
+              <div className={styles.statusTags}>
+                <Space size="small" wrap>
                   {getPingStatusTag(machine)}
                   {getAgentStatusTag(machine)}
                   {getGpuTag(machine)}
                 </Space>
-                <span className={styles.machinePosition}>
-                  {machine.position}
-                </span>
               </div>
 
               <div className={styles.machineDetails}>
-                <Space
-                  direction="vertical"
-                  size="small"
-                  style={{ width: '100%' }}
-                >
-                  {/* <div>
-                    <span className={styles.detailLabel}>主机地址:</span>
-                    {machine.host}
-                  </div> */}
-                  <div>
-                    <span className={styles.detailLabel}>最后Ping:</span>
+                <div className={styles.detailRow}>
+                  <span className={styles.detailLabel}>最后Ping:</span>
+                  <span className={styles.detailValue}>
                     {machine.lastPingTimeFormatted ||
                       formatTime(machine.lastPingTime)}
-                  </div>
-                  <div>
-                    <span className={styles.detailLabel}>最后心跳:</span>
+                  </span>
+                </div>
+                <div className={styles.detailRow}>
+                  <span className={styles.detailLabel}>最后心跳:</span>
+                  <span className={styles.detailValue}>
                     {machine.lastHeartbeatTimeFormatted ||
                       formatTime(machine.lastHeartbeatTime)}
-                  </div>
-                </Space>
+                  </span>
+                </div>
               </div>
             </div>
-          </List.Item>
-        )}
-      />
+          </Card>
+        ))}
+      </div>
     </Card>
   );
 };
