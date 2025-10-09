@@ -1,4 +1,5 @@
 import { getProjectStatistics } from '@/services/group_center/dashboardStatistics';
+import { Pie } from '@ant-design/charts';
 import { Alert, Card, Empty, List, Progress, Spin, Statistic, Tag } from 'antd';
 import React, { useEffect, useState } from 'react';
 
@@ -124,15 +125,25 @@ const ProjectStatistics: React.FC<ProjectStatisticsProps> = ({
     return totalRuntime > 0 ? (project.totalRuntime / totalRuntime) * 100 : 0;
   };
 
-  // 准备项目任务分布饼图数据
-  const getTaskDistributionData = () => {
+  // 准备项目时间占比饼图数据
+  const getProjectTimeDistributionData = () => {
     if (!projectData) return [];
+
+    const totalRuntime = projectData.topProjects.reduce(
+      (sum, project) => sum + project.totalRuntime,
+      0,
+    );
 
     return projectData.topProjects.map((project) => ({
       type: project.projectName,
-      value: project.totalTasks,
+      value: project.totalRuntime,
       runtime: project.totalRuntime,
+      tasks: project.totalTasks,
       users: project.activeUsersCount,
+      percentage:
+        totalRuntime > 0
+          ? ((project.totalRuntime / totalRuntime) * 100).toFixed(1)
+          : '0',
     }));
   };
 
@@ -148,37 +159,66 @@ const ProjectStatistics: React.FC<ProjectStatisticsProps> = ({
     }));
   };
 
-  // 饼图配置
-  const pieConfig = {
-    data: getTaskDistributionData(),
+  // 项目时间占比饼图配置 - 使用Ant Design Charts最新API
+  const projectTimePieConfig = {
+    data: getProjectTimeDistributionData(),
     angleField: 'value',
     colorField: 'type',
     radius: 0.8,
     label: {
-      type: 'outer',
-      content: '{name} {percentage}',
+      text: 'type',
+      position: 'outer',
+      formatter: (text: string, item: any) => {
+        const percent = item.percentage || '0';
+        return `${text} ${percent}%`;
+      },
     },
-    interactions: [
-      {
-        type: 'element-active',
-      },
-    ],
     tooltip: {
-      fields: ['type', 'value', 'runtime', 'users'],
-      formatter: (datum) => {
-        const hours = Math.floor(datum.runtime / 3600);
-        return {
-          name: datum.type,
-          value: `任务数: ${datum.value}\n运行时间: ${hours}h\n活跃用户: ${datum.users}人`,
-        };
-      },
+      title: 'type',
+      items: [
+        {
+          name: '运行时间',
+          field: 'runtime',
+          formatter: (datum: any) => {
+            const hours = Math.floor(datum.runtime / 3600);
+            return `${hours}h`;
+          },
+        },
+        {
+          name: '占比',
+          field: 'percentage',
+          formatter: (datum: any) => `${datum.percentage}%`,
+        },
+        {
+          name: '任务数',
+          field: 'tasks',
+          formatter: (datum: any) => `${datum.tasks}个`,
+        },
+        {
+          name: '活跃用户',
+          field: 'users',
+          formatter: (datum: any) => `${datum.users}人`,
+        },
+      ],
     },
     legend: {
       position: 'bottom',
+      layout: 'horizontal',
+      itemName: {
+        formatter: (text: string) => {
+          return text.length > 15 ? text.substring(0, 15) + '...' : text;
+        },
+      },
+    },
+    animation: {
+      appear: {
+        animation: 'fade-in',
+        duration: 1000,
+      },
     },
   };
 
-  // 柱状图配置
+  // 柱状图配置 - 使用Ant Design Charts最新API
   const columnConfig = {
     data: getRuntimeChartData(),
     xField: 'project',
@@ -192,26 +232,47 @@ const ProjectStatistics: React.FC<ProjectStatisticsProps> = ({
       position: 'top',
       style: {
         fill: '#000',
+        fontSize: 12,
       },
-      formatter: (datum) => `${datum.runtime}h`,
+      formatter: (datum: any) => `${datum.runtime}h`,
     },
     tooltip: {
-      fields: ['project', 'runtime', 'tasks', 'users'],
-      formatter: (datum) => {
-        return {
-          name: datum.project,
-          value: `运行时间: ${datum.runtime}h\n任务数: ${datum.tasks}\n活跃用户: ${datum.users}人`,
-        };
-      },
+      title: 'project',
+      items: [
+        {
+          name: '运行时间',
+          field: 'runtime',
+          formatter: (datum: any) => `${datum.runtime}h`,
+        },
+        {
+          name: '任务数',
+          field: 'tasks',
+          formatter: (datum: any) => `${datum.tasks}个`,
+        },
+        {
+          name: '活跃用户',
+          field: 'users',
+          formatter: (datum: any) => `${datum.users}人`,
+        },
+      ],
     },
     xAxis: {
       label: {
-        autoRotate: false,
+        autoRotate: true,
+        formatter: (text: string) => {
+          return text.length > 15 ? text.substring(0, 15) + '...' : text;
+        },
       },
     },
     yAxis: {
       label: {
-        formatter: (v) => `${v}h`,
+        formatter: (v: number) => `${Math.round(v)}h`,
+      },
+    },
+    animation: {
+      appear: {
+        animation: 'scale-in-y',
+        duration: 800,
       },
     },
   };
@@ -393,51 +454,10 @@ const ProjectStatistics: React.FC<ProjectStatisticsProps> = ({
         />
       </Card>
 
-      {/* 项目类型分布 */}
-      <Card title="项目类型分布" style={{ marginTop: 24 }}>
-        <div
-          style={{
-            height: 200,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            background: '#f5f5f5',
-            borderRadius: 6,
-          }}
-        >
-          <div style={{ textAlign: 'center', color: '#666' }}>
-            <div style={{ fontSize: '16px', marginBottom: 8 }}>
-              项目类型分布图
-            </div>
-            <div style={{ fontSize: '12px' }}>
-              这里将显示不同类型项目的分布情况
-            </div>
-            <div style={{ fontSize: '12px' }}>时间范围: {timePeriod}</div>
-          </div>
-        </div>
-      </Card>
-
-      {/* 项目使用趋势 */}
-      <Card title="项目使用趋势" style={{ marginTop: 24 }}>
-        <div
-          style={{
-            height: 200,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            background: '#f5f5f5',
-            borderRadius: 6,
-          }}
-        >
-          <div style={{ textAlign: 'center', color: '#666' }}>
-            <div style={{ fontSize: '16px', marginBottom: 8 }}>
-              项目使用趋势图
-            </div>
-            <div style={{ fontSize: '12px' }}>
-              这里将显示项目使用量的时间趋势
-            </div>
-            <div style={{ fontSize: '12px' }}>时间范围: {timePeriod}</div>
-          </div>
+      {/* 项目时间占比分布 */}
+      <Card title="项目时间占比分布" style={{ marginTop: 24 }}>
+        <div style={{ height: 400 }}>
+          <Pie {...projectTimePieConfig} />
         </div>
       </Card>
     </div>

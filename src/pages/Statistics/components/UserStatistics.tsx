@@ -1,4 +1,5 @@
 import { getUserStatistics } from '@/services/group_center/dashboardStatistics';
+import { Pie } from '@ant-design/charts';
 import { Alert, Card, Empty, List, Progress, Spin, Statistic, Tag } from 'antd';
 import React, { useEffect, useState } from 'react';
 
@@ -137,7 +138,29 @@ const UserStatistics: React.FC<UserStatisticsProps> = ({ timePeriod }) => {
     }));
   };
 
-  // 饼图配置
+  // 准备用户时间占比饼图数据
+  const getUserTimeDistributionData = () => {
+    if (!userData) return [];
+
+    const totalRuntime = userData.topUsers.reduce(
+      (sum, user) => sum + user.totalRuntime,
+      0,
+    );
+
+    return userData.topUsers.map((user) => ({
+      type: user.userName,
+      value: user.totalRuntime,
+      runtime: user.totalRuntime,
+      tasks: user.totalTasks,
+      favoriteGpu: user.favoriteGpu,
+      percentage:
+        totalRuntime > 0
+          ? ((user.totalRuntime / totalRuntime) * 100).toFixed(1)
+          : '0',
+    }));
+  };
+
+  // 饼图配置 - 使用Ant Design Charts最新API
   const pieConfig = {
     data: getTaskDistributionData(),
     angleField: 'value',
@@ -146,6 +169,10 @@ const UserStatistics: React.FC<UserStatisticsProps> = ({ timePeriod }) => {
     label: {
       type: 'outer',
       content: '{name} {percentage}',
+      formatter: (datum: any, mappingData: any) => {
+        const percentage = ((datum.value / mappingData.total) * 100).toFixed(1);
+        return `${datum.type}\n${percentage}%`;
+      },
     },
     interactions: [
       {
@@ -153,21 +180,40 @@ const UserStatistics: React.FC<UserStatisticsProps> = ({ timePeriod }) => {
       },
     ],
     tooltip: {
-      fields: ['type', 'value', 'runtime'],
-      formatter: (datum) => {
-        const hours = Math.floor(datum.runtime / 3600);
-        return {
-          name: datum.type,
-          value: `任务数: ${datum.value}\n运行时间: ${hours}h`,
-        };
-      },
+      title: 'type',
+      items: [
+        {
+          name: '任务数',
+          field: 'value',
+          formatter: (datum: any) => `${datum.value}个`,
+        },
+        {
+          name: '运行时间',
+          field: 'runtime',
+          formatter: (datum: any) => {
+            const hours = Math.floor(datum.runtime / 3600);
+            return `${hours}h`;
+          },
+        },
+      ],
     },
     legend: {
       position: 'bottom',
+      itemName: {
+        formatter: (text: string) => {
+          return text.length > 15 ? text.substring(0, 15) + '...' : text;
+        },
+      },
+    },
+    animation: {
+      appear: {
+        animation: 'scale-in',
+        duration: 1000,
+      },
     },
   };
 
-  // 柱状图配置
+  // 柱状图配置 - 使用Ant Design Charts最新API
   const columnConfig = {
     data: getRuntimeChartData(),
     xField: 'user',
@@ -181,26 +227,106 @@ const UserStatistics: React.FC<UserStatisticsProps> = ({ timePeriod }) => {
       position: 'top',
       style: {
         fill: '#000',
+        fontSize: 12,
       },
-      formatter: (datum) => `${datum.runtime}h`,
+      formatter: (datum: any) => `${datum.runtime}h`,
     },
     tooltip: {
-      fields: ['user', 'runtime', 'tasks', 'favoriteGpu'],
-      formatter: (datum) => {
-        return {
-          name: datum.user,
-          value: `运行时间: ${datum.runtime}h\n任务数: ${datum.tasks}\n常用GPU: ${datum.favoriteGpu || 'N/A'}`,
-        };
-      },
+      title: 'user',
+      items: [
+        {
+          name: '运行时间',
+          field: 'runtime',
+          formatter: (datum: any) => `${datum.runtime}h`,
+        },
+        {
+          name: '任务数',
+          field: 'tasks',
+          formatter: (datum: any) => `${datum.tasks}个`,
+        },
+        {
+          name: '常用GPU',
+          field: 'favoriteGpu',
+          formatter: (datum: any) => datum.favoriteGpu || 'N/A',
+        },
+      ],
     },
     xAxis: {
       label: {
-        autoRotate: false,
+        autoRotate: true,
+        formatter: (text: string) => {
+          return text.length > 10 ? text.substring(0, 10) + '...' : text;
+        },
       },
     },
     yAxis: {
       label: {
-        formatter: (v) => `${v}h`,
+        formatter: (v: number) => `${Math.round(v)}h`,
+      },
+    },
+    animation: {
+      appear: {
+        animation: 'scale-in-y',
+        duration: 800,
+      },
+    },
+  };
+
+  // 用户时间占比饼图配置 - 使用Ant Design Charts最新API
+  const userTimePieConfig = {
+    data: getUserTimeDistributionData(),
+    angleField: 'value',
+    colorField: 'type',
+    radius: 0.8,
+    label: {
+      text: 'type',
+      position: 'outer',
+      formatter: (text: string, item: any) => {
+        const percent = item.percentage || '0';
+        return `${text} ${percent}%`;
+      },
+    },
+    tooltip: {
+      title: 'type',
+      items: [
+        {
+          name: '运行时间',
+          field: 'runtime',
+          formatter: (datum: any) => {
+            const hours = Math.floor(datum.runtime / 3600);
+            return `${hours}h`;
+          },
+        },
+        {
+          name: '占比',
+          field: 'percentage',
+          formatter: (datum: any) => `${datum.percentage}%`,
+        },
+        {
+          name: '任务数',
+          field: 'tasks',
+          formatter: (datum: any) => `${datum.tasks}个`,
+        },
+        {
+          name: '常用GPU',
+          field: 'favoriteGpu',
+          formatter: (datum: any) => datum.favoriteGpu || 'N/A',
+        },
+      ],
+    },
+    legend: {
+      position: 'bottom',
+      layout: 'horizontal',
+      itemName: {
+        formatter: (text: string) => {
+          return text.length > 15 ? text.substring(0, 15) + '...' : text;
+        },
+      },
+    },
+    animation: {
+      appear: {
+        animation: 'fade-in',
+        duration: 1000,
       },
     },
   };
@@ -382,27 +508,10 @@ const UserStatistics: React.FC<UserStatisticsProps> = ({ timePeriod }) => {
         />
       </Card>
 
-      {/* 用户活动时间分布 */}
-      <Card title="用户活动时间分布" style={{ marginTop: 24 }}>
-        <div
-          style={{
-            height: 200,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            background: '#f5f5f5',
-            borderRadius: 6,
-          }}
-        >
-          <div style={{ textAlign: 'center', color: '#666' }}>
-            <div style={{ fontSize: '16px', marginBottom: 8 }}>
-              用户活动时间分布图
-            </div>
-            <div style={{ fontSize: '12px' }}>
-              这里将显示用户在不同时间段的活跃度分布
-            </div>
-            <div style={{ fontSize: '12px' }}>时间范围: {timePeriod}</div>
-          </div>
+      {/* 用户时间占比分布 */}
+      <Card title="用户时间占比分布" style={{ marginTop: 24 }}>
+        <div style={{ height: 400 }}>
+          <Pie {...userTimePieConfig} />
         </div>
       </Card>
     </div>

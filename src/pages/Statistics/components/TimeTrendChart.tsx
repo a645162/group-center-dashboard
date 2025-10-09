@@ -1,5 +1,5 @@
 import { getTimeTrendStatistics } from '@/services/group_center/dashboardStatistics';
-import { DualAxes, Line } from '@ant-design/charts';
+import { Line } from '@ant-design/charts';
 import { Alert, Card, Col, Empty, Row, Select, Spin, Statistic } from 'antd';
 import React, { useEffect, useState } from 'react';
 
@@ -119,7 +119,7 @@ const TimeTrendChart: React.FC<TimeTrendChartProps> = ({ timePeriod }) => {
     return [taskData, usageData];
   };
 
-  // 任务数趋势图配置
+  // 任务数趋势图配置 - 使用Ant Design Charts最新API
   const lineConfig = {
     data: getTaskTrendData(),
     xField: 'date',
@@ -131,30 +131,52 @@ const TimeTrendChart: React.FC<TimeTrendChartProps> = ({ timePeriod }) => {
     label: {
       style: {
         fill: '#aaa',
+        fontSize: 12,
       },
     },
     tooltip: {
-      fields: ['date', 'tasks', 'runtime', 'users'],
-      formatter: (datum) => {
-        return {
-          name: datum.date,
-          value: `任务数: ${datum.tasks}\n运行时间: ${datum.runtime}h\n活跃用户: ${datum.users}人`,
-        };
-      },
+      title: 'date',
+      items: [
+        {
+          name: '任务数',
+          field: 'tasks',
+          formatter: (datum: any) => `${datum.tasks}个`,
+        },
+        {
+          name: '运行时间',
+          field: 'runtime',
+          formatter: (datum: any) => `${datum.runtime}h`,
+        },
+        {
+          name: '活跃用户',
+          field: 'users',
+          formatter: (datum: any) => `${datum.users}人`,
+        },
+      ],
     },
     xAxis: {
       label: {
-        autoRotate: false,
+        autoRotate: true,
+        formatter: (text: string) => {
+          const date = new Date(text);
+          return `${date.getMonth() + 1}-${date.getDate()}`;
+        },
       },
     },
     yAxis: {
       label: {
-        formatter: (v) => `${v}个`,
+        formatter: (v: number) => `${Math.round(v)}个`,
+      },
+    },
+    animation: {
+      appear: {
+        animation: 'path-in',
+        duration: 1000,
       },
     },
   };
 
-  // 双轴图配置
+  // 双轴图配置 - 使用Ant Design Charts最新API
   const dualAxesConfig = {
     data: getDualAxesData(),
     xField: 'date',
@@ -169,6 +191,7 @@ const TimeTrendChart: React.FC<TimeTrendChartProps> = ({ timePeriod }) => {
         point: {
           size: 4,
         },
+        color: '#1890ff',
       },
       {
         geometry: 'line',
@@ -179,16 +202,24 @@ const TimeTrendChart: React.FC<TimeTrendChartProps> = ({ timePeriod }) => {
         point: {
           size: 4,
         },
+        color: '#52c41a',
       },
     ],
     tooltip: {
-      fields: ['date', 'value', 'type'],
-      formatter: (datum) => {
-        return {
-          name: `${datum.date} - ${datum.type}`,
-          value: `${datum.value}${datum.type === '任务数' ? '个' : '%'}`,
-        };
-      },
+      title: 'date',
+      items: [
+        {
+          name: '类型',
+          field: 'type',
+        },
+        {
+          name: '数值',
+          field: 'value',
+          formatter: (datum: any) => {
+            return `${datum.value}${datum.type === '任务数' ? '个' : '%'}`;
+          },
+        },
+      ],
     },
     legend: {
       position: 'top',
@@ -197,14 +228,20 @@ const TimeTrendChart: React.FC<TimeTrendChartProps> = ({ timePeriod }) => {
       value: {
         nice: true,
         label: {
-          formatter: (val) => `${val}个`,
+          formatter: (val: number) => `${Math.round(val)}个`,
         },
       },
       value1: {
         nice: true,
         label: {
-          formatter: (val) => `${val}%`,
+          formatter: (val: number) => `${Math.round(val)}%`,
         },
+      },
+    },
+    animation: {
+      appear: {
+        animation: 'path-in',
+        duration: 1000,
       },
     },
   };
@@ -281,36 +318,18 @@ const TimeTrendChart: React.FC<TimeTrendChartProps> = ({ timePeriod }) => {
       </Row>
 
       {/* 趋势图表 */}
-      <Row gutter={16}>
-        <Col xs={24} lg={12}>
-          <Card
-            title="任务数趋势"
-            extra={
-              <span style={{ color: '#666', fontSize: '12px' }}>
-                时间范围: {timePeriod}
-              </span>
-            }
-          >
-            <div style={{ height: 300 }}>
-              <Line {...lineConfig} />
-            </div>
-          </Card>
-        </Col>
-        <Col xs={24} lg={12}>
-          <Card
-            title="任务数与GPU使用率对比"
-            extra={
-              <span style={{ color: '#666', fontSize: '12px' }}>
-                数据点数: {trendData.dailyStats.length} 天
-              </span>
-            }
-          >
-            <div style={{ height: 300 }}>
-              <DualAxes {...dualAxesConfig} />
-            </div>
-          </Card>
-        </Col>
-      </Row>
+      <Card
+        title="任务数趋势"
+        extra={
+          <span style={{ color: '#666', fontSize: '12px' }}>
+            时间范围: {timePeriod}
+          </span>
+        }
+      >
+        <div style={{ height: 400 }}>
+          <Line {...lineConfig} />
+        </div>
+      </Card>
 
       {/* 数据表格 */}
       <Card title="详细数据" style={{ marginTop: 24 }}>

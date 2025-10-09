@@ -137,29 +137,45 @@ const GpuUsageChart: React.FC<GpuUsageChartProps> = ({ timePeriod }) => {
     }));
   };
 
-  // 饼图配置
+  // 饼图配置 - 使用Ant Design Charts最新API
   const pieConfig = {
     data: getPieChartData(),
     angleField: 'value',
     colorField: 'type',
     radius: 0.8,
     label: {
-      type: 'outer',
-      content: '{name} {percentage}',
+      text: 'type',
+      position: 'outer',
+      formatter: (text: string, item: any) => {
+        const total = getPieChartData().reduce((sum, d) => sum + d.value, 0);
+        const percent =
+          total > 0 ? ((item.value / total) * 100).toFixed(1) : '0';
+        return `${text} ${percent}%`;
+      },
     },
-    interactions: [
-      {
-        type: 'element-active',
-      },
-    ],
     tooltip: {
-      fields: ['type', 'value', 'server'],
-      formatter: (datum: { type: string; value: number; server: string }) => {
-        return { name: datum.type, value: `${(datum.value || 0).toFixed(1)}%` };
-      },
+      title: 'type',
+      items: [
+        {
+          name: '使用率',
+          field: 'value',
+          formatter: (datum: any) => `${(datum.value || 0).toFixed(1)}%`,
+        },
+        {
+          name: '服务器',
+          field: 'server',
+        },
+      ],
     },
     legend: {
       position: 'bottom',
+      layout: 'horizontal',
+    },
+    animation: {
+      appear: {
+        animation: 'fade-in',
+        duration: 1000,
+      },
     },
   };
 
@@ -167,7 +183,7 @@ const GpuUsageChart: React.FC<GpuUsageChartProps> = ({ timePeriod }) => {
   const columnConfig = {
     data: getColumnChartData(),
     xField: 'gpu',
-    yField: 'tasks', // 映射到任务数
+    yField: 'tasks',
     seriesField: 'server',
     isGroup: true,
     columnStyle: {
@@ -178,29 +194,39 @@ const GpuUsageChart: React.FC<GpuUsageChartProps> = ({ timePeriod }) => {
       style: {
         fill: '#000',
       },
-      formatter: (datum: { tasks: number }) => `${datum.tasks || 0}`, // 确保任务数显示正确
+      formatter: (datum: any) => `${datum.tasks || 0}`,
     },
     tooltip: {
-      fields: ['gpu', 'tasks', 'server'],
-      formatter: (datum: {
-        gpu: string;
-        tasks: number | null | undefined; // 处理可能的 null 或 undefined
-        server: string;
-      }) => {
-        return {
-          name: `${datum.gpu} (${datum.server})`,
-          value: `任务数: ${datum.tasks !== null && datum.tasks !== undefined ? datum.tasks : 0}`, // 确保任务数显示正确
-        };
-      },
+      title: 'gpu',
+      items: [
+        {
+          name: '任务数',
+          value: 'tasks',
+          formatter: (datum: any) => `${datum.tasks || 0}个`,
+        },
+        {
+          name: '服务器',
+          value: 'server',
+        },
+      ],
     },
     xAxis: {
       label: {
-        autoRotate: false,
+        autoRotate: true,
+        formatter: (text: string) => {
+          return text.length > 10 ? text.substring(0, 10) + '...' : text;
+        },
       },
     },
     yAxis: {
       label: {
-        formatter: (v) => `${v}`, // 确保任务数显示为整数
+        formatter: (v: number) => `${Math.round(v)}`,
+      },
+    },
+    animation: {
+      appear: {
+        animation: 'scale-in-y',
+        duration: 800,
       },
     },
   };
