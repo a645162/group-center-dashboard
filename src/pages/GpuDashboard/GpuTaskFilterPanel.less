@@ -4,9 +4,13 @@
   gap: 12px;
   align-items: center;
   padding: 12px;
-  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  background: linear-gradient(
+    135deg,
+    var(--ant-color-bg-layout) 0%,
+    var(--ant-color-bg-container) 100%
+  );
   border-radius: 12px;
-  border: 1px solid #e1e5e9;
+  border: 1px solid var(--ant-color-border);
 }
 
 .fillterItem {
@@ -20,15 +24,15 @@
     font-size: 13px;
     font-weight: 500;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    border: 1px solid #e8e8e8;
-    background: white;
-    color: #595959;
+    border: 1px solid var(--ant-color-border);
+    background: var(--ant-color-bg-container);
+    color: var(--ant-color-text-secondary);
     box-shadow: 0 1px 2px rgba(0, 0, 0, 3%);
 
     &:hover {
-      background: #f8f9fa;
-      border-color: #d9d9d9;
-      color: #262626;
+      background: var(--ant-color-bg-layout);
+      border-color: var(--ant-color-border);
+      color: var(--ant-color-text);
       transform: translateY(-1px);
       box-shadow: 0 2px 6px rgba(0, 0, 0, 8%);
     }

@@ -55,29 +55,37 @@
   overflow: hidden;
 
   .ant-card-head {
-    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-    border-bottom: 1px solid #e1e5e9;
+    background: linear-gradient(
+      135deg,
+      var(--ant-color-bg-layout) 0%,
+      var(--ant-color-bg-container) 100%
+    );
+    border-bottom: 1px solid var(--ant-color-border);
     padding: 12px 16px;
 
     .ant-card-head-title {
       font-weight: 600;
       font-size: 15px;
-      color: #1a1a1a;
+      color: var(--ant-color-text-heading);
     }
   }
 
   .ant-card-body {
     padding: 20px;
-    background: white;
+    background: var(--ant-color-bg-container);
   }
 }
 
 .filterSection {
   margin-bottom: 20px;
   padding: 16px;
-  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  background: linear-gradient(
+    135deg,
+    var(--ant-color-bg-layout) 0%,
+    var(--ant-color-bg-container) 100%
+  );
   border-radius: 8px;
-  border: 1px solid #e1e5e9;
+  border: 1px solid var(--ant-color-border);
 
   &:last-child {
     margin-bottom: 0;
@@ -87,7 +95,7 @@
 .filterLabel {
   font-weight: 600;
   margin-bottom: 12px;
-  color: #1a1a1a;
+  color: var(--ant-color-text-heading);
   font-size: 14px;
   display: flex;
   align-items: center;
@@ -102,9 +110,9 @@
 .filterSubSection {
   margin-bottom: 16px;
   padding: 12px;
-  background: rgba(255, 255, 255, 60%);
+  background: var(--ant-color-bg-container);
   border-radius: 6px;
-  border: 1px solid rgba(0, 0, 0, 8%);
+  border: 1px solid var(--ant-color-border);
 
   &:last-child {
     margin-bottom: 0;
@@ -114,7 +122,7 @@
 .filterSubLabel {
   font-weight: 500;
   margin-bottom: 8px;
-  color: #595959;
+  color: var(--ant-color-text-secondary);
   font-size: 13px;
   display: flex;
   align-items: center;

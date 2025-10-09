@@ -49,6 +49,7 @@ const GpuDashboardWithNoContent: React.FC<GpuDashboardWithNoContentProps> = ({
   const [showAnchor, setShowAnchor] = useState(() => {
     return window.innerWidth > window.innerHeight; // 横屏默认显示，竖屏默认隐藏
   });
+  const [isAnimating, setIsAnimating] = useState(false);
 
   // 监听屏幕方向变化
   useEffect(() => {
@@ -61,60 +62,88 @@ const GpuDashboardWithNoContent: React.FC<GpuDashboardWithNoContentProps> = ({
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
+  // 处理锚点显示/隐藏动画
+  const handleToggleAnchor = () => {
+    if (isAnimating) return;
+
+    setIsAnimating(true);
+    setShowAnchor(!showAnchor);
+
+    // 动画结束后重置状态
+    setTimeout(() => {
+      setIsAnimating(false);
+    }, 300);
+  };
+
   if (!machineList) {
     return <></>;
   }
 
   return (
     <VShow v-show={machineList !== undefined && machineList.length > 0}>
-      {/* 切换按钮 */}
-      {machineList.length > 1 && (
-        <Button
-          type="primary"
-          shape="circle"
-          icon={showAnchor ? <CloseOutlined /> : <MenuOutlined />}
-          onClick={() => setShowAnchor(!showAnchor)}
-          style={{
-            position: 'fixed',
-            right: 20,
-            bottom: 20,
-            zIndex: 1001,
-            width: 50,
-            height: 50,
-            backgroundColor: 'rgba(24, 144, 255, 0.8)',
-            borderColor: 'rgba(24, 144, 255, 0.8)',
-            backdropFilter: 'blur(4px)',
-            boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
-          }}
-        />
-      )}
-
       {/* 浮动在右边的设备导航锚点 */}
-      {machineList.length > 1 && showAnchor && (
-        <Anchor
-          affix={true}
-          offsetTop={100}
-          style={{
-            position: 'fixed',
-            right: 20,
-            top: '50%',
-            transform: 'translateY(-50%)',
-            zIndex: 1000,
-            backgroundColor: 'rgba(255, 255, 255, 0.95)',
-            padding: '12px',
-            borderRadius: '8px',
-            boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
-            border: '1px solid rgba(217, 217, 217, 0.8)',
-            backdropFilter: 'blur(8px)',
-            maxHeight: '60vh',
-            overflowY: 'auto',
-          }}
-          items={machineList.map((machine) => ({
-            key: machine.machineName,
-            href: `#device-${machine.machineName}`,
-            title: machine.machineName,
-          }))}
-        />
+      {machineList.length > 1 && (
+        <>
+          {/* 锚点容器 */}
+          <div
+            style={{
+              position: 'fixed',
+              right: 20,
+              top: '50%',
+              transform: `translateY(-50%) translateX(${showAnchor ? '0' : '100%'})`,
+              zIndex: 1000,
+              transition: 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+              opacity: showAnchor ? 1 : 0,
+              pointerEvents: showAnchor ? 'auto' : 'none',
+            }}
+          >
+            <Anchor
+              affix={true}
+              offsetTop={100}
+              style={{
+                backgroundColor: 'var(--ant-color-bg-container)',
+                padding: '12px',
+                borderRadius: '8px',
+                boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+                border: '1px solid var(--ant-color-border)',
+                backdropFilter: 'blur(8px)',
+                maxHeight: '60vh',
+                overflowY: 'auto',
+                minWidth: '120px',
+                transition: 'all 0.3s ease',
+              }}
+              items={machineList.map((machine) => ({
+                key: machine.machineName,
+                href: `#device-${machine.machineName}`,
+                title: machine.machineName,
+              }))}
+            />
+          </div>
+
+          {/* 切换按钮 - 跟随锚点位置 */}
+          <Button
+            type="primary"
+            shape="circle"
+            icon={showAnchor ? <CloseOutlined /> : <MenuOutlined />}
+            onClick={handleToggleAnchor}
+            style={{
+              position: 'fixed',
+              right: showAnchor ? 140 : 20,
+              top: '50%',
+              transform: 'translateY(-50%)',
+              zIndex: 1001,
+              width: 50,
+              height: 50,
+              backgroundColor: 'var(--ant-color-bg-container)',
+              borderColor: 'var(--ant-color-border)',
+              color: 'var(--ant-color-text)',
+              backdropFilter: 'blur(8px)',
+              boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+              transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+            }}
+            disabled={isAnimating}
+          />
+        </>
       )}
 
       <div className={styles.machineDiv}>
