@@ -1,67 +1,157 @@
 .gpuServerFilter {
-  padding: 12px;
-  background: #fafafa;
-  border-radius: 8px;
-  border: 1px solid #d9d9d9;
+  padding: 16px;
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  border-radius: 12px;
+  border: 1px solid #e1e5e9;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 6%);
 
   .filterHeader {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 12px;
+    margin-bottom: 16px;
 
     .filterTitle {
       font-weight: 600;
-      color: #262626;
-      font-size: 14px;
+      color: #1a1a1a;
+      font-size: 15px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+
+      &::before {
+        content: '💻';
+        font-size: 14px;
+      }
     }
 
     .actionButton {
-      padding: 0;
+      padding: 4px 8px;
       height: auto;
       font-size: 12px;
       color: #1890ff;
+      border-radius: 4px;
+      transition: all 0.2s ease;
 
       &:hover {
         color: #40a9ff;
+        background-color: rgba(24, 144, 255, 10%);
       }
     }
   }
 
   .machineButtons {
-    display: flex;
-    flex-wrap: wrap;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
     gap: 8px;
 
     .machineButton {
-      transition: all 0.2s ease-in-out;
-      border-radius: 6px;
-      font-size: 12px;
-      height: 32px;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      border-radius: 8px;
+      font-size: 13px;
+      height: 36px;
       padding: 0 12px;
+      border: none;
+      position: relative;
+      overflow: hidden;
+
+      &::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(
+          90deg,
+          transparent,
+          rgba(255, 255, 255, 20%),
+          transparent
+        );
+        transition: left 0.5s;
+      }
+
+      &:hover::before {
+        left: 100%;
+      }
 
       &.selected {
-        border: 2px solid #1890ff;
-        background-color: #1890ff;
+        background: linear-gradient(135deg, #1890ff 0%, #096dd9 100%);
         color: white;
         font-weight: 500;
+        box-shadow: 0 2px 8px rgba(24, 144, 255, 30%);
+        transform: translateY(-1px);
 
         &:hover {
-          border-color: #40a9ff;
-          background-color: #40a9ff;
+          background: linear-gradient(135deg, #40a9ff 0%, #1890ff 100%);
+          box-shadow: 0 4px 12px rgba(24, 144, 255, 40%);
+          transform: translateY(-2px);
         }
       }
 
       &.unselected {
-        border: 1px solid #d9d9d9;
-        background-color: #f5f5f5;
-        color: #8c8c8c;
+        background: white;
+        color: #595959;
+        border: 1px solid #e8e8e8;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 3%);
 
         &:hover {
-          border-color: #bfbfbf;
-          background-color: #e8e8e8;
-          color: #595959;
+          background: #f8f9fa;
+          border-color: #d9d9d9;
+          color: #262626;
+          transform: translateY(-1px);
+          box-shadow: 0 2px 6px rgba(0, 0, 0, 8%);
         }
+      }
+    }
+  }
+
+  /* 移动端适配 */
+  @media (max-width: 768px) {
+    padding: 12px;
+
+    .filterHeader {
+      margin-bottom: 12px;
+
+      .filterTitle {
+        font-size: 14px;
+      }
+    }
+
+    .machineButtons {
+      grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+      gap: 6px;
+
+      .machineButton {
+        font-size: 12px;
+        height: 32px;
+        padding: 0 8px;
+      }
+    }
+  }
+
+  /* 小屏幕适配 */
+  @media (max-width: 480px) {
+    padding: 10px;
+
+    .filterHeader {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 8px;
+
+      .filterTitle {
+        font-size: 13px;
+      }
+    }
+
+    .machineButtons {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 6px;
+
+      .machineButton {
+        font-size: 11px;
+        height: 30px;
+        padding: 0 6px;
       }
     }
   }
