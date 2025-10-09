@@ -50,7 +50,7 @@
 
 .filterCard {
   border-radius: 12px;
-  border: 1px solid #e1e5e9;
+  border: 1px solid var(--ant-color-border);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 8%);
   overflow: hidden;
 
@@ -220,12 +220,12 @@
 // 暗色主题支持
 [data-theme='dark'] {
   .filterCard {
-    background: rgba(255, 255, 255, 4%);
-    border-color: rgba(255, 255, 255, 12%);
+    background: var(--ant-color-bg-container);
+    border-color: var(--ant-color-border);
 
     .ant-card-head {
-      background: rgba(255, 255, 255, 8%);
-      border-bottom-color: rgba(255, 255, 255, 12%);
+      background: var(--ant-color-bg-container-hover);
+      border-bottom-color: var(--ant-color-border);
 
       .ant-card-head-title {
         color: rgba(255, 255, 255, 90%);
@@ -238,8 +238,8 @@
   }
 
   .filterSection {
-    background: rgba(255, 255, 255, 6%);
-    border-color: rgba(255, 255, 255, 12%);
+    background: var(--ant-color-bg-container);
+    border-color: var(--ant-color-border);
   }
 
   .filterLabel {
