@@ -183,19 +183,32 @@ const GpuDashboardPageContent: React.FC<Props> = (props) => {
   // 解析URL参数
   const getUrlMachineName = () => {
     const searchParams = new URLSearchParams(location.search);
-    // 获取URL路径中的参数，例如 /gpu-dashboard?4090a
+    // 获取URL路径中的参数，例如 /gpu-dashboard?4090a 或 /gpu-dashboard?2084
     const pathname = location.pathname;
     const search = location.search;
 
     console.log('URL pathname:', pathname);
     console.log('URL search:', search);
+    console.log('URL searchParams:', Array.from(searchParams.entries()));
 
-    // 如果search为空，尝试从pathname中提取
+    // 如果search不为空，尝试从search中提取简化参数
     if (search && search.length > 1) {
       // 去掉开头的'?'字符
       const paramValue = search.substring(1);
       console.log('URL parameter value:', paramValue);
-      return paramValue;
+
+      // 检查是否是简化格式参数（没有键名，只有值）
+      if (
+        !searchParams.has('user') &&
+        !searchParams.has('project') &&
+        !searchParams.has('gpuIds') &&
+        !searchParams.has('gpuRange') &&
+        !searchParams.has('multiGpu') &&
+        !searchParams.has('nameEng')
+      ) {
+        console.log('Detected simplified URL parameter:', paramValue);
+        return paramValue;
+      }
     }
 
     return null;
@@ -331,6 +344,7 @@ const GpuDashboardPageContent: React.FC<Props> = (props) => {
   };
 
   useEffect(() => {
+    console.log('useEffect triggered, machineList length:', machineList.length);
     const urlMachineName = getUrlMachineName();
     let hasProcessedFilters = false;
 
@@ -363,23 +377,64 @@ const GpuDashboardPageContent: React.FC<Props> = (props) => {
       }, 100);
     }
 
-    // 处理简化格式的URL参数（如 ?4090a）
+    // 处理简化格式的URL参数（如 ?4090a 或 ?2084）
     if (urlMachineName && machineList.length > 0 && !hasMachineNameEng) {
       console.log('Processing simplified URL parameter:', urlMachineName);
 
-      // 根据简化参数匹配机器
-      const matchedMachines = machineList.filter(
-        (machine) =>
-          machine.machineName.toLowerCase() === urlMachineName.toLowerCase() ||
-          machine.machineName
-            .toLowerCase()
-            .includes(urlMachineName.toLowerCase()),
+      // 根据简化参数匹配机器 - 改进匹配逻辑
+      const matchedMachines = machineList.filter((machine) => {
+        const machineName = machine.machineName.toLowerCase();
+        const urlParam = urlMachineName.toLowerCase();
+
+        // 1. 精确匹配机器名称
+        if (machineName === urlParam) {
+          return true;
+        }
+
+        // 2. 检查机器名称是否包含URL参数
+        if (machineName.includes(urlParam)) {
+          return true;
+        }
+
+        // 3. 检查URL关键词是否包含URL参数
+        if (machine.urlKeywords && Array.isArray(machine.urlKeywords)) {
+          const hasMatchingKeyword = machine.urlKeywords.some((keyword) =>
+            keyword.toLowerCase().includes(urlParam),
+          );
+          if (hasMatchingKeyword) {
+            return true;
+          }
+        }
+
+        // 4. 检查机器URL路径是否包含URL参数
+        if (
+          machine.machineUrl &&
+          machine.machineUrl.toLowerCase().includes(urlParam)
+        ) {
+          return true;
+        }
+
+        return false;
+      });
+
+      console.log(
+        'All available machines:',
+        machineList.map((m) => ({
+          name: m.machineName,
+          url: m.machineUrl,
+          keywords: m.urlKeywords,
+        })),
       );
+      console.log('Matched machines count:', matchedMachines.length);
 
       if (matchedMachines.length > 0) {
         console.log(
           'Matched machines from simplified URL:',
-          matchedMachines.map((m) => m.machineName),
+          matchedMachines.map((m) => ({
+            name: m.machineName,
+            url: m.machineUrl,
+            keywords: m.urlKeywords,
+          })),
         );
         setSelectedMachineState(matchedMachines);
         setTryToSelectedMachineList(matchedMachines);
@@ -393,6 +448,11 @@ const GpuDashboardPageContent: React.FC<Props> = (props) => {
           }, 100);
         }
         return;
+      } else {
+        console.log(
+          'No machines matched simplified URL parameter:',
+          urlMachineName,
+        );
       }
     }
 
