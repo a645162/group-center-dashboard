@@ -1,5 +1,7 @@
 import RunTimeComponent from '@/components/Time/RunTimeComponent';
 import VShow from '@/components/Vue/V-Show';
+import { useGpuTaskFilterProjectNameStore } from '@/data/store/modules/filter/GpuTaskFilterProjectName';
+import { useGpuTaskFilterUserNameStore } from '@/data/store/modules/filter/GpuTaskFilterUserName';
 import { convertFromMBToGB, getMemoryString } from '@/utils/Convert/MemorySize';
 import {
   BugOutlined,
@@ -119,11 +121,17 @@ const GpuTaskCardItem: React.FC<Props> = (props) => {
   };
 
   const setUserFilterPopConfirmText = `您是否需要将用户名过滤器设置为:${taskInfo.name}`;
+
+  // 在组件顶层获取store函数
+  const setUserNameFilter = useGpuTaskFilterUserNameStore(
+    (state) => state.setUserNameEng,
+  );
+  const setProjectNameFilter = useGpuTaskFilterProjectNameStore(
+    (state) => state.setProjectName,
+  );
+
   const handleSetUserFilter = () => {
-    // const setUserNameFilter = useGpuTaskFilterUserNameStore(
-    //   (state) => state.setUserNameEng,
-    // );
-    // setUserNameFilter(taskInfo.name);
+    setUserNameFilter(taskInfo.name);
 
     setOpenUserFilterPopConfirm(false);
 
@@ -133,10 +141,30 @@ const GpuTaskCardItem: React.FC<Props> = (props) => {
     });
   };
 
+  const handleSetProjectFilter = () => {
+    setProjectNameFilter(taskInfo.projectName);
+
+    messageApi.open({
+      type: 'success',
+      content: '项目名过滤器设置完毕！',
+    });
+  };
+
   const moreMenuItems: MenuProps['items'] = [
     {
       key: '1',
-      label: <a onClick={onClickShowDetail}>详细信息</a>,
+      label: '详细信息',
+      onClick: onClickShowDetail,
+    },
+    {
+      key: '2',
+      label: '设置该用户为过滤用户',
+      onClick: handleSetUserFilter,
+    },
+    {
+      key: '3',
+      label: '设置该项目名为项目名过滤器',
+      onClick: handleSetProjectFilter,
     },
   ];
   const MoreMenu = () => (
@@ -179,6 +207,13 @@ const GpuTaskCardItem: React.FC<Props> = (props) => {
         <ContextMenuItem disabled>{taskInfo.projectName}</ContextMenuItem>
         <ContextMenuDivider />
         <ContextMenuItem onClick={onClickShowDetail}>详细信息</ContextMenuItem>
+        <ContextMenuDivider />
+        <ContextMenuItem onClick={handleSetUserFilter}>
+          设置该用户为过滤用户
+        </ContextMenuItem>
+        <ContextMenuItem onClick={handleSetProjectFilter}>
+          设置该项目名为项目名过滤器
+        </ContextMenuItem>
       </ContextMenu>
 
       {/* Gpu Task Detail Modal */}
