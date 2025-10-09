@@ -1,6 +1,7 @@
 import { CloseOutlined, MenuOutlined } from '@ant-design/icons';
 import { Anchor, Button } from 'antd';
 import React, { useEffect, useState } from 'react';
+import { useLocation } from 'umi';
 
 import { getPublicMachineList } from '@/services/group_center/frontendPublic';
 
@@ -126,6 +127,7 @@ const GpuDashboardWithNoContent: React.FC<GpuDashboardWithNoContentProps> = ({
 
 const GpuDashboardPageContent: React.FC<Props> = (props) => {
   const {} = props;
+  const location = useLocation();
 
   const machineList = useMachineListState();
 
@@ -137,7 +139,54 @@ const GpuDashboardPageContent: React.FC<Props> = (props) => {
     API.FrontEndMachine[]
   >([]);
 
+  // 解析URL参数
+  const getUrlMachineName = () => {
+    const searchParams = new URLSearchParams(location.search);
+    // 获取URL路径中的参数，例如 /gpu-dashboard?4090a
+    const pathname = location.pathname;
+    const search = location.search;
+
+    console.log('URL pathname:', pathname);
+    console.log('URL search:', search);
+
+    // 如果search为空，尝试从pathname中提取
+    if (search && search.length > 1) {
+      // 去掉开头的'?'字符
+      const paramValue = search.substring(1);
+      console.log('URL parameter value:', paramValue);
+      return paramValue;
+    }
+
+    return null;
+  };
+
   useEffect(() => {
+    const urlMachineName = getUrlMachineName();
+
+    if (urlMachineName && machineList.length > 0) {
+      // 如果URL中有机器名参数，则只选择该机器
+      const matchedMachine = machineList.find(
+        (machine) =>
+          machine.machineName.toLowerCase() === urlMachineName.toLowerCase() ||
+          machine.machineName
+            .toLowerCase()
+            .includes(urlMachineName.toLowerCase()),
+      );
+
+      if (matchedMachine) {
+        console.log('URL matched machine:', matchedMachine.machineName);
+        setSelectedMachineState([matchedMachine]);
+        setTryToSelectedMachineList([matchedMachine]);
+        setLatestRunGpu([matchedMachine])
+          .then(() => console.log('URL machine selection saved'))
+          .catch((error) =>
+            console.log('Error saving URL machine selection:', error),
+          );
+        return;
+      }
+    }
+
+    // 如果没有URL参数或未匹配到机器，则使用cookie中的设置
     getLatestRunGpu().then((latestMachineList: API.FrontEndMachine[]) => {
       // Check `latestMachineList` is in `machineList`
       // console.log('latestMachineList:', latestMachineList);
@@ -154,7 +203,7 @@ const GpuDashboardPageContent: React.FC<Props> = (props) => {
       setTryToSelectedMachineList(finalSelectedMachineList);
       setSelectedMachineState(finalSelectedMachineList);
     });
-  }, [machineList]);
+  }, [machineList, location.search]);
 
   const onSelectedMachineChange = (machineList: API.FrontEndMachine[]) => {
     setLatestRunGpu(machineList)

@@ -158,12 +158,12 @@ const GpuTaskCardItem: React.FC<Props> = (props) => {
     },
     {
       key: '2',
-      label: '设置该用户为过滤用户',
+      label: `设置"${taskInfo.name}"为过滤用户`,
       onClick: handleSetUserFilter,
     },
     {
       key: '3',
-      label: '设置该项目名为项目名过滤器',
+      label: `设置"${taskInfo.projectName}"为项目名过滤器`,
       onClick: handleSetProjectFilter,
     },
   ];
@@ -209,10 +209,10 @@ const GpuTaskCardItem: React.FC<Props> = (props) => {
         <ContextMenuItem onClick={onClickShowDetail}>详细信息</ContextMenuItem>
         <ContextMenuDivider />
         <ContextMenuItem onClick={handleSetUserFilter}>
-          设置该用户为过滤用户
+          设置"{taskInfo.name}"为过滤用户
         </ContextMenuItem>
         <ContextMenuItem onClick={handleSetProjectFilter}>
-          设置该项目名为项目名过滤器
+          设置"{taskInfo.projectName}"为项目名过滤器
         </ContextMenuItem>
       </ContextMenu>
 
