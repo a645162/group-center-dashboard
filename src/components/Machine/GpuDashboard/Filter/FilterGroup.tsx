@@ -1,7 +1,12 @@
-import { FilterOutlined } from '@ant-design/icons';
+import { ClearOutlined, FilterOutlined } from '@ant-design/icons';
 import { Button, Card, Space } from 'antd';
 import React, { useState } from 'react';
 
+import { useGpuTaskFilterCardStore } from '@/data/store/modules/filter/GpuTaskFilterCard';
+import { useGpuTaskFilterMachineStore } from '@/data/store/modules/filter/GpuTaskFilterMachine';
+import { useGpuTaskFilterMultiGpuStore } from '@/data/store/modules/filter/GpuTaskFilterMultiGpu';
+import { useGpuTaskFilterProjectNameStore } from '@/data/store/modules/filter/GpuTaskFilterProjectName';
+import { useGpuTaskFilterUserNameStore } from '@/data/store/modules/filter/GpuTaskFilterUserName';
 import GpuTaskFilterPanel from '@/pages/GpuDashboard/GpuTaskFilterPanel';
 import styles from './FilterGroup.less';
 import GpuCardFilter from './GpuCardFilter';
@@ -20,22 +25,73 @@ const FilterGroup: React.FC<FilterGroupProps> = ({
 }) => {
   const [showFilters, setShowFilters] = useState(true);
 
+  // 获取所有过滤器的清除方法
+  const clearUserFilter = useGpuTaskFilterUserNameStore(
+    (state) => state.clearUserFilter,
+  );
+  const clearProjectFilter = useGpuTaskFilterProjectNameStore(
+    (state) => state.clearProjectFilter,
+  );
+  const clearAllCardFilters = useGpuTaskFilterCardStore(
+    (state) => state.clearAllCardFilters,
+  );
+  const clearMultiGpuFilter = useGpuTaskFilterMultiGpuStore(
+    (state) => state.clearMultiGpuFilter,
+  );
+  const clearMachineSelection = useGpuTaskFilterMachineStore(
+    (state) => state.clearMachineSelection,
+  );
+
+  // 清除所有筛选器
+  const handleClearAllFilters = () => {
+    // 清除用户名过滤器
+    clearUserFilter();
+
+    // 清除工程名过滤器
+    clearProjectFilter();
+
+    // 清除按卡筛选器
+    clearAllCardFilters();
+
+    // 清除多GPU筛选器
+    clearMultiGpuFilter();
+
+    // 清除机器选择（全选所有机器）
+    clearMachineSelection();
+    onSelectionChange(machineList);
+
+    console.log('All filters cleared');
+  };
+
   return (
     <div className={styles.filterGroupContainer}>
-      {/* 筛选器显示/隐藏按钮 */}
+      {/* 筛选器显示/隐藏按钮和清除按钮 */}
       <div className={styles.filterToggle}>
-        <Button
-          type="primary"
-          icon={<FilterOutlined />}
-          onClick={() => setShowFilters(!showFilters)}
-          size="small"
-        >
-          {showFilters ? '隐藏筛选器' : '显示筛选器'}
-        </Button>
+        <Space size="small">
+          <Button
+            type="primary"
+            icon={<FilterOutlined />}
+            onClick={() => setShowFilters(!showFilters)}
+            size="small"
+          >
+            {showFilters ? '隐藏筛选器' : '显示筛选器'}
+          </Button>
+          <Button
+            type="default"
+            icon={<ClearOutlined />}
+            onClick={handleClearAllFilters}
+            size="small"
+            danger
+          >
+            清除所有筛选器
+          </Button>
+        </Space>
       </div>
 
       {/* 筛选器组 */}
-      {showFilters && (
+      <div
+        className={`${styles.filterContent} ${showFilters ? styles.filterContentVisible : styles.filterContentHidden}`}
+      >
         <Card size="small" className={styles.filterCard} title="筛选器">
           <Space direction="vertical" size="middle" style={{ width: '100%' }}>
             {/* GPU服务器筛选 */}
@@ -71,7 +127,7 @@ const FilterGroup: React.FC<FilterGroupProps> = ({
             </div>
           </Space>
         </Card>
-      )}
+      </div>
     </div>
   );
 };

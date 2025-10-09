@@ -1,7 +1,7 @@
 import { CloseOutlined, MenuOutlined } from '@ant-design/icons';
 import { Anchor, Button } from 'antd';
 import React, { useEffect, useState } from 'react';
-import { useLocation } from 'umi';
+import { history, useLocation } from 'umi';
 
 import { getPublicMachineList } from '@/services/group_center/frontendPublic';
 
@@ -9,6 +9,12 @@ import GpuDashboard from '@/components/Machine/GpuDashboard';
 import { FilterGroup } from '@/components/Machine/GpuDashboard/Filter';
 import VShow from '@/components/Vue/V-Show';
 import { getLatestRunGpu, setLatestRunGpu } from '@/data/cookies/Gpu';
+import { useGpuTaskFilterCardStore } from '@/data/store/modules/filter/GpuTaskFilterCard';
+import { useGpuTaskFilterMachineStore } from '@/data/store/modules/filter/GpuTaskFilterMachine';
+import { useGpuTaskFilterMultiGpuStore } from '@/data/store/modules/filter/GpuTaskFilterMultiGpu';
+import { useGpuTaskFilterProjectNameStore } from '@/data/store/modules/filter/GpuTaskFilterProjectName';
+import { useGpuTaskFilterUserNameStore } from '@/data/store/modules/filter/GpuTaskFilterUserName';
+import { parseGpuIds, parseGpuRange } from '@/utils/urlParams';
 import styles from './GpuDashboardPageContent.less';
 
 interface Props {
@@ -139,6 +145,41 @@ const GpuDashboardPageContent: React.FC<Props> = (props) => {
     API.FrontEndMachine[]
   >([]);
 
+  // 获取过滤器状态管理
+  const setUserNameEng = useGpuTaskFilterUserNameStore(
+    (state) => state.setUserNameEng,
+  );
+  const setIsFuzzyMatchUser = useGpuTaskFilterUserNameStore(
+    (state) => state.setIsFuzzyMatch,
+  );
+  const setProjectName = useGpuTaskFilterProjectNameStore(
+    (state) => state.setProjectName,
+  );
+  const setIsFuzzyMatchProject = useGpuTaskFilterProjectNameStore(
+    (state) => state.setIsFuzzyMatch,
+  );
+  const setGpuIdFilter = useGpuTaskFilterCardStore(
+    (state) => state.setGpuIdFilter,
+  );
+  const setGpuIdFilterEnabled = useGpuTaskFilterCardStore(
+    (state) => state.setGpuIdFilterEnabled,
+  );
+  const setGpuNameFilter = useGpuTaskFilterCardStore(
+    (state) => state.setGpuNameFilter,
+  );
+  const setGpuNameFilterEnabled = useGpuTaskFilterCardStore(
+    (state) => state.setGpuNameFilterEnabled,
+  );
+  const setMultiGpuFilter = useGpuTaskFilterMultiGpuStore(
+    (state) => state.setMultiGpuFilter,
+  );
+  const setSelectedMachineNames = useGpuTaskFilterMachineStore(
+    (state) => state.setSelectedMachineNames,
+  );
+  const selectedMachineNames = useGpuTaskFilterMachineStore(
+    (state) => state.selectedMachineNames,
+  );
+
   // 解析URL参数
   const getUrlMachineName = () => {
     const searchParams = new URLSearchParams(location.search);
@@ -160,12 +201,174 @@ const GpuDashboardPageContent: React.FC<Props> = (props) => {
     return null;
   };
 
+  // 解析过滤器URL参数并设置过滤器状态
+  const parseFilterParams = () => {
+    const searchParams = new URLSearchParams(location.search);
+    let hasFilterParams = false;
+
+    // 解析用户名过滤器
+    const userParam = searchParams.get('user');
+    if (userParam) {
+      console.log('Setting user filter from URL:', userParam);
+      setUserNameEng(userParam);
+      setIsFuzzyMatchUser(true); // 默认使用模糊匹配
+      hasFilterParams = true;
+    }
+
+    // 解析工程名过滤器
+    const projectParam = searchParams.get('project');
+    if (projectParam) {
+      console.log('Setting project filter from URL:', projectParam);
+      setProjectName(projectParam);
+      setIsFuzzyMatchProject(true); // 默认使用模糊匹配
+      hasFilterParams = true;
+    }
+
+    // 解析GPU ID过滤器
+    const gpuIdsParam = searchParams.get('gpuIds');
+    if (gpuIdsParam) {
+      const gpuIds = parseGpuIds(gpuIdsParam);
+      console.log('Setting GPU IDs filter from URL:', gpuIds);
+      if (gpuIds.length > 0) {
+        setGpuIdFilter(gpuIds, undefined);
+        setGpuIdFilterEnabled(true);
+        hasFilterParams = true;
+      }
+    }
+
+    // 解析GPU范围过滤器
+    const gpuRangeParam = searchParams.get('gpuRange');
+    if (gpuRangeParam) {
+      const gpuRange = parseGpuRange(gpuRangeParam);
+      console.log('Setting GPU range filter from URL:', gpuRange);
+      if (gpuRange) {
+        setGpuIdFilter([], gpuRange);
+        setGpuIdFilterEnabled(true);
+        hasFilterParams = true;
+      }
+    }
+
+    // 解析多GPU过滤器
+    const multiGpuParam = searchParams.get('multiGpu');
+    if (multiGpuParam) {
+      console.log('Setting multi-GPU filter from URL:', multiGpuParam);
+      // 将字符串转换为对应的枚举值
+      if (multiGpuParam === 'true') {
+        setMultiGpuFilter('multi');
+      } else if (multiGpuParam === 'false') {
+        setMultiGpuFilter('single');
+      } else {
+        setMultiGpuFilter('none');
+      }
+      hasFilterParams = true;
+    }
+
+    return hasFilterParams;
+  };
+
+  // 解析机器nameEng参数并设置机器选择
+  const parseMachineNameEngParam = () => {
+    const searchParams = new URLSearchParams(location.search);
+    const nameEngParam = searchParams.get('nameEng');
+
+    if (nameEngParam && machineList.length > 0) {
+      console.log('Setting machine filter from URL nameEng:', nameEngParam);
+
+      // 根据nameEng参数匹配机器
+      const matchedMachines = machineList.filter(
+        (machine) =>
+          machine.machineName
+            .toLowerCase()
+            .includes(nameEngParam.toLowerCase()) ||
+          machine.machineName.toLowerCase() === nameEngParam.toLowerCase(),
+      );
+
+      if (matchedMachines.length > 0) {
+        console.log(
+          'Matched machines:',
+          matchedMachines.map((m) => m.machineName),
+        );
+        setSelectedMachineState(matchedMachines);
+        setTryToSelectedMachineList(matchedMachines);
+        // 保存到持久化存储
+        setSelectedMachineNames(matchedMachines.map((m) => m.machineName));
+        return true;
+      }
+    }
+
+    return false;
+  };
+
+  // 删除URL中的过滤器参数
+  const removeFilterParamsFromUrl = () => {
+    const searchParams = new URLSearchParams(location.search);
+    const filterKeys = [
+      'user',
+      'project',
+      'gpuIds',
+      'gpuRange',
+      'multiGpu',
+      'nameEng',
+    ];
+
+    let hasRemoved = false;
+    filterKeys.forEach((key) => {
+      if (searchParams.has(key)) {
+        searchParams.delete(key);
+        hasRemoved = true;
+      }
+    });
+
+    if (hasRemoved) {
+      const newSearch = searchParams.toString();
+      const newUrl = newSearch
+        ? `${location.pathname}?${newSearch}`
+        : location.pathname;
+
+      console.log('Removing filter params from URL, new URL:', newUrl);
+      history.replace(newUrl);
+    }
+  };
+
   useEffect(() => {
     const urlMachineName = getUrlMachineName();
+    let hasProcessedFilters = false;
 
-    if (urlMachineName && machineList.length > 0) {
-      // 如果URL中有机器名参数，则只选择该机器
-      const matchedMachine = machineList.find(
+    // 解析过滤器参数
+    const hasFilterParams = parseFilterParams();
+    if (hasFilterParams) {
+      hasProcessedFilters = true;
+      // 延迟删除过滤器参数，确保状态已经设置
+      setTimeout(() => {
+        removeFilterParamsFromUrl();
+      }, 100);
+    }
+
+    // 解析机器nameEng参数
+    const hasMachineNameEng = parseMachineNameEngParam();
+    if (hasMachineNameEng) {
+      hasProcessedFilters = true;
+      // 延迟删除nameEng参数
+      setTimeout(() => {
+        const searchParams = new URLSearchParams(location.search);
+        if (searchParams.has('nameEng')) {
+          searchParams.delete('nameEng');
+          const newSearch = searchParams.toString();
+          const newUrl = newSearch
+            ? `${location.pathname}?${newSearch}`
+            : location.pathname;
+          console.log('Removing nameEng param from URL, new URL:', newUrl);
+          history.replace(newUrl);
+        }
+      }, 100);
+    }
+
+    // 处理简化格式的URL参数（如 ?4090a）
+    if (urlMachineName && machineList.length > 0 && !hasMachineNameEng) {
+      console.log('Processing simplified URL parameter:', urlMachineName);
+
+      // 根据简化参数匹配机器
+      const matchedMachines = machineList.filter(
         (machine) =>
           machine.machineName.toLowerCase() === urlMachineName.toLowerCase() ||
           machine.machineName
@@ -173,39 +376,66 @@ const GpuDashboardPageContent: React.FC<Props> = (props) => {
             .includes(urlMachineName.toLowerCase()),
       );
 
-      if (matchedMachine) {
-        console.log('URL matched machine:', matchedMachine.machineName);
-        setSelectedMachineState([matchedMachine]);
-        setTryToSelectedMachineList([matchedMachine]);
-        setLatestRunGpu([matchedMachine])
-          .then(() => console.log('URL machine selection saved'))
-          .catch((error) =>
-            console.log('Error saving URL machine selection:', error),
-          );
+      if (matchedMachines.length > 0) {
+        console.log(
+          'Matched machines from simplified URL:',
+          matchedMachines.map((m) => m.machineName),
+        );
+        setSelectedMachineState(matchedMachines);
+        setTryToSelectedMachineList(matchedMachines);
+        // 保存到持久化存储
+        setSelectedMachineNames(matchedMachines.map((m) => m.machineName));
+
+        // 如果只有简化格式参数，也删除它
+        if (!hasProcessedFilters) {
+          setTimeout(() => {
+            history.replace(location.pathname);
+          }, 100);
+        }
         return;
       }
     }
 
-    // 如果没有URL参数或未匹配到机器，则使用cookie中的设置
-    getLatestRunGpu().then((latestMachineList: API.FrontEndMachine[]) => {
-      // Check `latestMachineList` is in `machineList`
-      // console.log('latestMachineList:', latestMachineList);
-      const finalSelectedMachineList = machineList.filter((machine) => {
-        for (let i = 0; i < latestMachineList.length; i++) {
-          if (machine.machineName === latestMachineList[i].machineName) {
-            return true;
-          }
-        }
-        return false;
-      });
-      // console.log('finalSelectedMachineList:', finalSelectedMachineList);
-
-      setTryToSelectedMachineList(finalSelectedMachineList);
-      setSelectedMachineState(finalSelectedMachineList);
-    });
+    // 如果没有URL参数或未匹配到机器，则使用持久化存储中的设置
+    if (!hasMachineNameEng) {
+      // 使用持久化存储中的机器名称列表
+      if (selectedMachineNames.length > 0) {
+        const finalSelectedMachineList = machineList.filter((machine) =>
+          selectedMachineNames.includes(machine.machineName),
+        );
+        console.log(
+          'Using persisted machine selection:',
+          finalSelectedMachineList.map((m) => m.machineName),
+        );
+        setTryToSelectedMachineList(finalSelectedMachineList);
+        setSelectedMachineState(finalSelectedMachineList);
+      } else {
+        // 如果没有持久化设置，则使用cookie作为后备
+        getLatestRunGpu().then((latestMachineList: API.FrontEndMachine[]) => {
+          const finalSelectedMachineList = machineList.filter((machine) => {
+            for (let i = 0; i < latestMachineList.length; i++) {
+              if (machine.machineName === latestMachineList[i].machineName) {
+                return true;
+              }
+            }
+            return false;
+          });
+          console.log(
+            'Using cookie machine selection:',
+            finalSelectedMachineList.map((m) => m.machineName),
+          );
+          setTryToSelectedMachineList(finalSelectedMachineList);
+          setSelectedMachineState(finalSelectedMachineList);
+        });
+      }
+    }
   }, [machineList, location.search]);
 
   const onSelectedMachineChange = (machineList: API.FrontEndMachine[]) => {
+    // 保存到持久化存储
+    setSelectedMachineNames(machineList.map((m) => m.machineName));
+
+    // 同时保存到cookie作为后备
     setLatestRunGpu(machineList)
       .then(() => {
         console.log('setLatestRunGpu success');

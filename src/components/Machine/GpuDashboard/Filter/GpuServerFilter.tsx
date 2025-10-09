@@ -17,16 +17,16 @@ const GpuServerFilter: React.FC<GpuServerFilterProps> = ({
     new Set(),
   );
 
-  // 初始化选中状态 - 默认全选
+  // 初始化选中状态 - 只有当没有外部选中状态时才默认全选
   useEffect(() => {
-    if (machineList.length > 0) {
+    if (machineList.length > 0 && selectedMachines.length === 0) {
       const allMachineNames = new Set(
         machineList.map((machine) => machine.machineName),
       );
       setSelectedMachineNames(allMachineNames);
       onSelectionChange(machineList);
     }
-  }, [machineList]);
+  }, [machineList, selectedMachines.length]);
 
   // 同步外部选中状态
   useEffect(() => {
