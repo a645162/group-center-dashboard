@@ -2,7 +2,8 @@
   .statusSummary {
     margin-bottom: 16px;
     padding: 16px;
-    background-color: #f5f5f5;
+    background-color: var(--ant-color-bg-container);
+    border: 1px solid var(--ant-color-border-secondary);
     border-radius: 8px;
   }
 
@@ -16,37 +17,37 @@
   .proxyCard {
     transition: all 0.3s ease;
     border-radius: 8px;
-    border: 1px solid #f0f0f0;
+    border: 1px solid var(--ant-color-border);
     padding: 16px;
 
     &:hover {
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 10%);
+      box-shadow: 0 4px 12px var(--ant-box-shadow);
       transform: translateY(-2px);
     }
 
     &.available {
-      border-left: 4px solid #52c41a;
+      border-left: 4px solid var(--ant-color-success);
       background: linear-gradient(
         90deg,
-        rgba(82, 196, 26, 3%) 0%,
+        var(--ant-color-success-bg) 0%,
         transparent 100%
       );
     }
 
     &.unavailable {
-      border-left: 4px solid #ff4d4f;
+      border-left: 4px solid var(--ant-color-error);
       background: linear-gradient(
         90deg,
-        rgba(255, 77, 79, 3%) 0%,
+        var(--ant-color-error-bg) 0%,
         transparent 100%
       );
     }
 
     &.disabled {
-      border-left: 4px solid #d9d9d9;
+      border-left: 4px solid var(--ant-color-text-disabled);
       background: linear-gradient(
         90deg,
-        rgba(217, 217, 217, 3%) 0%,
+        var(--ant-color-fill-disabled) 0%,
         transparent 100%
       );
     }
@@ -58,12 +59,12 @@
     align-items: center;
     margin-bottom: 12px;
     padding-bottom: 8px;
-    border-bottom: 1px solid #f0f0f0;
+    border-bottom: 1px solid var(--ant-color-border);
 
     .serverName {
       font-weight: 600;
       font-size: 16px;
-      color: #1890ff;
+      color: var(--ant-color-primary);
     }
   }
 
@@ -77,13 +78,13 @@
 
       .detailLabel {
         font-weight: 500;
-        color: #666;
+        color: var(--ant-color-text-secondary);
         font-size: 12px;
       }
 
       .detailValue {
         font-size: 12px;
-        color: #333;
+        color: var(--ant-color-text);
         text-align: right;
         max-width: 150px;
         overflow: hidden;

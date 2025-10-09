@@ -1,5 +1,5 @@
-import { QrcodeOutlined } from '@ant-design/icons';
-import { Avatar, Button, Card, Popover, QRCode } from 'antd';
+import { LinkOutlined, QrcodeOutlined } from '@ant-design/icons';
+import { Avatar, Button, Card, Popover, QRCode, Tag } from 'antd';
 import React from 'react';
 
 import VShow from '@/components/Vue/V-Show';
@@ -18,29 +18,62 @@ const HomeSiteItemWidget: React.FC<Props> = (props) => {
   };
 
   const QrCodeContent = () => (
-    <div>
+    <div style={{ textAlign: 'center' }}>
       <QRCode
         errorLevel="H"
         value={siteObject.url}
         icon={siteObject.iconUrl}
         bordered={false}
+        size={200}
       />
+      <div style={{ marginTop: 8, fontSize: 12, color: '#666' }}>
+        扫描二维码访问
+      </div>
     </div>
   );
+
+  // 提取域名用于显示标签
+  const getDomain = (url: string) => {
+    try {
+      const domain = new URL(url).hostname;
+      return domain.replace('www.', '');
+    } catch {
+      return url;
+    }
+  };
 
   return (
     <Card className={styles.card} onClick={onCardClick}>
       <div className={styles.containerDiv}>
         {/* Icon */}
-        <Avatar className={styles.avatar} size={32} src={siteObject.iconUrl} />
+        <div className={styles.iconContainer}>
+          <Avatar
+            className={styles.avatar}
+            size={40}
+            src={siteObject.iconUrl}
+          />
+          <div className={styles.iconOverlay}>
+            <LinkOutlined />
+          </div>
+        </div>
 
-        {/* Name */}
-        <a className={styles.aText}>{siteObject.name}</a>
+        {/* Content */}
+        <div className={styles.content}>
+          <div className={styles.siteName}>{siteObject.name}</div>
+          <Tag className={styles.domainTag} color="blue">
+            {getDomain(siteObject.url)}
+          </Tag>
+        </div>
 
         {/* QRCode */}
         <VShow v-show={siteObject.supportQrCode}>
           <Popover className={styles.popover} content={<QrCodeContent />}>
-            <Button shape="circle" icon={<QrcodeOutlined />} />
+            <Button
+              className={styles.qrButton}
+              type="text"
+              icon={<QrcodeOutlined />}
+              size="small"
+            />
           </Popover>
         </VShow>
       </div>

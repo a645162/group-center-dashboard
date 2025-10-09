@@ -1,45 +1,145 @@
 .card {
-  // 大小根据内容决定
-  width: auto;
+  // 固定宽度，确保排列整齐
+  width: 320px;
+  min-height: 60px;
 
-  // 阴影
-  border-radius: 5px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 10%);
-  transition: all 0.3s ease-in-out;
+  // 使用Ant Design默认样式，自动支持夜间模式
+  border-radius: 8px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 6%);
+  transition: all 0.2s ease;
   cursor: pointer;
 
+  // 边距
+  margin: 4px;
+  padding: 4px;
+
+  // 防止内容溢出
+  overflow: hidden;
+
   &:hover {
-    box-shadow: 0 0 20px rgba(0, 0, 0, 20%);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 12%);
   }
 
-  // 边距
-  margin: 8px;
-  padding: 0;
-
-  //   background-color: aqua;
+  &:active {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 10%);
+  }
 }
 
 .containerDiv {
-  // 垂直居中
+  // 水平布局，紧凑排列
   display: flex;
-  justify-content: center;
   align-items: center;
+  width: 100%;
+  height: 100%;
+  gap: 4px;
+}
 
-  // 宽度由内容大小决定
-  width: auto;
-
-  //   background-color: red;
+.iconContainer {
+  position: relative;
+  flex-shrink: 0;
 }
 
 .avatar {
-  margin-right: 8px;
+  border-radius: 6px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 10%);
+  transition: transform 0.2s ease;
+
+  .card:hover & {
+    transform: scale(1.05);
+  }
 }
 
-.aText {
-  font-size: large;
-  width: max-content;
+.iconOverlay {
+  position: absolute;
+  bottom: -2px;
+  right: -2px;
+  background: #1890ff;
+  border-radius: 50%;
+  width: 14px;
+  height: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 8px;
+  border: 2px solid white;
+}
+
+.content {
+  flex: 1;
+  min-width: 0; // 防止内容溢出
+}
+
+.siteName {
+  font-size: 14px;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-bottom: 2px;
+  transition: color 0.2s ease;
+
+  .card:hover & {
+    color: #1890ff;
+  }
+}
+
+.domainTag {
+  font-size: 10px;
+  line-height: 1.2;
+  padding: 1px 4px;
+  border-radius: 3px;
+}
+
+.qrButton {
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+  min-width: 24px;
+  padding: 0;
+  border: none;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background-color: #1890ff;
+    color: white;
+    transform: scale(1.1);
+  }
 }
 
 .popover {
-  margin-left: 8px;
+  .ant-btn {
+    border: none;
+  }
+}
+
+// 响应式设计
+@media (max-width: 768px) {
+  .card {
+    width: 100%;
+    min-height: 56px;
+    margin: 3px 0;
+    padding: 10px;
+  }
+
+  .siteName {
+    font-size: 13px;
+  }
+
+  .avatar {
+    width: 32px;
+    height: 32px;
+  }
+
+  .iconOverlay {
+    width: 12px;
+    height: 12px;
+    font-size: 7px;
+  }
+
+  .domainTag {
+    font-size: 9px;
+  }
 }

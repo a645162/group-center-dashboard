@@ -4,17 +4,81 @@
 
 .siteListDiv {
   width: 100%;
-  display: flex;
-  flex-wrap: wrap;
-
-  // justify-content: space-between;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 8px;
+  padding: 4px 0;
 }
 
 .siteItemDiv {
-  width: auto;
-  // flex-basis: calc(25%);
+  display: flex;
+  justify-content: center;
+}
 
-  // margin-bottom: 1rem;
+// 分类卡片样式优化
+:global {
+  .ant-card {
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 8%);
+    border: 1px solid rgba(0, 0, 0, 6%);
+    transition: all 0.3s ease;
 
-  /* 添加一些间距 */
+    &:hover {
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 12%);
+      transform: translateY(-2px);
+    }
+  }
+
+  .ant-card-head {
+    border-bottom: 1px solid rgba(0, 0, 0, 4%);
+    padding: 16px 20px;
+
+    .ant-card-head-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: #1f2937;
+    }
+  }
+
+  .ant-card-body {
+    padding: 20px;
+  }
+}
+
+.avatar {
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 10%);
+  transition: transform 0.2s ease;
+
+  &:hover {
+    transform: scale(1.05);
+  }
+}
+
+// 响应式设计
+@media (max-width: 768px) {
+  .siteListDiv {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  :global {
+    .ant-card-head {
+      padding: 12px 16px;
+
+      .ant-card-head-title {
+        font-size: 16px;
+      }
+    }
+
+    .ant-card-body {
+      padding: 16px;
+    }
+  }
+}
+
+@media (min-width: 1200px) {
+  .siteListDiv {
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  }
 }
