@@ -388,7 +388,7 @@ const TimeTrendChart: React.FC<TimeTrendChartProps> = ({ timePeriod }) => {
               {trendData.dailyStats.map((day, index) => (
                 <tr key={index}>
                   <td style={{ padding: '8px', border: '1px solid #f0f0f0' }}>
-                    {day.date}
+                    {day.date.split(' ')[0]}
                   </td>
                   <td
                     style={{

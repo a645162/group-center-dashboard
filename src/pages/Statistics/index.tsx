@@ -6,6 +6,7 @@ import { get24HourReport } from '@/services/group_center/dashboardStatistics';
 import GpuUsageChart from './components/GpuUsageChart';
 import ProjectStatistics from './components/ProjectStatistics';
 import TimeTrendChart from './components/TimeTrendChart';
+import UserActivityTimeChart from './components/UserActivityTimeChart';
 import UserStatistics from './components/UserStatistics';
 import styles from './index.less';
 
@@ -204,6 +205,11 @@ const StatisticsPage: React.FC = () => {
               key: 'trend',
               label: '时间趋势',
               children: <TimeTrendChart timePeriod={timePeriod} />,
+            },
+            {
+              key: 'activity',
+              label: '活动时间分布',
+              children: <UserActivityTimeChart timePeriod={timePeriod} />,
             },
           ]}
         />

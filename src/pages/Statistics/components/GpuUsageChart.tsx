@@ -113,31 +113,73 @@ const GpuUsageChart: React.FC<GpuUsageChartProps> = ({ timePeriod }) => {
     return `${gb.toFixed(1)} GB`;
   };
 
-  // 准备饼图数据
+  // 准备饼图数据 - 按GPU型号聚合任务数
   const getPieChartData = () => {
     if (!gpuData) return [];
 
-    return gpuData.usageByDevice.map((gpu) => ({
-      type: gpu.gpuName,
-      value: gpu.averageUsagePercent,
-      server: gpu.serverName,
+    // 按GPU型号聚合任务数
+    const gpuModelMap = new Map<string, number>();
+
+    gpuData.usageByDevice.forEach((gpu) => {
+      const gpuModel = gpu.gpuName || '未知GPU';
+      const currentCount = gpuModelMap.get(gpuModel) || 0;
+      gpuModelMap.set(gpuModel, currentCount + (gpu.totalUsageCount || 0));
+    });
+
+    // 转换为饼图数据格式
+    return Array.from(gpuModelMap.entries()).map(([gpuModel, taskCount]) => ({
+      type: gpuModel,
+      value: taskCount,
+      taskCount: taskCount,
     }));
   };
 
-  // 准备柱状图数据
+  // 准备柱状图数据 - 按GPU型号和服务器分组显示任务数
   const getColumnChartData = () => {
     if (!gpuData) return [];
 
-    return gpuData.usageByDevice.map((gpu) => ({
-      gpu: gpu.gpuName || '未知GPU', // 默认值处理
-      usage: gpu.averageUsagePercent ?? 0, // 确保 usage 不为 null/undefined
-      memory: gpu.averageMemoryUsage ?? 0, // 确保 memory 不为 null/undefined
-      tasks: gpu.totalUsageCount ?? 0, // 确保 tasks 不为 null/undefined
-      server: gpu.serverName || '未知服务器', // 默认值处理
-    }));
+    // 按GPU型号分组，然后按服务器显示任务数
+    const gpuModelMap = new Map<
+      string,
+      Array<{ server: string; tasks: number }>
+    >();
+
+    gpuData.usageByDevice.forEach((gpu) => {
+      const gpuModel = gpu.gpuName || '未知GPU';
+      const server = gpu.serverName || '未知服务器';
+      const tasks = gpu.totalUsageCount || 0;
+
+      if (!gpuModelMap.has(gpuModel)) {
+        gpuModelMap.set(gpuModel, []);
+      }
+
+      const serverList = gpuModelMap.get(gpuModel)!;
+      const existingServer = serverList.find((item) => item.server === server);
+
+      if (existingServer) {
+        existingServer.tasks += tasks;
+      } else {
+        serverList.push({ server, tasks });
+      }
+    });
+
+    // 转换为柱状图数据格式
+    const result: Array<{ gpu: string; server: string; tasks: number }> = [];
+
+    gpuModelMap.forEach((serverList, gpuModel) => {
+      serverList.forEach((serverData) => {
+        result.push({
+          gpu: gpuModel,
+          server: serverData.server,
+          tasks: serverData.tasks,
+        });
+      });
+    });
+
+    return result;
   };
 
-  // 饼图配置 - 使用Ant Design Charts最新API
+  // 饼图配置 - 使用Ant Design Charts最新API，显示GPU型号任务数
   const pieConfig = {
     data: getPieChartData(),
     angleField: 'value',
@@ -150,26 +192,37 @@ const GpuUsageChart: React.FC<GpuUsageChartProps> = ({ timePeriod }) => {
         const total = getPieChartData().reduce((sum, d) => sum + d.value, 0);
         const percent =
           total > 0 ? ((item.value / total) * 100).toFixed(1) : '0';
-        return `${text} ${percent}%`;
+        return `${text}\n${item.value}个 (${percent}%)`;
       },
     },
     tooltip: {
       title: 'type',
       items: [
         {
-          name: '使用率',
+          name: '任务数',
           field: 'value',
-          formatter: (datum: any) => `${(datum.value || 0).toFixed(1)}%`,
+          formatter: (datum: any) => `${datum.value || 0}个`,
         },
         {
-          name: '服务器',
-          field: 'server',
+          name: '占比',
+          field: 'value',
+          formatter: (datum: any, index: number, data: any[], column: any) => {
+            const total = data.reduce((sum, d) => sum + d.value, 0);
+            const percent =
+              total > 0 ? ((datum.value / total) * 100).toFixed(1) : '0';
+            return `${percent}%`;
+          },
         },
       ],
     },
     legend: {
       position: 'bottom',
       layout: 'horizontal',
+      itemName: {
+        formatter: (text: string) => {
+          return text.length > 15 ? text.substring(0, 15) + '...' : text;
+        },
+      },
     },
     animation: {
       appear: {
@@ -179,7 +232,7 @@ const GpuUsageChart: React.FC<GpuUsageChartProps> = ({ timePeriod }) => {
     },
   };
 
-  // 柱状图配置
+  // 柱状图配置 - 显示每台服务器上同型号GPU的任务数
   const columnConfig = {
     data: getColumnChartData(),
     xField: 'gpu',
@@ -193,6 +246,7 @@ const GpuUsageChart: React.FC<GpuUsageChartProps> = ({ timePeriod }) => {
       position: 'top',
       style: {
         fill: '#000',
+        fontSize: 12,
       },
       formatter: (datum: any) => `${datum.tasks || 0}`,
     },
@@ -221,6 +275,17 @@ const GpuUsageChart: React.FC<GpuUsageChartProps> = ({ timePeriod }) => {
     yAxis: {
       label: {
         formatter: (v: number) => `${Math.round(v)}`,
+      },
+      title: {
+        text: '任务数',
+      },
+    },
+    legend: {
+      position: 'bottom',
+      itemName: {
+        formatter: (text: string) => {
+          return text.length > 15 ? text.substring(0, 15) + '...' : text;
+        },
       },
     },
     animation: {
@@ -373,19 +438,19 @@ const GpuUsageChart: React.FC<GpuUsageChartProps> = ({ timePeriod }) => {
       {/* 使用率分布图表 */}
       <Row gutter={16}>
         <Col xs={24} lg={12}>
-          <Card title="GPU使用率分布" style={{ marginBottom: 16 }}>
+          <Card title="GPU型号任务数分布" style={{ marginBottom: 16 }}>
             {getPieChartData().length > 0 ? (
               <Pie {...pieConfig} />
             ) : (
               <Empty
-                description="暂无GPU使用率数据"
+                description="暂无GPU任务数据"
                 image={Empty.PRESENTED_IMAGE_SIMPLE}
               />
             )}
           </Card>
         </Col>
         <Col xs={24} lg={12}>
-          <Card title="各GPU设备使用率对比" style={{ marginBottom: 16 }}>
+          <Card title="各GPU设备任务数对比" style={{ marginBottom: 16 }}>
             {getColumnChartData().length > 0 ? (
               <Column {...columnConfig} />
             ) : (

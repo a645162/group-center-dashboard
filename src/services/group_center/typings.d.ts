@@ -110,6 +110,16 @@ declare namespace API {
     timePeriod?: string;
   };
 
+  type getUserActivityTimeDistributionCustomParams = {
+    startTime: string;
+    endTime: string;
+  };
+
+  type getUserActivityTimeDistributionParams = {
+    /** Time period for statistics (default: ONE_WEEK) */
+    timePeriod?: string;
+  };
+
   type getUserStatisticsParams = {
     /** Time period for statistics (default: ONE_WEEK) */
     timePeriod?: string;
