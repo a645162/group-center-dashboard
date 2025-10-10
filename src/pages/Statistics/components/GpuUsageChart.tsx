@@ -324,10 +324,12 @@ const GpuUsageChart: React.FC<GpuUsageChartProps> = ({ timePeriod }) => {
       title: 'gpu',
       items: [
         {
-          name: '服务器-任务数',
-          field: 'server',
-          valueFormatter: (datum: any) =>
-            `${datum?.server || '未知服务器'}-${datum?.tasks || 0}个`,
+          name: '任务数',
+          field: 'tasks',
+          valueFormatter: (value: any) => {
+            console.log('Column tooltip formatter - value:', value);
+            return `${value || 0}个`;
+          },
         },
       ],
     },
