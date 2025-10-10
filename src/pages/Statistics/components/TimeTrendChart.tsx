@@ -93,7 +93,7 @@ const TimeTrendChart: React.FC<TimeTrendChartProps> = ({ timePeriod }) => {
     if (!trendData || !trendData.dailyStats) return [];
 
     return trendData.dailyStats.map((day) => ({
-      date: day.date,
+      date: day.date.split(' ')[0], // 只保留日期部分，移除时间
       tasks: day.totalTasks,
       runtime: Math.floor(day.totalRuntime / 3600), // 转换为小时
       users: day.activeUsersCount,
@@ -105,13 +105,13 @@ const TimeTrendChart: React.FC<TimeTrendChartProps> = ({ timePeriod }) => {
     if (!trendData || !trendData.dailyStats) return [[], []];
 
     const taskData = trendData.dailyStats.map((day) => ({
-      date: day.date,
+      date: day.date.split(' ')[0], // 只保留日期部分，移除时间
       value: day.totalTasks,
       type: '任务数',
     }));
 
     const usageData = trendData.dailyStats.map((day) => ({
-      date: day.date,
+      date: day.date.split(' ')[0], // 只保留日期部分，移除时间
       value: day.peakGpuUsage,
       type: 'GPU使用率',
     }));
@@ -155,12 +155,9 @@ const TimeTrendChart: React.FC<TimeTrendChartProps> = ({ timePeriod }) => {
       ],
     },
     xAxis: {
+      type: 'cat', // 使用分类轴而不是线性轴
       label: {
         autoRotate: true,
-        formatter: (text: string) => {
-          const date = new Date(text);
-          return `${date.getMonth() + 1}-${date.getDate()}`;
-        },
       },
     },
     yAxis: {
@@ -181,6 +178,12 @@ const TimeTrendChart: React.FC<TimeTrendChartProps> = ({ timePeriod }) => {
     data: getDualAxesData(),
     xField: 'date',
     yField: ['value', 'value'],
+    xAxis: {
+      type: 'cat', // 使用分类轴而不是线性轴
+      label: {
+        autoRotate: true,
+      },
+    },
     geometryOptions: [
       {
         geometry: 'line',

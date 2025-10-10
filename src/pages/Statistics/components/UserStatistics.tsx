@@ -280,7 +280,7 @@ const UserStatistics: React.FC<UserStatisticsProps> = ({ timePeriod }) => {
     radius: 0.8,
     label: {
       text: 'type',
-      position: 'outer',
+      position: 'outside',
       formatter: (text: string, item: any) => {
         const percent = item.percentage || '0';
         return `${text} ${percent}%`;
