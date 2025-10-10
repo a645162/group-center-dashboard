@@ -145,12 +145,25 @@ const GpuUsageChart: React.FC<GpuUsageChartProps> = ({ timePeriod }) => {
       );
     });
 
-    // 转换为饼图数据格式 - 确保格式正确
+    // 计算总任务数
+    const totalTasks = Array.from(gpuModelMap.values()).reduce(
+      (sum, count) => sum + count,
+      0,
+    );
+    console.log(
+      'GpuUsageChart: Total tasks for percentage calculation:',
+      totalTasks,
+    );
+
+    // 转换为饼图数据格式 - 预先计算百分比
     const pieData = Array.from(gpuModelMap.entries()).map(
       ([gpuModel, taskCount]) => {
+        const percentage =
+          totalTasks > 0 ? ((taskCount / totalTasks) * 100).toFixed(1) : '0';
         const dataItem = {
           type: gpuModel,
           value: taskCount,
+          percentage: percentage,
         };
         console.log('GpuUsageChart: Pie chart data item:', dataItem);
         return dataItem;
@@ -236,14 +249,7 @@ const GpuUsageChart: React.FC<GpuUsageChartProps> = ({ timePeriod }) => {
       text: 'type',
       position: 'outside',
       formatter: (text: string, item: any) => {
-        const pieData = getPieChartData();
-        if (!pieData || !Array.isArray(pieData)) {
-          return `${text}\n0个 (0%)`;
-        }
-        const total = pieData.reduce((sum, d) => sum + (d?.value || 0), 0);
-        const percent =
-          total > 0 ? (((item?.value || 0) / total) * 100).toFixed(1) : '0';
-        return `${text}\n${item?.value || 0}个 (${percent}%)`;
+        return `${text}\n${item?.value || 0}个 (${item?.percentage || '0'}%)`;
       },
     },
     tooltip: {
@@ -252,25 +258,17 @@ const GpuUsageChart: React.FC<GpuUsageChartProps> = ({ timePeriod }) => {
         {
           name: '任务数',
           field: 'value',
-          valueFormatter: (datum: any) => {
-            console.log('Pie tooltip valueFormatter:', datum);
+          formatter: (datum: any) => {
+            console.log('Pie tooltip task count formatter:', datum);
             return `${datum?.value || 0}个`;
           },
         },
         {
           name: '占比',
-          field: 'value',
-          valueFormatter: (datum: any, index: number, data: any[]) => {
-            console.log('Pie tooltip percent formatter:', datum, index, data);
-            if (!data || !Array.isArray(data)) {
-              return '0%';
-            }
-            const total = data.reduce((sum, d) => sum + (d?.value || 0), 0);
-            const percent =
-              total > 0
-                ? (((datum?.value || 0) / total) * 100).toFixed(1)
-                : '0';
-            return `${percent}%`;
+          field: 'percentage',
+          formatter: (datum: any) => {
+            console.log('Pie tooltip percentage formatter:', datum);
+            return `${datum?.percentage || '0'}%`;
           },
         },
       ],
