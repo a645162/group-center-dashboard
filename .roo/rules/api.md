@@ -10,6 +10,10 @@
 
 你可以在linux或者mac下使用curl或者在Windows中使用Invoke-RestMethod直接访问api，获取返回值，从而编写代码！
 
+## Invoke-RestMethod
+
+WIndows中使用Invoke-RestMethod，其中可以使用ConvertTo-Json获取具体的信息而不是“ @{refreshTime=2025-10-10 17:50:04; totalUsers=11; users=System.Object[]}”这种System.Object[]，从而能够让你更好的理解API返回的结果。
+
 ## Swagger
 
 <http://localhost:15090/v3/api-docs> 为Swagger的API url你可以使用！

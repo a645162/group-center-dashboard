@@ -87,16 +87,38 @@ const UserActivityTimeChart: React.FC<UserActivityTimeChartProps> = ({
 
   // 解析时间区间，处理跨天情况
   const parseTimeRange = (timeRange: string) => {
+    console.log('Parsing time range:', timeRange);
     const [startTime, endTime] = timeRange.split('-');
-    return { startTime, endTime };
+    console.log('Parsed startTime:', startTime, 'endTime:', endTime);
+
+    // 处理包含"次日"的情况
+    const cleanEndTime = endTime.replace('次日', '').trim();
+    console.log('Cleaned endTime:', cleanEndTime);
+
+    return { startTime, endTime: cleanEndTime };
   };
 
   // 计算跨天时间段的显示逻辑
   const isCrossDay = (timeRange: string): boolean => {
+    // 如果包含"次日"关键词，直接判断为跨天
+    if (timeRange.includes('次日')) {
+      console.log('Cross day detected by "次日" keyword');
+      return true;
+    }
+
     const { startTime, endTime } = parseTimeRange(timeRange);
     const startHour = parseInt(startTime.split(':')[0]);
     const endHour = parseInt(endTime.split(':')[0]);
-    return startHour > endHour; // 如果开始时间的小时大于结束时间的小时，说明跨天
+    const result = startHour > endHour; // 如果开始时间的小时大于结束时间的小时，说明跨天
+    console.log(
+      'Cross day check result:',
+      result,
+      'startHour:',
+      startHour,
+      'endHour:',
+      endHour,
+    );
+    return result;
   };
 
   // 准备时间区间图数据
