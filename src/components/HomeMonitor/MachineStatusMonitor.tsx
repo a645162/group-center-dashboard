@@ -1,7 +1,6 @@
 import {
   CheckCircleOutlined,
   CloseCircleOutlined,
-  DesktopOutlined,
   ReloadOutlined,
 } from '@ant-design/icons';
 import { Button, Card, Space, Statistic, Tag, Tooltip } from 'antd';
@@ -86,16 +85,16 @@ const MachineStatusMonitor: React.FC<MachineStatusMonitorProps> = ({
     );
   };
 
-  const getGpuTag = (machine: API.MachineStatusResponse) => {
-    if (machine.isGpu) {
-      return (
-        <Tag color="purple" icon={<DesktopOutlined />}>
-          GPU服务器
-        </Tag>
-      );
-    }
-    return <Tag color="default">普通服务器</Tag>;
-  };
+  // const getGpuTag = (machine: API.MachineStatusResponse) => {
+  //   if (machine.isGpu) {
+  //     return (
+  //       <Tag color="purple" icon={<DesktopOutlined />}>
+  //         GPU服务器
+  //       </Tag>
+  //     );
+  //   }
+  //   return <Tag color="default">普通服务器</Tag>;
+  // };
 
   const formatTime = (timestamp?: number) => {
     if (!timestamp || timestamp <= 0) {
@@ -191,7 +190,7 @@ const MachineStatusMonitor: React.FC<MachineStatusMonitorProps> = ({
                 <Space size="small" wrap>
                   {getPingStatusTag(machine)}
                   {getAgentStatusTag(machine)}
-                  {getGpuTag(machine)}
+                  {/* {getGpuTag(machine)} */}
                 </Space>
               </div>
 
