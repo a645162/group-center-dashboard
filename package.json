@@ -1,6 +1,6 @@
 {
   "name": "group-center-dashboard",
-  "version": "1.4.1",
+  "version": "1.5.1",
   "private": true,
   "author": "Haomin Kong <a645162@qq.com>",
   "scripts": {
@@ -37,7 +37,7 @@
     "react-number-format": "^5.4.4",
     "typed.js": "^2.1.0",
     "typescript-cookie": "^1.0.6",
-    "ua-parser-js": "^2.0.5",
+    "ua-parser-js": "^2.0.6",
     "zustand": "^5.0.8"
   },
   "devDependencies": {
