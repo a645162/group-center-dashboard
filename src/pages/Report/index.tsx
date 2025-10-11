@@ -1,8 +1,14 @@
-import { Card, Col, Layout, Row, version } from 'antd';
+import { version as getGroupCenterVersion } from '@/services/group_center/programInfo';
+import { Alert, Card, Col, Layout, Row, Spin, version } from 'antd';
+import { useEffect, useState } from 'react';
 import { UAParser } from 'ua-parser-js';
+import packageJson from '../../../package.json';
 
 export default function ReportPage() {
   const uaString = navigator.userAgent;
+  const [groupCenterVersion, setGroupCenterVersion] = useState<string>('');
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string>('');
 
   const uaParser = new UAParser(uaString);
 
@@ -13,12 +19,40 @@ export default function ReportPage() {
   const uaOs = uaParser.getOS();
   const uaResult = uaParser.getResult();
 
+  useEffect(() => {
+    const fetchVersion = async () => {
+      try {
+        setLoading(true);
+        const version = await getGroupCenterVersion();
+        setGroupCenterVersion(version);
+        setError('');
+      } catch (err) {
+        console.error('Failed to fetch GroupCenter version:', err);
+        setError('Failed to fetch GroupCenter version');
+        setGroupCenterVersion('Unknown');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchVersion();
+  }, []);
+
   return (
     <Layout style={{ padding: '16px' }}>
       <Card
         title={`User Agent Info - antd@${version}`}
         style={{ marginBottom: '16px' }}
       >
+        {error && (
+          <Alert
+            message="GroupCenter Version Error"
+            description={error}
+            type="warning"
+            showIcon
+            style={{ marginBottom: '16px' }}
+          />
+        )}
         <Row gutter={[16, 16]}>
           <Col xs={24} sm={12} md={8} lg={6}>
             <Card size="small" title="Browser">
@@ -67,6 +101,26 @@ export default function ReportPage() {
             <Card size="small" title="CPU">
               <p>
                 <strong>Architecture:</strong> {uaCpu.architecture || 'Unknown'}
+              </p>
+            </Card>
+          </Col>
+          <Col xs={24} sm={12} md={8} lg={6}>
+            <Card size="small" title="GroupCenter Version">
+              {loading ? (
+                <div style={{ textAlign: 'center' }}>
+                  <Spin size="small" />
+                </div>
+              ) : (
+                <p>
+                  <strong>Version:</strong> {groupCenterVersion}
+                </p>
+              )}
+            </Card>
+          </Col>
+          <Col xs={24} sm={12} md={8} lg={6}>
+            <Card size="small" title="React App Version">
+              <p>
+                <strong>Version:</strong> {packageJson.version}
               </p>
             </Card>
           </Col>
