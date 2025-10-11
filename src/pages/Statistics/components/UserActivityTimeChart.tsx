@@ -1,4 +1,5 @@
 import { getUserActivityTimeDistribution } from '@/services/group_center/dashboardStatistics';
+import { GetIsDarkMode } from '@/utils/AntD5/AntD5DarkMode';
 import { Alert, Card, Col, Empty, Row, Spin, Statistic, theme } from 'antd';
 import React, { useEffect, useState } from 'react';
 
@@ -203,6 +204,16 @@ const UserActivityTimeChart: React.FC<UserActivityTimeChartProps> = ({
 
   const stats = calculateStats();
   const chartData = getTimeRangeChartData();
+  const isDark = GetIsDarkMode();
+
+  // 自定义滚动条样式
+  const scrollbarStyles = {
+    /* Firefox */
+    scrollbarWidth: 'thin' as const,
+    scrollbarColor: isDark
+      ? 'rgba(255, 255, 255, 0.3) rgba(255, 255, 255, 0.1)'
+      : 'rgba(0, 0, 0, 0.3) rgba(0, 0, 0, 0.1)',
+  };
 
   return (
     <div>
@@ -261,11 +272,33 @@ const UserActivityTimeChart: React.FC<UserActivityTimeChartProps> = ({
           </span>
         }
       >
+        <style>
+          {`
+            .activity-time-scroll::-webkit-scrollbar {
+              width: 8px;
+            }
+            .activity-time-scroll::-webkit-scrollbar-track {
+              background: ${isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)'};
+              border-radius: 4px;
+            }
+            .activity-time-scroll::-webkit-scrollbar-thumb {
+              background: ${isDark ? 'rgba(255, 255, 255, 0.3)' : 'rgba(0, 0, 0, 0.3)'};
+              border-radius: 4px;
+            }
+            .activity-time-scroll::-webkit-scrollbar-thumb:hover {
+              background: ${isDark ? 'rgba(255, 255, 255, 0.5)' : 'rgba(0, 0, 0, 0.5)'};
+            }
+          `}
+        </style>
         <div
+          className="activity-time-scroll"
           style={{
             maxHeight: '600px',
             overflowY: 'auto',
             minHeight: '400px',
+            padding: '0 8px',
+            marginRight: '-8px',
+            ...scrollbarStyles,
           }}
         >
           {chartData.map((item, index) => {

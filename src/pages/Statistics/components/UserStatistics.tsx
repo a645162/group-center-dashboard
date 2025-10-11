@@ -169,6 +169,7 @@ const UserStatistics: React.FC<UserStatisticsProps> = ({ timePeriod }) => {
     angleField: 'value',
     colorField: 'type',
     radius: 0.8,
+    autoFit: true,
     theme: isDark ? 'dark' : 'light',
     label: {
       type: 'outer',
@@ -224,6 +225,7 @@ const UserStatistics: React.FC<UserStatisticsProps> = ({ timePeriod }) => {
     yField: 'runtime',
     seriesField: 'user',
     isGroup: false,
+    autoFit: true,
     theme: isDark ? 'dark' : 'light',
     columnStyle: {
       radius: [4, 4, 0, 0],
@@ -283,6 +285,7 @@ const UserStatistics: React.FC<UserStatisticsProps> = ({ timePeriod }) => {
     angleField: 'value',
     colorField: 'type',
     radius: 0.8,
+    autoFit: true,
     theme: isDark ? 'dark' : 'light',
     label: {
       text: 'type',

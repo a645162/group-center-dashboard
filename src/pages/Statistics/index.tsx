@@ -21,6 +21,7 @@ interface OverviewStats {
 
 const StatisticsPage: React.FC = () => {
   const [timePeriod, setTimePeriod] = useState<string>('ONE_WEEK');
+  const [activeTab, setActiveTab] = useState<string>('gpu');
   const [overviewStats, setOverviewStats] = useState<OverviewStats | null>(
     null,
   );
@@ -183,7 +184,14 @@ const StatisticsPage: React.FC = () => {
       <div className={styles.statisticsPage}>
         {/* 详细统计 */}
         <Tabs
-          defaultActiveKey="gpu"
+          activeKey={activeTab}
+          onChange={(key) => {
+            setActiveTab(key);
+            // 延迟触发resize事件,让图表重新计算大小
+            setTimeout(() => {
+              window.dispatchEvent(new Event('resize'));
+            }, 100);
+          }}
           size="large"
           items={[
             {
