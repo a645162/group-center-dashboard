@@ -124,6 +124,7 @@ const TimeTrendChart: React.FC<TimeTrendChartProps> = ({ timePeriod }) => {
     data: getTaskTrendData(),
     xField: 'date',
     yField: 'tasks',
+    autoFit: true,
     point: {
       size: 5,
       shape: 'diamond',
@@ -178,6 +179,7 @@ const TimeTrendChart: React.FC<TimeTrendChartProps> = ({ timePeriod }) => {
     data: getDualAxesData(),
     xField: 'date',
     yField: ['value', 'value'],
+    autoFit: true,
     xAxis: {
       type: 'cat', // 使用分类轴而不是线性轴
       label: {

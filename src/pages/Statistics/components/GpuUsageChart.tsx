@@ -245,6 +245,7 @@ const GpuUsageChart: React.FC<GpuUsageChartProps> = ({ timePeriod }) => {
     angleField: 'value',
     colorField: 'type',
     radius: 0.8,
+    autoFit: true,
     label: {
       text: 'type',
       position: 'outside',
@@ -297,6 +298,7 @@ const GpuUsageChart: React.FC<GpuUsageChartProps> = ({ timePeriod }) => {
     yField: 'tasks',
     seriesField: 'server',
     isGroup: true,
+    autoFit: true,
     columnStyle: {
       radius: [4, 4, 0, 0],
     },

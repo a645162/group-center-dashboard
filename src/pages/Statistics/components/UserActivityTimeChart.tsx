@@ -260,7 +260,13 @@ const UserActivityTimeChart: React.FC<UserActivityTimeChartProps> = ({
           </span>
         }
       >
-        <div style={{ maxHeight: '600px', overflowY: 'auto' }}>
+        <div
+          style={{
+            maxHeight: '600px',
+            overflowY: 'auto',
+            minHeight: '400px',
+          }}
+        >
           {chartData.map((item, index) => {
             const startHour = parseInt(item.startTime.split(':')[0]);
             const startMinute = parseInt(item.startTime.split(':')[1]);

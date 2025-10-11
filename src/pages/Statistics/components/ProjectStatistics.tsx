@@ -165,6 +165,7 @@ const ProjectStatistics: React.FC<ProjectStatisticsProps> = ({
     angleField: 'value',
     colorField: 'type',
     radius: 0.8,
+    autoFit: true,
     label: {
       text: 'type',
       position: 'outside',
@@ -225,6 +226,7 @@ const ProjectStatistics: React.FC<ProjectStatisticsProps> = ({
     yField: 'runtime',
     seriesField: 'project',
     isGroup: false,
+    autoFit: true,
     columnStyle: {
       radius: [4, 4, 0, 0],
     },
