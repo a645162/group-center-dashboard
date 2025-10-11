@@ -1,4 +1,5 @@
 import { getUserStatistics } from '@/services/group_center/dashboardStatistics';
+import { GetIsDarkMode } from '@/utils/AntD5/AntD5DarkMode';
 import { Pie } from '@ant-design/charts';
 import { Alert, Card, Empty, List, Progress, Spin, Statistic, Tag } from 'antd';
 import React, { useEffect, useState } from 'react';
@@ -160,12 +161,15 @@ const UserStatistics: React.FC<UserStatisticsProps> = ({ timePeriod }) => {
     }));
   };
 
+  const isDark = GetIsDarkMode();
+
   // 饼图配置 - 使用Ant Design Charts最新API
   const pieConfig = {
     data: getTaskDistributionData(),
     angleField: 'value',
     colorField: 'type',
     radius: 0.8,
+    theme: isDark ? 'dark' : 'light',
     label: {
       type: 'outer',
       content: '{name} {percentage}',
@@ -220,6 +224,7 @@ const UserStatistics: React.FC<UserStatisticsProps> = ({ timePeriod }) => {
     yField: 'runtime',
     seriesField: 'user',
     isGroup: false,
+    theme: isDark ? 'dark' : 'light',
     columnStyle: {
       radius: [4, 4, 0, 0],
     },
@@ -278,6 +283,7 @@ const UserStatistics: React.FC<UserStatisticsProps> = ({ timePeriod }) => {
     angleField: 'value',
     colorField: 'type',
     radius: 0.8,
+    theme: isDark ? 'dark' : 'light',
     label: {
       text: 'type',
       position: 'outside',

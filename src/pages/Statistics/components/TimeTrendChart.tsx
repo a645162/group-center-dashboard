@@ -1,4 +1,5 @@
 import { getTimeTrendStatistics } from '@/services/group_center/dashboardStatistics';
+import { GetIsDarkMode } from '@/utils/AntD5/AntD5DarkMode';
 import { Line } from '@ant-design/charts';
 import { Alert, Card, Col, Empty, Row, Select, Spin, Statistic } from 'antd';
 import React, { useEffect, useState } from 'react';
@@ -119,12 +120,15 @@ const TimeTrendChart: React.FC<TimeTrendChartProps> = ({ timePeriod }) => {
     return [taskData, usageData];
   };
 
+  const isDark = GetIsDarkMode();
+
   // 任务数趋势图配置 - 使用Ant Design Charts最新API
   const lineConfig = {
     data: getTaskTrendData(),
     xField: 'date',
     yField: 'tasks',
     autoFit: true,
+    theme: isDark ? 'dark' : 'light',
     point: {
       size: 5,
       shape: 'diamond',
@@ -180,6 +184,7 @@ const TimeTrendChart: React.FC<TimeTrendChartProps> = ({ timePeriod }) => {
     xField: 'date',
     yField: ['value', 'value'],
     autoFit: true,
+    theme: isDark ? 'dark' : 'light',
     xAxis: {
       type: 'cat', // 使用分类轴而不是线性轴
       label: {
@@ -341,11 +346,17 @@ const TimeTrendChart: React.FC<TimeTrendChartProps> = ({ timePeriod }) => {
         <div style={{ overflowX: 'auto' }}>
           <table style={{ width: '100%', borderCollapse: 'collapse' }}>
             <thead>
-              <tr style={{ background: '#fafafa' }}>
+              <tr
+                style={{
+                  background: isDark ? 'rgba(255, 255, 255, 0.04)' : '#fafafa',
+                }}
+              >
                 <th
                   style={{
                     padding: '8px',
-                    border: '1px solid #f0f0f0',
+                    border: isDark
+                      ? '1px solid rgba(255, 255, 255, 0.12)'
+                      : '1px solid #f0f0f0',
                     textAlign: 'left',
                   }}
                 >
@@ -354,7 +365,9 @@ const TimeTrendChart: React.FC<TimeTrendChartProps> = ({ timePeriod }) => {
                 <th
                   style={{
                     padding: '8px',
-                    border: '1px solid #f0f0f0',
+                    border: isDark
+                      ? '1px solid rgba(255, 255, 255, 0.12)'
+                      : '1px solid #f0f0f0',
                     textAlign: 'right',
                   }}
                 >
@@ -363,7 +376,9 @@ const TimeTrendChart: React.FC<TimeTrendChartProps> = ({ timePeriod }) => {
                 <th
                   style={{
                     padding: '8px',
-                    border: '1px solid #f0f0f0',
+                    border: isDark
+                      ? '1px solid rgba(255, 255, 255, 0.12)'
+                      : '1px solid #f0f0f0',
                     textAlign: 'right',
                   }}
                 >
@@ -372,7 +387,9 @@ const TimeTrendChart: React.FC<TimeTrendChartProps> = ({ timePeriod }) => {
                 <th
                   style={{
                     padding: '8px',
-                    border: '1px solid #f0f0f0',
+                    border: isDark
+                      ? '1px solid rgba(255, 255, 255, 0.12)'
+                      : '1px solid #f0f0f0',
                     textAlign: 'right',
                   }}
                 >
@@ -381,7 +398,9 @@ const TimeTrendChart: React.FC<TimeTrendChartProps> = ({ timePeriod }) => {
                 <th
                   style={{
                     padding: '8px',
-                    border: '1px solid #f0f0f0',
+                    border: isDark
+                      ? '1px solid rgba(255, 255, 255, 0.12)'
+                      : '1px solid #f0f0f0',
                     textAlign: 'right',
                   }}
                 >
@@ -392,13 +411,22 @@ const TimeTrendChart: React.FC<TimeTrendChartProps> = ({ timePeriod }) => {
             <tbody>
               {trendData.dailyStats.map((day, index) => (
                 <tr key={index}>
-                  <td style={{ padding: '8px', border: '1px solid #f0f0f0' }}>
+                  <td
+                    style={{
+                      padding: '8px',
+                      border: isDark
+                        ? '1px solid rgba(255, 255, 255, 0.12)'
+                        : '1px solid #f0f0f0',
+                    }}
+                  >
                     {day.date.split(' ')[0]}
                   </td>
                   <td
                     style={{
                       padding: '8px',
-                      border: '1px solid #f0f0f0',
+                      border: isDark
+                        ? '1px solid rgba(255, 255, 255, 0.12)'
+                        : '1px solid #f0f0f0',
                       textAlign: 'right',
                     }}
                   >
@@ -407,7 +435,9 @@ const TimeTrendChart: React.FC<TimeTrendChartProps> = ({ timePeriod }) => {
                   <td
                     style={{
                       padding: '8px',
-                      border: '1px solid #f0f0f0',
+                      border: isDark
+                        ? '1px solid rgba(255, 255, 255, 0.12)'
+                        : '1px solid #f0f0f0',
                       textAlign: 'right',
                     }}
                   >
@@ -416,7 +446,9 @@ const TimeTrendChart: React.FC<TimeTrendChartProps> = ({ timePeriod }) => {
                   <td
                     style={{
                       padding: '8px',
-                      border: '1px solid #f0f0f0',
+                      border: isDark
+                        ? '1px solid rgba(255, 255, 255, 0.12)'
+                        : '1px solid #f0f0f0',
                       textAlign: 'right',
                     }}
                   >
@@ -425,7 +457,9 @@ const TimeTrendChart: React.FC<TimeTrendChartProps> = ({ timePeriod }) => {
                   <td
                     style={{
                       padding: '8px',
-                      border: '1px solid #f0f0f0',
+                      border: isDark
+                        ? '1px solid rgba(255, 255, 255, 0.12)'
+                        : '1px solid #f0f0f0',
                       textAlign: 'right',
                     }}
                   >

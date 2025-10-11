@@ -1,4 +1,5 @@
 import { getProjectStatistics } from '@/services/group_center/dashboardStatistics';
+import { GetIsDarkMode } from '@/utils/AntD5/AntD5DarkMode';
 import { Pie } from '@ant-design/charts';
 import { Alert, Card, Empty, List, Progress, Spin, Statistic, Tag } from 'antd';
 import React, { useEffect, useState } from 'react';
@@ -159,6 +160,8 @@ const ProjectStatistics: React.FC<ProjectStatisticsProps> = ({
     }));
   };
 
+  const isDark = GetIsDarkMode();
+
   // 项目时间占比饼图配置 - 使用Ant Design Charts最新API
   const projectTimePieConfig = {
     data: getProjectTimeDistributionData(),
@@ -166,6 +169,7 @@ const ProjectStatistics: React.FC<ProjectStatisticsProps> = ({
     colorField: 'type',
     radius: 0.8,
     autoFit: true,
+    theme: isDark ? 'dark' : 'light',
     label: {
       text: 'type',
       position: 'outside',
@@ -227,6 +231,7 @@ const ProjectStatistics: React.FC<ProjectStatisticsProps> = ({
     seriesField: 'project',
     isGroup: false,
     autoFit: true,
+    theme: isDark ? 'dark' : 'light',
     columnStyle: {
       radius: [4, 4, 0, 0],
     },

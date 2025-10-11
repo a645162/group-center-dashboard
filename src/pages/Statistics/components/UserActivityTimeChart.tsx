@@ -1,5 +1,5 @@
 import { getUserActivityTimeDistribution } from '@/services/group_center/dashboardStatistics';
-import { Alert, Card, Col, Empty, Row, Spin, Statistic } from 'antd';
+import { Alert, Card, Col, Empty, Row, Spin, Statistic, theme } from 'antd';
 import React, { useEffect, useState } from 'react';
 
 interface UserActivityTimeChartProps {
@@ -24,6 +24,7 @@ interface UserActivityTimeResponse {
 const UserActivityTimeChart: React.FC<UserActivityTimeChartProps> = ({
   timePeriod,
 }) => {
+  const { token } = theme.useToken();
   const [activityData, setActivityData] =
     useState<UserActivityTimeResponse | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
@@ -213,7 +214,7 @@ const UserActivityTimeChart: React.FC<UserActivityTimeChartProps> = ({
               <Statistic
                 title="总用户数"
                 value={activityData.totalUsers}
-                valueStyle={{ color: '#1890ff' }}
+                valueStyle={{ color: token.colorPrimary }}
                 suffix="人"
               />
             </Card>
@@ -223,7 +224,7 @@ const UserActivityTimeChart: React.FC<UserActivityTimeChartProps> = ({
               <Statistic
                 title="总任务数"
                 value={stats.totalTasks}
-                valueStyle={{ color: '#52c41a' }}
+                valueStyle={{ color: token.colorSuccess }}
                 suffix="个"
               />
             </Card>
@@ -233,7 +234,7 @@ const UserActivityTimeChart: React.FC<UserActivityTimeChartProps> = ({
               <Statistic
                 title="跨天用户数"
                 value={stats.crossDayUsers}
-                valueStyle={{ color: '#faad14' }}
+                valueStyle={{ color: token.colorWarning }}
                 suffix="人"
               />
             </Card>
@@ -243,7 +244,7 @@ const UserActivityTimeChart: React.FC<UserActivityTimeChartProps> = ({
               <Statistic
                 title="人均任务数"
                 value={stats.averageTasksPerUser.toFixed(1)}
-                valueStyle={{ color: '#722ed1' }}
+                valueStyle={{ color: token.colorInfo }}
                 precision={1}
               />
             </Card>
@@ -255,7 +256,7 @@ const UserActivityTimeChart: React.FC<UserActivityTimeChartProps> = ({
       <Card
         title="用户活动时间分布"
         extra={
-          <span style={{ color: '#666', fontSize: '12px' }}>
+          <span style={{ color: token.colorTextSecondary, fontSize: '12px' }}>
             时间范围: {timePeriod} | 数据刷新: {activityData.refreshTime}
           </span>
         }
@@ -285,16 +286,15 @@ const UserActivityTimeChart: React.FC<UserActivityTimeChartProps> = ({
                 style={{
                   marginBottom: 20,
                   borderLeft: item.crossDay
-                    ? '4px solid #ff4d4f'
-                    : '4px solid #52c41a',
+                    ? `4px solid ${token.colorError}`
+                    : `4px solid ${token.colorSuccess}`,
                   transition: 'all 0.3s ease',
                   cursor: 'pointer',
                 }}
                 bodyStyle={{ padding: '16px' }}
                 hoverable
                 onMouseEnter={(e) => {
-                  e.currentTarget.style.boxShadow =
-                    '0 4px 12px rgba(0,0,0,0.15)';
+                  e.currentTarget.style.boxShadow = `0 4px 12px ${token.colorBgElevated}`;
                   e.currentTarget.style.transform = 'translateY(-2px)';
                 }}
                 onMouseLeave={(e) => {
@@ -309,12 +309,15 @@ const UserActivityTimeChart: React.FC<UserActivityTimeChartProps> = ({
                         fontWeight: 'bold',
                         fontSize: '14px',
                         marginBottom: 8,
+                        color: token.colorText,
                       }}
                     >
                       {item.user}
                     </div>
                     {item.crossDay && (
-                      <div style={{ fontSize: '12px', color: '#ff4d4f' }}>
+                      <div
+                        style={{ fontSize: '12px', color: token.colorError }}
+                      >
                         ⚠️ 跨天活动
                       </div>
                     )}
@@ -337,7 +340,7 @@ const UserActivityTimeChart: React.FC<UserActivityTimeChartProps> = ({
                           left: 0,
                           right: 0,
                           height: 10,
-                          backgroundColor: '#f0f0f0',
+                          backgroundColor: token.colorFillSecondary,
                           borderRadius: 5,
                           transform: 'translateY(-50%)',
                         }}
@@ -355,7 +358,7 @@ const UserActivityTimeChart: React.FC<UserActivityTimeChartProps> = ({
                               left: `${startPosition}%`,
                               right: 0,
                               height: 10,
-                              backgroundColor: '#ff4d4f',
+                              backgroundColor: token.colorError,
                               borderRadius: '0 5px 5px 0',
                               transform: 'translateY(-50%)',
                               opacity: 0.8,
@@ -369,7 +372,7 @@ const UserActivityTimeChart: React.FC<UserActivityTimeChartProps> = ({
                               left: 0,
                               right: `${100 - endPosition}%`,
                               height: 10,
-                              backgroundColor: '#ff4d4f',
+                              backgroundColor: token.colorError,
                               borderRadius: '5px 0 0 5px',
                               transform: 'translateY(-50%)',
                               opacity: 0.8,
@@ -385,7 +388,7 @@ const UserActivityTimeChart: React.FC<UserActivityTimeChartProps> = ({
                             left: `${startPosition}%`,
                             right: `${100 - endPosition}%`,
                             height: 10,
-                            backgroundColor: '#1890ff',
+                            backgroundColor: token.colorPrimary,
                             borderRadius: 5,
                             transform: 'translateY(-50%)',
                             opacity: 0.8,
@@ -401,7 +404,7 @@ const UserActivityTimeChart: React.FC<UserActivityTimeChartProps> = ({
                           left: 0,
                           right: 0,
                           fontSize: '10px',
-                          color: '#666',
+                          color: token.colorTextSecondary,
                           display: 'flex',
                           justifyContent: 'space-between',
                           marginTop: 8,
@@ -421,8 +424,8 @@ const UserActivityTimeChart: React.FC<UserActivityTimeChartProps> = ({
                           width: 3,
                           height: 20,
                           backgroundColor: item.crossDay
-                            ? '#ff4d4f'
-                            : '#1890ff',
+                            ? token.colorError
+                            : token.colorPrimary,
                           transform: 'translate(-50%, -50%)',
                           borderRadius: 1.5,
                         }}
@@ -434,13 +437,15 @@ const UserActivityTimeChart: React.FC<UserActivityTimeChartProps> = ({
                           left: `${startPosition}%`,
                           transform: 'translateX(-50%)',
                           fontSize: '11px',
-                          color: item.crossDay ? '#ff4d4f' : '#1890ff',
+                          color: item.crossDay
+                            ? token.colorError
+                            : token.colorPrimary,
                           whiteSpace: 'nowrap',
                           fontWeight: 'bold',
-                          backgroundColor: 'white',
+                          backgroundColor: token.colorBgContainer,
                           padding: '2px 4px',
                           borderRadius: 2,
-                          boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+                          boxShadow: `0 1px 3px ${token.colorBgElevated}`,
                         }}
                       >
                         {item.startTime}
@@ -455,8 +460,8 @@ const UserActivityTimeChart: React.FC<UserActivityTimeChartProps> = ({
                           width: 3,
                           height: 20,
                           backgroundColor: item.crossDay
-                            ? '#ff4d4f'
-                            : '#1890ff',
+                            ? token.colorError
+                            : token.colorPrimary,
                           transform: 'translate(-50%, -50%)',
                           borderRadius: 1.5,
                         }}
@@ -468,13 +473,15 @@ const UserActivityTimeChart: React.FC<UserActivityTimeChartProps> = ({
                           left: `${endPosition}%`,
                           transform: 'translateX(-50%)',
                           fontSize: '11px',
-                          color: item.crossDay ? '#ff4d4f' : '#1890ff',
+                          color: item.crossDay
+                            ? token.colorError
+                            : token.colorPrimary,
                           whiteSpace: 'nowrap',
                           fontWeight: 'bold',
-                          backgroundColor: 'white',
+                          backgroundColor: token.colorBgContainer,
                           padding: '2px 4px',
                           borderRadius: 2,
-                          boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+                          boxShadow: `0 1px 3px ${token.colorBgElevated}`,
                         }}
                       >
                         {item.endTime}
@@ -483,7 +490,11 @@ const UserActivityTimeChart: React.FC<UserActivityTimeChartProps> = ({
 
                     {/* 活动区间说明 */}
                     <div
-                      style={{ fontSize: '12px', color: '#666', marginTop: 32 }}
+                      style={{
+                        fontSize: '12px',
+                        color: token.colorTextSecondary,
+                        marginTop: 32,
+                      }}
                     >
                       {item.crossDay ? (
                         <span>
@@ -505,12 +516,17 @@ const UserActivityTimeChart: React.FC<UserActivityTimeChartProps> = ({
                             style={{
                               fontSize: '16px',
                               fontWeight: 'bold',
-                              color: '#52c41a',
+                              color: token.colorSuccess,
                             }}
                           >
                             {item.totalTasks}
                           </div>
-                          <div style={{ fontSize: '12px', color: '#666' }}>
+                          <div
+                            style={{
+                              fontSize: '12px',
+                              color: token.colorTextSecondary,
+                            }}
+                          >
                             任务数
                           </div>
                         </div>
@@ -521,12 +537,17 @@ const UserActivityTimeChart: React.FC<UserActivityTimeChartProps> = ({
                             style={{
                               fontSize: '16px',
                               fontWeight: 'bold',
-                              color: '#1890ff',
+                              color: token.colorPrimary,
                             }}
                           >
                             {formatRuntime(item.totalRuntime)}
                           </div>
-                          <div style={{ fontSize: '12px', color: '#666' }}>
+                          <div
+                            style={{
+                              fontSize: '12px',
+                              color: token.colorTextSecondary,
+                            }}
+                          >
                             运行时间
                           </div>
                         </div>

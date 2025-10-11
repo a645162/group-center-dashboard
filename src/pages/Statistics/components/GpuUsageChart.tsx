@@ -1,4 +1,5 @@
 import { getGpuStatistics } from '@/services/group_center/dashboardStatistics';
+import { GetIsDarkMode } from '@/utils/AntD5/AntD5DarkMode';
 import { Column, Pie } from '@ant-design/charts';
 import { Alert, Card, Col, Empty, Row, Spin, Statistic } from 'antd';
 import React, { useEffect, useState } from 'react';
@@ -239,13 +240,16 @@ const GpuUsageChart: React.FC<GpuUsageChartProps> = ({ timePeriod }) => {
     return result;
   };
 
-  // 饼图配置 - 使用Ant Design Charts最新API，显示GPU型号任务数
+  const isDark = GetIsDarkMode();
+
+  // 饼图配置 - 使用Ant Design Charts最新API,显示GPU型号任务数
   const pieConfig = {
     data: getPieChartData(),
     angleField: 'value',
     colorField: 'type',
     radius: 0.8,
     autoFit: true,
+    theme: isDark ? 'dark' : 'light',
     label: {
       text: 'type',
       position: 'outside',
@@ -299,6 +303,7 @@ const GpuUsageChart: React.FC<GpuUsageChartProps> = ({ timePeriod }) => {
     seriesField: 'server',
     isGroup: true,
     autoFit: true,
+    theme: isDark ? 'dark' : 'light',
     columnStyle: {
       radius: [4, 4, 0, 0],
     },
