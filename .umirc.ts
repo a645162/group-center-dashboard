@@ -18,4 +18,6 @@ export default defineConfig({
   npmClient: 'pnpm',
   mako: {},
   tailwindcss: {},
+  // 引入全局样式
+  styles: ['@/global.less'],
 });

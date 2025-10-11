@@ -3,40 +3,83 @@
 }
 
 .helloDiv {
-  padding-top: 80px;
-  padding-bottom: 80px;
+  padding-top: 40px;
+  padding-bottom: 40px;
+
+  // 移动端优化
+  @media (max-width: 768px) {
+    padding-top: 20px;
+    padding-bottom: 20px;
+  }
 }
 
 .clockDiv {
   font-size: 36px;
   padding: 18px;
-
-  // 居中
   text-align: center;
+
+  // 移动端优化
+  @media (max-width: 768px) {
+    font-size: 24px;
+    padding: 12px;
+  }
+
+  @media (max-width: 480px) {
+    font-size: 20px;
+    padding: 8px;
+  }
 }
 
 .containerSiteList {
   width: 100%;
+  padding: 0 16px;
+
+  // 移动端优化
+  @media (max-width: 768px) {
+    padding: 0 8px;
+  }
 }
 
 .monitorContainer {
   display: flex;
   gap: 16px;
   margin-bottom: 24px;
+  padding: 0 16px;
 
   .monitorPanel {
     flex: 1;
     min-height: 500px;
   }
-}
 
-// 响应式设计
-@media (max-width: 768px) {
-  .monitorContainer {
+  // 移动端优化
+  @media (max-width: 768px) {
     flex-direction: column;
+    gap: 12px;
+    margin-bottom: 16px;
+    padding: 0 8px;
 
     .monitorPanel {
-      min-height: 400px;
+      min-height: 350px;
+      width: 100%;
     }
+  }
+
+  @media (max-width: 480px) {
+    .monitorPanel {
+      min-height: 300px;
+    }
+  }
+}
+
+// 响应式设计 - 增强移动端支持
+@media (max-width: 768px) {
+  .container {
+    padding: 0;
+  }
+}
+
+@media (max-width: 480px) {
+  .container {
+    padding: 0;
   }
 }

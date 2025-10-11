@@ -1,5 +1,5 @@
 .taskQueryPage {
-  padding: 0;
+  padding: 0 16px;
 
   .queryFormSection {
     margin-bottom: 24px;
@@ -25,9 +25,66 @@
 // 响应式设计
 @media (max-width: 768px) {
   .taskQueryPage {
+    padding: 0 8px;
+
     .queryFormSection,
     .resultSection {
-      margin-bottom: 16px;
+      margin-bottom: 12px;
+    }
+
+    :global(.ant-card) {
+      margin-bottom: 12px;
+    }
+
+    :global(.ant-card-body) {
+      padding: 16px;
+    }
+
+    // 表格响应式优化
+    :global(.ant-table) {
+      font-size: 12px;
+    }
+
+    :global(.ant-table-thead > tr > th) {
+      padding: 8px;
+      font-size: 12px;
+    }
+
+    :global(.ant-table-tbody > tr > td) {
+      padding: 8px;
+      font-size: 12px;
+    }
+
+    // 表单响应式优化
+    :global(.ant-form-item) {
+      margin-bottom: 12px;
+    }
+
+    :global(.ant-form-item-label) {
+      padding-bottom: 4px;
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .taskQueryPage {
+    padding: 0 4px;
+
+    :global(.ant-card-body) {
+      padding: 12px;
+    }
+
+    :global(.ant-table-thead > tr > th) {
+      padding: 6px 4px;
+    }
+
+    :global(.ant-table-tbody > tr > td) {
+      padding: 6px 4px;
+    }
+
+    // 隐藏不必要的列
+    :global(.ant-table-column-has-sorters) {
+      min-width: 60px;
     }
   }
 }

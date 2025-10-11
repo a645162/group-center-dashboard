@@ -1,3 +1,25 @@
 .container {
-  // padding-top: 80px;
+  padding: 0 16px;
+
+  // 移动端优化
+  @media (max-width: 768px) {
+    padding: 0 8px;
+  }
+}
+
+// 移动端全局样式优化
+@media (max-width: 768px) {
+  :global(.ant-card) {
+    margin-bottom: 12px;
+  }
+
+  :global(.ant-card-body) {
+    padding: 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  :global(.ant-card-body) {
+    padding: 12px;
+  }
 }

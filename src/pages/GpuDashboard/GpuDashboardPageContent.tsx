@@ -88,34 +88,44 @@ const GpuDashboardWithNoContent: React.FC<GpuDashboardWithNoContentProps> = ({
           <div
             style={{
               position: 'fixed',
-              right: 20,
-              top: '50%',
-              transform: `translateY(-50%) translateX(${showAnchor ? '0' : '100%'})`,
+              right: window.innerWidth > 768 ? 20 : 8,
+              top: window.innerWidth > 768 ? '50%' : 'auto',
+              bottom: window.innerWidth > 768 ? 'auto' : 80,
+              transform:
+                window.innerWidth > 768
+                  ? `translateY(-50%) translateX(${showAnchor ? '0' : '100%'})`
+                  : `translateX(${showAnchor ? '0' : '100%'})`,
               zIndex: 1000,
               transition: 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
               opacity: showAnchor ? 1 : 0,
               pointerEvents: showAnchor ? 'auto' : 'none',
+              maxWidth: window.innerWidth > 768 ? 'auto' : '90vw',
             }}
           >
             <Anchor
               affix={true}
-              offsetTop={100}
+              offsetTop={window.innerWidth > 768 ? 100 : 60}
               style={{
                 backgroundColor: 'var(--ant-color-bg-container)',
-                padding: '12px',
+                padding: window.innerWidth > 768 ? '12px' : '8px',
                 borderRadius: '8px',
                 boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
                 border: '1px solid var(--ant-color-border)',
                 backdropFilter: 'blur(8px)',
-                maxHeight: '60vh',
+                maxHeight: window.innerWidth > 768 ? '60vh' : '40vh',
                 overflowY: 'auto',
-                minWidth: '120px',
+                minWidth: window.innerWidth > 768 ? '120px' : '100px',
                 transition: 'all 0.3s ease',
               }}
               items={machineList.map((machine) => ({
                 key: machine.machineName,
                 href: `#device-${machine.machineName}`,
-                title: machine.machineName,
+                title:
+                  window.innerWidth > 768
+                    ? machine.machineName
+                    : machine.machineName.length > 8
+                      ? `${machine.machineName.substring(0, 8)}...`
+                      : machine.machineName,
               }))}
             />
           </div>
@@ -128,12 +138,20 @@ const GpuDashboardWithNoContent: React.FC<GpuDashboardWithNoContentProps> = ({
             onClick={handleToggleAnchor}
             style={{
               position: 'fixed',
-              right: showAnchor ? 140 : 20,
-              top: '50%',
-              transform: 'translateY(-50%)',
+              right:
+                window.innerWidth > 768
+                  ? showAnchor
+                    ? 140
+                    : 20
+                  : showAnchor
+                    ? 100
+                    : 8,
+              top: window.innerWidth > 768 ? '50%' : 'auto',
+              bottom: window.innerWidth > 768 ? 'auto' : 20,
+              transform: window.innerWidth > 768 ? 'translateY(-50%)' : 'none',
               zIndex: 1001,
-              width: 50,
-              height: 50,
+              width: window.innerWidth > 768 ? 50 : 44,
+              height: window.innerWidth > 768 ? 50 : 44,
               backgroundColor: 'var(--ant-color-bg-container)',
               borderColor: 'var(--ant-color-border)',
               color: 'var(--ant-color-text)',

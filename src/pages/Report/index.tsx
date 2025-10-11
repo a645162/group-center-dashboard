@@ -1,4 +1,4 @@
-import { Layout, Space, version } from 'antd';
+import { Card, Col, Layout, Row, version } from 'antd';
 import { UAParser } from 'ua-parser-js';
 
 export default function ReportPage() {
@@ -7,43 +7,102 @@ export default function ReportPage() {
   const uaParser = new UAParser(uaString);
 
   const uaBrowser = uaParser.getBrowser();
-  console.log(uaBrowser);
-
   const uaCpu = uaParser.getCPU();
-  console.log(uaCpu);
-
   const uaEngine = uaParser.getEngine();
-  console.log(uaEngine);
-
   const uaDevice = uaParser.getDevice();
-  console.log(uaDevice);
-
   const uaOs = uaParser.getOS();
-  console.log(uaOs);
-
   const uaResult = uaParser.getResult();
-  console.log(uaResult);
 
   return (
-    <Layout>
-      <h1>with antd@{version}</h1>
-      <Space>
-        <p>
-          Browser: {uaBrowser.name}({uaBrowser.version})
-        </p>
-        <p>
-          Device: {uaDevice.vendor} {uaDevice.model}
-        </p>
-        <p>
-          OS: {uaOs.name} {uaOs.version}
-        </p>
-        <p>
-          Engine: {uaEngine.name} {uaEngine.version}
-        </p>
-        <p>CPU: {uaCpu.architecture}</p>
-        <p>Result: {JSON.stringify(uaResult)}</p>
-        <p>UA: {uaString}</p>
-      </Space>
+    <Layout style={{ padding: '16px' }}>
+      <Card
+        title={`User Agent Info - antd@${version}`}
+        style={{ marginBottom: '16px' }}
+      >
+        <Row gutter={[16, 16]}>
+          <Col xs={24} sm={12} md={8} lg={6}>
+            <Card size="small" title="Browser">
+              <p>
+                <strong>Name:</strong> {uaBrowser.name}
+              </p>
+              <p>
+                <strong>Version:</strong> {uaBrowser.version}
+              </p>
+            </Card>
+          </Col>
+          <Col xs={24} sm={12} md={8} lg={6}>
+            <Card size="small" title="Device">
+              <p>
+                <strong>Vendor:</strong> {uaDevice.vendor || 'Unknown'}
+              </p>
+              <p>
+                <strong>Model:</strong> {uaDevice.model || 'Unknown'}
+              </p>
+              <p>
+                <strong>Type:</strong> {uaDevice.type || 'Unknown'}
+              </p>
+            </Card>
+          </Col>
+          <Col xs={24} sm={12} md={8} lg={6}>
+            <Card size="small" title="Operating System">
+              <p>
+                <strong>Name:</strong> {uaOs.name}
+              </p>
+              <p>
+                <strong>Version:</strong> {uaOs.version}
+              </p>
+            </Card>
+          </Col>
+          <Col xs={24} sm={12} md={8} lg={6}>
+            <Card size="small" title="Engine">
+              <p>
+                <strong>Name:</strong> {uaEngine.name}
+              </p>
+              <p>
+                <strong>Version:</strong> {uaEngine.version}
+              </p>
+            </Card>
+          </Col>
+          <Col xs={24} sm={12} md={8} lg={6}>
+            <Card size="small" title="CPU">
+              <p>
+                <strong>Architecture:</strong> {uaCpu.architecture || 'Unknown'}
+              </p>
+            </Card>
+          </Col>
+          <Col xs={24} sm={24} md={16} lg={12}>
+            <Card size="small" title="User Agent String">
+              <p
+                style={{
+                  wordBreak: 'break-all',
+                  fontSize: '12px',
+                  fontFamily: 'monospace',
+                  backgroundColor: '#f5f5f5',
+                  padding: '8px',
+                  borderRadius: '4px',
+                }}
+              >
+                {uaString}
+              </p>
+            </Card>
+          </Col>
+        </Row>
+      </Card>
+
+      <Card title="Complete UA Result">
+        <pre
+          style={{
+            fontSize: '12px',
+            overflow: 'auto',
+            maxHeight: '300px',
+            backgroundColor: '#f5f5f5',
+            padding: '12px',
+            borderRadius: '4px',
+          }}
+        >
+          {JSON.stringify(uaResult, null, 2)}
+        </pre>
+      </Card>
     </Layout>
   );
 }
