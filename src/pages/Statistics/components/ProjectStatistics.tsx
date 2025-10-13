@@ -1,7 +1,17 @@
 import { getProjectStatistics } from '@/services/group_center/dashboardStatistics';
 import { GetIsDarkMode } from '@/utils/AntD5/AntD5DarkMode';
 import { Pie } from '@ant-design/charts';
-import { Alert, Card, Empty, List, Progress, Spin, Statistic, Tag } from 'antd';
+import {
+  Alert,
+  Card,
+  Empty,
+  List,
+  Pagination,
+  Progress,
+  Spin,
+  Statistic,
+  Tag,
+} from 'antd';
 import React, { useEffect, useState } from 'react';
 
 interface ProjectStatisticsProps {
@@ -33,6 +43,8 @@ const ProjectStatistics: React.FC<ProjectStatisticsProps> = ({
   );
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [pageSize, setPageSize] = useState<number>(10);
 
   useEffect(() => {
     fetchProjectStatistics();
@@ -87,7 +99,7 @@ const ProjectStatistics: React.FC<ProjectStatisticsProps> = ({
           totalProjects,
           activeProjects,
           averageTasksPerProject,
-          topProjects: projectStats.slice(0, 10), // 只显示前10名
+          topProjects: projectStats, // 存储所有项目数据
         });
         console.log('ProjectStatistics: Project data set successfully');
       } else {
@@ -126,6 +138,14 @@ const ProjectStatistics: React.FC<ProjectStatisticsProps> = ({
     return totalRuntime > 0 ? (project.totalRuntime / totalRuntime) * 100 : 0;
   };
 
+  // 获取当前页显示的项目数据
+  const getCurrentPageProjects = () => {
+    if (!projectData) return [];
+    const startIndex = (currentPage - 1) * pageSize;
+    const endIndex = startIndex + pageSize;
+    return projectData.topProjects.slice(startIndex, endIndex);
+  };
+
   // 准备项目时间占比饼图数据
   const getProjectTimeDistributionData = () => {
     if (!projectData) return [];
@@ -158,6 +178,12 @@ const ProjectStatistics: React.FC<ProjectStatisticsProps> = ({
       tasks: project.totalTasks,
       users: project.activeUsersCount,
     }));
+  };
+
+  // 处理分页变化
+  const handlePageChange = (page: number, size: number) => {
+    setCurrentPage(page);
+    setPageSize(size);
   };
 
   const isDark = GetIsDarkMode();
@@ -369,8 +395,9 @@ const ProjectStatistics: React.FC<ProjectStatisticsProps> = ({
         }
       >
         <List
-          dataSource={projectData.topProjects}
+          dataSource={getCurrentPageProjects()}
           renderItem={(project, index) => {
+            const globalIndex = (currentPage - 1) * pageSize + index;
             const usagePercentage = calculateUsagePercentage(
               project,
               projectData.topProjects,
@@ -387,10 +414,14 @@ const ProjectStatistics: React.FC<ProjectStatisticsProps> = ({
                   <div style={{ width: 40, textAlign: 'center' }}>
                     <Tag
                       color={
-                        index < 3 ? '#f50' : index < 5 ? '#2db7f5' : '#87d068'
+                        globalIndex < 3
+                          ? '#f50'
+                          : globalIndex < 5
+                            ? '#2db7f5'
+                            : '#87d068'
                       }
                     >
-                      #{index + 1}
+                      #{globalIndex + 1}
                     </Tag>
                   </div>
 
@@ -459,6 +490,20 @@ const ProjectStatistics: React.FC<ProjectStatisticsProps> = ({
             );
           }}
         />
+        <div style={{ marginTop: 16, textAlign: 'center' }}>
+          <Pagination
+            current={currentPage}
+            pageSize={pageSize}
+            total={projectData.topProjects.length}
+            showSizeChanger
+            showQuickJumper
+            showTotal={(total, range) =>
+              `第 ${range[0]}-${range[1]} 条，共 ${total} 条`
+            }
+            onChange={handlePageChange}
+            onShowSizeChange={handlePageChange}
+          />
+        </div>
       </Card>
 
       {/* 项目时间占比分布 */}

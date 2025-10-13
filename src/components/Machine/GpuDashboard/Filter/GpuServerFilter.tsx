@@ -16,17 +16,40 @@ const GpuServerFilter: React.FC<GpuServerFilterProps> = ({
   const [selectedMachineNames, setSelectedMachineNames] = useState<Set<string>>(
     new Set(),
   );
+  const [hasBeenInitialized, setHasBeenInitialized] = useState(false);
 
-  // 初始化选中状态 - 只有当没有外部选中状态时才默认全选
+  // 初始化选中状态 - 只有当组件首次加载且没有选中任何机器时才默认全选
   useEffect(() => {
-    if (machineList.length > 0 && selectedMachines.length === 0) {
+    // 只有在以下情况才自动全选：
+    // 1. machineList 有数据
+    // 2. selectedMachines 为空（没有外部选中的机器）
+    // 3. selectedMachineNames 为空（组件内部状态也为空）
+    // 4. 还没有初始化过（避免用户清空后再次自动全选）
+    if (
+      machineList.length > 0 &&
+      selectedMachines.length === 0 &&
+      selectedMachineNames.size === 0 &&
+      !hasBeenInitialized
+    ) {
+      console.log('Auto-selecting all machines - initial load only');
+
       const allMachineNames = new Set(
         machineList.map((machine) => machine.machineName),
       );
       setSelectedMachineNames(allMachineNames);
-      onSelectionChange(machineList);
+      setHasBeenInitialized(true);
+      // 使用 setTimeout 避免在渲染过程中调用 onSelectionChange
+      setTimeout(() => {
+        onSelectionChange(machineList);
+      }, 0);
     }
-  }, [machineList, selectedMachines.length]);
+  }, [
+    machineList,
+    selectedMachines.length,
+    selectedMachineNames.size,
+    hasBeenInitialized,
+    onSelectionChange,
+  ]);
 
   // 同步外部选中状态
   useEffect(() => {
@@ -46,6 +69,7 @@ const GpuServerFilter: React.FC<GpuServerFilterProps> = ({
     }
 
     setSelectedMachineNames(newSelectedNames);
+    setHasBeenInitialized(true); // 标记为已初始化，用户手动操作后不再自动全选
 
     // 更新选中的机器列表
     const newSelectedMachines = machineList.filter((machine) =>
@@ -59,11 +83,13 @@ const GpuServerFilter: React.FC<GpuServerFilterProps> = ({
       machineList.map((machine) => machine.machineName),
     );
     setSelectedMachineNames(allMachineNames);
+    setHasBeenInitialized(true); // 标记为已初始化
     onSelectionChange(machineList);
   };
 
   const handleClearAll = () => {
     setSelectedMachineNames(new Set());
+    setHasBeenInitialized(true); // 标记为已初始化，避免自动全选
     onSelectionChange([]);
   };
 

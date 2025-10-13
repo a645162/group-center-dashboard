@@ -1,7 +1,17 @@
 import { getUserStatistics } from '@/services/group_center/dashboardStatistics';
 import { GetIsDarkMode } from '@/utils/AntD5/AntD5DarkMode';
 import { Pie } from '@ant-design/charts';
-import { Alert, Card, Empty, List, Progress, Spin, Statistic, Tag } from 'antd';
+import {
+  Alert,
+  Card,
+  Empty,
+  List,
+  Pagination,
+  Progress,
+  Spin,
+  Statistic,
+  Tag,
+} from 'antd';
 import React, { useEffect, useState } from 'react';
 
 interface UserStatisticsProps {
@@ -29,6 +39,8 @@ const UserStatistics: React.FC<UserStatisticsProps> = ({ timePeriod }) => {
   const [userData, setUserData] = useState<UserStatisticsData | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [pageSize, setPageSize] = useState<number>(10);
 
   useEffect(() => {
     fetchUserStatistics();
@@ -83,7 +95,7 @@ const UserStatistics: React.FC<UserStatisticsProps> = ({ timePeriod }) => {
           totalUsers,
           activeUsers,
           averageTasksPerUser,
-          topUsers: userStats.slice(0, 10), // 只显示前10名
+          topUsers: userStats, // 存储所有用户数据
         });
         console.log('UserStatistics: User data set successfully');
       } else {
@@ -116,6 +128,14 @@ const UserStatistics: React.FC<UserStatisticsProps> = ({ timePeriod }) => {
     return totalRuntime > 0 ? (user.totalRuntime / totalRuntime) * 100 : 0;
   };
 
+  // 获取当前页显示的用户数据
+  const getCurrentPageUsers = () => {
+    if (!userData) return [];
+    const startIndex = (currentPage - 1) * pageSize;
+    const endIndex = startIndex + pageSize;
+    return userData.topUsers.slice(startIndex, endIndex);
+  };
+
   // 准备用户任务分布饼图数据
   const getTaskDistributionData = () => {
     if (!userData) return [];
@@ -137,6 +157,12 @@ const UserStatistics: React.FC<UserStatisticsProps> = ({ timePeriod }) => {
       tasks: user.totalTasks,
       favoriteGpu: user.favoriteGpu,
     }));
+  };
+
+  // 处理分页变化
+  const handlePageChange = (page: number, size: number) => {
+    setCurrentPage(page);
+    setPageSize(size);
   };
 
   // 准备用户时间占比饼图数据
@@ -425,8 +451,9 @@ const UserStatistics: React.FC<UserStatisticsProps> = ({ timePeriod }) => {
         }
       >
         <List
-          dataSource={userData.topUsers}
+          dataSource={getCurrentPageUsers()}
           renderItem={(user, index) => {
+            const globalIndex = (currentPage - 1) * pageSize + index;
             const usagePercentage = calculateUsagePercentage(
               user,
               userData.topUsers,
@@ -443,10 +470,14 @@ const UserStatistics: React.FC<UserStatisticsProps> = ({ timePeriod }) => {
                   <div style={{ width: 40, textAlign: 'center' }}>
                     <Tag
                       color={
-                        index < 3 ? '#f50' : index < 5 ? '#2db7f5' : '#87d068'
+                        globalIndex < 3
+                          ? '#f50'
+                          : globalIndex < 5
+                            ? '#2db7f5'
+                            : '#87d068'
                       }
                     >
-                      #{index + 1}
+                      #{globalIndex + 1}
                     </Tag>
                   </div>
 
@@ -515,6 +546,20 @@ const UserStatistics: React.FC<UserStatisticsProps> = ({ timePeriod }) => {
             );
           }}
         />
+        <div style={{ marginTop: 16, textAlign: 'center' }}>
+          <Pagination
+            current={currentPage}
+            pageSize={pageSize}
+            total={userData.topUsers.length}
+            showSizeChanger
+            showQuickJumper
+            showTotal={(total, range) =>
+              `第 ${range[0]}-${range[1]} 条，共 ${total} 条`
+            }
+            onChange={handlePageChange}
+            onShowSizeChange={handlePageChange}
+          />
+        </div>
       </Card>
 
       {/* 用户时间占比分布 */}
