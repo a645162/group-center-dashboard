@@ -8,11 +8,14 @@ import {
   List,
   Pagination,
   Progress,
+  Select,
   Spin,
   Statistic,
   Tag,
 } from 'antd';
 import React, { useEffect, useState } from 'react';
+
+const { Option } = Select;
 
 interface UserStatisticsProps {
   timePeriod: string;
@@ -41,6 +44,7 @@ const UserStatistics: React.FC<UserStatisticsProps> = ({ timePeriod }) => {
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [pageSize, setPageSize] = useState<number>(10);
+  const [topK, setTopK] = useState<number | null>(10);
 
   useEffect(() => {
     fetchUserStatistics();
@@ -169,12 +173,15 @@ const UserStatistics: React.FC<UserStatisticsProps> = ({ timePeriod }) => {
   const getUserTimeDistributionData = () => {
     if (!userData) return [];
 
-    const totalRuntime = userData.topUsers.reduce(
+    const topUsers = topK
+      ? userData.topUsers.slice(0, topK)
+      : userData.topUsers;
+    const totalRuntime = topUsers.reduce(
       (sum, user) => sum + user.totalRuntime,
       0,
     );
 
-    return userData.topUsers.map((user) => ({
+    return topUsers.map((user) => ({
       type: user.userName,
       value: user.totalRuntime,
       runtime: user.totalRuntime,
@@ -441,6 +448,46 @@ const UserStatistics: React.FC<UserStatisticsProps> = ({ timePeriod }) => {
         </Card>
       </div>
 
+      {/* 用户时间占比分布 */}
+      <Card
+        title={
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+            }}
+          >
+            <span>用户时间占比分布</span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <span style={{ fontSize: '12px', color: '#666' }}>显示前</span>
+              <Select
+                value={topK}
+                onChange={setTopK}
+                style={{ width: 100 }}
+                size="small"
+              >
+                <Option value={5}>5</Option>
+                <Option value={10}>10</Option>
+                <Option value={15}>15</Option>
+                <Option value={20}>20</Option>
+                <Option value={25}>25</Option>
+                <Option value={null}>无限制</Option>
+              </Select>
+              <span style={{ fontSize: '12px', color: '#666' }}>
+                个用户 {topK ? '' : '(显示全部)'} (共 {userData.topUsers.length}{' '}
+                个)
+              </span>
+            </div>
+          </div>
+        }
+        style={{ marginBottom: 24 }}
+      >
+        <div style={{ height: 400 }}>
+          <Pie {...userTimePieConfig} />
+        </div>
+      </Card>
+
       {/* 用户排名列表 */}
       <Card
         title="用户使用排名"
@@ -559,13 +606,6 @@ const UserStatistics: React.FC<UserStatisticsProps> = ({ timePeriod }) => {
             onChange={handlePageChange}
             onShowSizeChange={handlePageChange}
           />
-        </div>
-      </Card>
-
-      {/* 用户时间占比分布 */}
-      <Card title="用户时间占比分布" style={{ marginTop: 24 }}>
-        <div style={{ height: 400 }}>
-          <Pie {...userTimePieConfig} />
         </div>
       </Card>
     </div>

@@ -1,10 +1,22 @@
 import { getTimeTrendStatistics } from '@/services/group_center/dashboardStatistics';
 import { GetIsDarkMode } from '@/utils/AntD5/AntD5DarkMode';
 import { Line } from '@ant-design/charts';
-import { Alert, Card, Col, Empty, Row, Select, Spin, Statistic } from 'antd';
+import {
+  Alert,
+  Card,
+  Col,
+  Collapse,
+  Empty,
+  Pagination,
+  Row,
+  Select,
+  Spin,
+  Statistic,
+} from 'antd';
 import React, { useEffect, useState } from 'react';
 
 const { Option } = Select;
+const { Panel } = Collapse;
 
 interface TimeTrendChartProps {
   timePeriod: string;
@@ -34,6 +46,8 @@ const TimeTrendChart: React.FC<TimeTrendChartProps> = ({ timePeriod }) => {
   const [trendData, setTrendData] = useState<TimeTrendData | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [pageSize, setPageSize] = useState<number>(10);
 
   useEffect(() => {
     fetchTimeTrendStatistics();
@@ -256,6 +270,22 @@ const TimeTrendChart: React.FC<TimeTrendChartProps> = ({ timePeriod }) => {
     },
   };
 
+  // 获取当前页面的数据
+  const getCurrentPageData = () => {
+    if (!trendData || !trendData.dailyStats) return [];
+    const startIndex = (currentPage - 1) * pageSize;
+    const endIndex = startIndex + pageSize;
+    return trendData.dailyStats.slice(startIndex, endIndex);
+  };
+
+  // 处理分页变化
+  const handlePageChange = (page: number, size?: number) => {
+    setCurrentPage(page);
+    if (size) {
+      setPageSize(size);
+    }
+  };
+
   if (loading) {
     return (
       <div style={{ textAlign: 'center', padding: '50px 0' }}>
@@ -341,136 +371,171 @@ const TimeTrendChart: React.FC<TimeTrendChartProps> = ({ timePeriod }) => {
         </div>
       </Card>
 
-      {/* 数据表格 */}
-      <Card title="详细数据" style={{ marginTop: 24 }}>
-        <div style={{ overflowX: 'auto' }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-            <thead>
-              <tr
+      {/* 数据表格 - 使用Collapse组件默认折叠 */}
+      <Collapse style={{ marginTop: 24 }}>
+        <Panel header="详细数据" key="1">
+          <div style={{ overflowX: 'auto' }}>
+            <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+              <thead>
+                <tr
+                  style={{
+                    background: isDark
+                      ? 'rgba(255, 255, 255, 0.04)'
+                      : '#fafafa',
+                  }}
+                >
+                  <th
+                    style={{
+                      padding: '8px',
+                      border: isDark
+                        ? '1px solid rgba(255, 255, 255, 0.12)'
+                        : '1px solid #f0f0f0',
+                      textAlign: 'left',
+                    }}
+                  >
+                    日期
+                  </th>
+                  <th
+                    style={{
+                      padding: '8px',
+                      border: isDark
+                        ? '1px solid rgba(255, 255, 255, 0.12)'
+                        : '1px solid #f0f0f0',
+                      textAlign: 'right',
+                    }}
+                  >
+                    任务数
+                  </th>
+                  <th
+                    style={{
+                      padding: '8px',
+                      border: isDark
+                        ? '1px solid rgba(255, 255, 255, 0.12)'
+                        : '1px solid #f0f0f0',
+                      textAlign: 'right',
+                    }}
+                  >
+                    总运行时间
+                  </th>
+                  <th
+                    style={{
+                      padding: '8px',
+                      border: isDark
+                        ? '1px solid rgba(255, 255, 255, 0.12)'
+                        : '1px solid #f0f0f0',
+                      textAlign: 'right',
+                    }}
+                  >
+                    峰值GPU使用率
+                  </th>
+                  <th
+                    style={{
+                      padding: '8px',
+                      border: isDark
+                        ? '1px solid rgba(255, 255, 255, 0.12)'
+                        : '1px solid #f0f0f0',
+                      textAlign: 'right',
+                    }}
+                  >
+                    活跃用户数
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {getCurrentPageData().map((day, index) => {
+                  const globalIndex = (currentPage - 1) * pageSize + index;
+                  return (
+                    <tr key={globalIndex}>
+                      <td
+                        style={{
+                          padding: '8px',
+                          border: isDark
+                            ? '1px solid rgba(255, 255, 255, 0.12)'
+                            : '1px solid #f0f0f0',
+                        }}
+                      >
+                        {day.date.split(' ')[0]}
+                      </td>
+                      <td
+                        style={{
+                          padding: '8px',
+                          border: isDark
+                            ? '1px solid rgba(255, 255, 255, 0.12)'
+                            : '1px solid #f0f0f0',
+                          textAlign: 'right',
+                        }}
+                      >
+                        {day.totalTasks}
+                      </td>
+                      <td
+                        style={{
+                          padding: '8px',
+                          border: isDark
+                            ? '1px solid rgba(255, 255, 255, 0.12)'
+                            : '1px solid #f0f0f0',
+                          textAlign: 'right',
+                        }}
+                      >
+                        {formatRuntime(day.totalRuntime)}
+                      </td>
+                      <td
+                        style={{
+                          padding: '8px',
+                          border: isDark
+                            ? '1px solid rgba(255, 255, 255, 0.12)'
+                            : '1px solid #f0f0f0',
+                          textAlign: 'right',
+                        }}
+                      >
+                        {day.peakGpuUsage.toFixed(1)}%
+                      </td>
+                      <td
+                        style={{
+                          padding: '8px',
+                          border: isDark
+                            ? '1px solid rgba(255, 255, 255, 0.12)'
+                            : '1px solid #f0f0f0',
+                          textAlign: 'right',
+                        }}
+                      >
+                        {day.activeUsersCount}
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+
+          {/* 分页组件 */}
+          {trendData &&
+            trendData.dailyStats &&
+            trendData.dailyStats.length > 0 && (
+              <div
                 style={{
-                  background: isDark ? 'rgba(255, 255, 255, 0.04)' : '#fafafa',
+                  marginTop: 16,
+                  textAlign: 'right',
+                  position: 'relative',
+                  zIndex: 1,
                 }}
               >
-                <th
-                  style={{
-                    padding: '8px',
-                    border: isDark
-                      ? '1px solid rgba(255, 255, 255, 0.12)'
-                      : '1px solid #f0f0f0',
-                    textAlign: 'left',
-                  }}
-                >
-                  日期
-                </th>
-                <th
-                  style={{
-                    padding: '8px',
-                    border: isDark
-                      ? '1px solid rgba(255, 255, 255, 0.12)'
-                      : '1px solid #f0f0f0',
-                    textAlign: 'right',
-                  }}
-                >
-                  任务数
-                </th>
-                <th
-                  style={{
-                    padding: '8px',
-                    border: isDark
-                      ? '1px solid rgba(255, 255, 255, 0.12)'
-                      : '1px solid #f0f0f0',
-                    textAlign: 'right',
-                  }}
-                >
-                  总运行时间
-                </th>
-                <th
-                  style={{
-                    padding: '8px',
-                    border: isDark
-                      ? '1px solid rgba(255, 255, 255, 0.12)'
-                      : '1px solid #f0f0f0',
-                    textAlign: 'right',
-                  }}
-                >
-                  峰值GPU使用率
-                </th>
-                <th
-                  style={{
-                    padding: '8px',
-                    border: isDark
-                      ? '1px solid rgba(255, 255, 255, 0.12)'
-                      : '1px solid #f0f0f0',
-                    textAlign: 'right',
-                  }}
-                >
-                  活跃用户数
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {trendData.dailyStats.map((day, index) => (
-                <tr key={index}>
-                  <td
-                    style={{
-                      padding: '8px',
-                      border: isDark
-                        ? '1px solid rgba(255, 255, 255, 0.12)'
-                        : '1px solid #f0f0f0',
-                    }}
-                  >
-                    {day.date.split(' ')[0]}
-                  </td>
-                  <td
-                    style={{
-                      padding: '8px',
-                      border: isDark
-                        ? '1px solid rgba(255, 255, 255, 0.12)'
-                        : '1px solid #f0f0f0',
-                      textAlign: 'right',
-                    }}
-                  >
-                    {day.totalTasks}
-                  </td>
-                  <td
-                    style={{
-                      padding: '8px',
-                      border: isDark
-                        ? '1px solid rgba(255, 255, 255, 0.12)'
-                        : '1px solid #f0f0f0',
-                      textAlign: 'right',
-                    }}
-                  >
-                    {formatRuntime(day.totalRuntime)}
-                  </td>
-                  <td
-                    style={{
-                      padding: '8px',
-                      border: isDark
-                        ? '1px solid rgba(255, 255, 255, 0.12)'
-                        : '1px solid #f0f0f0',
-                      textAlign: 'right',
-                    }}
-                  >
-                    {day.peakGpuUsage.toFixed(1)}%
-                  </td>
-                  <td
-                    style={{
-                      padding: '8px',
-                      border: isDark
-                        ? '1px solid rgba(255, 255, 255, 0.12)'
-                        : '1px solid #f0f0f0',
-                      textAlign: 'right',
-                    }}
-                  >
-                    {day.activeUsersCount}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </Card>
+                <Pagination
+                  current={currentPage}
+                  pageSize={pageSize}
+                  total={trendData.dailyStats.length}
+                  showSizeChanger
+                  showQuickJumper
+                  showTotal={(total, range) =>
+                    `第 ${range[0]}-${range[1]} 条，共 ${total} 条`
+                  }
+                  onChange={handlePageChange}
+                  onShowSizeChange={handlePageChange}
+                  pageSizeOptions={['10', '20', '50', '100']}
+                />
+              </div>
+            )}
+        </Panel>
+      </Collapse>
     </div>
   );
 };

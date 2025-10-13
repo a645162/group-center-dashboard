@@ -8,11 +8,14 @@ import {
   List,
   Pagination,
   Progress,
+  Select,
   Spin,
   Statistic,
   Tag,
 } from 'antd';
 import React, { useEffect, useState } from 'react';
+
+const { Option } = Select;
 
 interface ProjectStatisticsProps {
   timePeriod: string;
@@ -45,6 +48,7 @@ const ProjectStatistics: React.FC<ProjectStatisticsProps> = ({
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [pageSize, setPageSize] = useState<number>(10);
+  const [topK, setTopK] = useState<number | null>(10);
 
   useEffect(() => {
     fetchProjectStatistics();
@@ -150,12 +154,15 @@ const ProjectStatistics: React.FC<ProjectStatisticsProps> = ({
   const getProjectTimeDistributionData = () => {
     if (!projectData) return [];
 
-    const totalRuntime = projectData.topProjects.reduce(
+    const topProjects = topK
+      ? projectData.topProjects.slice(0, topK)
+      : projectData.topProjects;
+    const totalRuntime = topProjects.reduce(
       (sum, project) => sum + project.totalRuntime,
       0,
     );
 
-    return projectData.topProjects.map((project) => ({
+    return topProjects.map((project) => ({
       type: project.projectName,
       value: project.totalRuntime,
       runtime: project.totalRuntime,
@@ -385,6 +392,46 @@ const ProjectStatistics: React.FC<ProjectStatisticsProps> = ({
         </Card>
       </div>
 
+      {/* 项目时间占比分布 */}
+      <Card
+        title={
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+            }}
+          >
+            <span>项目时间占比分布</span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <span style={{ fontSize: '12px', color: '#666' }}>显示前</span>
+              <Select
+                value={topK}
+                onChange={setTopK}
+                style={{ width: 100 }}
+                size="small"
+              >
+                <Option value={5}>5</Option>
+                <Option value={10}>10</Option>
+                <Option value={15}>15</Option>
+                <Option value={20}>20</Option>
+                <Option value={25}>25</Option>
+                <Option value={null}>无限制</Option>
+              </Select>
+              <span style={{ fontSize: '12px', color: '#666' }}>
+                个项目 {topK ? '' : '(显示全部)'} (共{' '}
+                {projectData.topProjects.length} 个)
+              </span>
+            </div>
+          </div>
+        }
+        style={{ marginBottom: 24 }}
+      >
+        <div style={{ height: 400 }}>
+          <Pie {...projectTimePieConfig} />
+        </div>
+      </Card>
+
       {/* 项目排名列表 */}
       <Card
         title="项目使用排名"
@@ -503,13 +550,6 @@ const ProjectStatistics: React.FC<ProjectStatisticsProps> = ({
             onChange={handlePageChange}
             onShowSizeChange={handlePageChange}
           />
-        </div>
-      </Card>
-
-      {/* 项目时间占比分布 */}
-      <Card title="项目时间占比分布" style={{ marginTop: 24 }}>
-        <div style={{ height: 400 }}>
-          <Pie {...projectTimePieConfig} />
         </div>
       </Card>
     </div>
