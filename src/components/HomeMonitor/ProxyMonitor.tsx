@@ -1,6 +1,9 @@
 import {
   CheckCircleOutlined,
   CloseCircleOutlined,
+  CodeOutlined,
+  ConsoleSqlOutlined,
+  CopyOutlined,
   DownOutlined,
   ReloadOutlined,
 } from '@ant-design/icons';
@@ -100,18 +103,53 @@ const ProxyMonitor: React.FC<ProxyMonitorProps> = ({
   }, [refreshInterval]);
 
   const getStatusTag = (server: API.ProxyServerInfo) => {
-    if (server.isAvailable) {
-      return (
-        <Tag color="green" icon={<CheckCircleOutlined />}>
-          在线
+    // 如果服务器被禁用，显示禁用标签
+    if (!server.enable) {
+      const disabledTag = (
+        <Tag color="default" icon={<CloseCircleOutlined />}>
+          禁用
         </Tag>
       );
+
+      // 如果有最后检查时间，添加Tooltip显示
+      if (server.lastCheckTime) {
+        return (
+          <Tooltip
+            title={`最后检查: ${formatTime(server.lastCheckTime)}`}
+            color="rgba(0, 0, 0, 0.75)"
+          >
+            {disabledTag}
+          </Tooltip>
+        );
+      }
+
+      return disabledTag;
     }
-    return (
+
+    // 服务器启用时的状态标签
+    const statusTag = server.isAvailable ? (
+      <Tag color="green" icon={<CheckCircleOutlined />}>
+        在线
+      </Tag>
+    ) : (
       <Tag color="red" icon={<CloseCircleOutlined />}>
         离线
       </Tag>
     );
+
+    // 如果有最后检查时间，添加Tooltip显示
+    if (server.lastCheckTime) {
+      return (
+        <Tooltip
+          title={`最后检查: ${formatTime(server.lastCheckTime)}`}
+          color="rgba(0, 0, 0, 0.75)"
+        >
+          {statusTag}
+        </Tooltip>
+      );
+    }
+
+    return statusTag;
   };
 
   const getResponseTimeColor = (time?: number) => {
@@ -203,7 +241,12 @@ const ProxyMonitor: React.FC<ProxyMonitorProps> = ({
   const getMoreMenuItems = (server: API.ProxyServerInfo) => [
     {
       key: '1',
-      label: '复制为Bash代理服务器',
+      label: (
+        <Space>
+          <ConsoleSqlOutlined />
+          复制为Bash代理服务器
+        </Space>
+      ),
       onClick: () => {
         const command = generateBashProxyCommand(server);
         copyToClipboardPromise(command)
@@ -223,7 +266,12 @@ const ProxyMonitor: React.FC<ProxyMonitorProps> = ({
     },
     {
       key: '2',
-      label: '复制为PowerShell代理服务器',
+      label: (
+        <Space>
+          <CodeOutlined />
+          复制为PowerShell代理服务器
+        </Space>
+      ),
       onClick: () => {
         const command = generatePowerShellProxyCommand(server);
         copyToClipboardPromise(command)
@@ -268,13 +316,24 @@ const ProxyMonitor: React.FC<ProxyMonitorProps> = ({
         direction="right"
         onClose={() => setContextMenuOpen(false)}
       >
-        <ContextMenuItem disabled>{selectedServer?.name}</ContextMenuItem>
+        <ContextMenuItem disabled>
+          <Space>
+            <CopyOutlined />
+            {selectedServer?.name}
+          </Space>
+        </ContextMenuItem>
         <ContextMenuDivider />
         <ContextMenuItem onClick={handleCopyBashCommand}>
-          复制"{selectedServer?.name}"为Bash代理服务器
+          <Space>
+            <ConsoleSqlOutlined />
+            复制"{selectedServer?.name}"为Bash代理服务器
+          </Space>
         </ContextMenuItem>
         <ContextMenuItem onClick={handleCopyPowerShellCommand}>
-          复制"{selectedServer?.name}"为PowerShell代理服务器
+          <Space>
+            <CodeOutlined />
+            复制"{selectedServer?.name}"为PowerShell代理服务器
+          </Space>
         </ContextMenuItem>
       </ContextMenu>
 
@@ -374,18 +433,6 @@ const ProxyMonitor: React.FC<ProxyMonitorProps> = ({
                   <span className={styles.detailLabel}>类型:</span>
                   <span className={styles.detailValue}>{server.type}</span>
                 </div>
-                <div className={styles.detailRow}>
-                  <span className={styles.detailLabel}>优先级:</span>
-                  <span className={styles.detailValue}>{server.priority}</span>
-                </div>
-                <div className={styles.detailRow}>
-                  <span className={styles.detailLabel}>状态:</span>
-                  <span className={styles.detailValue}>
-                    <Tag color={server.enable ? 'blue' : 'default'}>
-                      {server.enable ? '启用' : '禁用'}
-                    </Tag>
-                  </span>
-                </div>
                 {server.responseTime && (
                   <div className={styles.detailRow}>
                     <span className={styles.detailLabel}>响应时间:</span>
@@ -393,14 +440,6 @@ const ProxyMonitor: React.FC<ProxyMonitorProps> = ({
                       <Tag color={getResponseTimeColor(server.responseTime)}>
                         {server.responseTime}ms
                       </Tag>
-                    </span>
-                  </div>
-                )}
-                {server.lastCheckTime && (
-                  <div className={styles.detailRow}>
-                    <span className={styles.detailLabel}>最后检查:</span>
-                    <span className={styles.detailValue}>
-                      {formatTime(server.lastCheckTime)}
                     </span>
                   </div>
                 )}

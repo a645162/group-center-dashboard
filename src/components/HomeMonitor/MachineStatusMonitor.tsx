@@ -56,32 +56,44 @@ const MachineStatusMonitor: React.FC<MachineStatusMonitorProps> = ({
   }, [refreshInterval]);
 
   const getPingStatusTag = (machine: API.MachineStatusResponse) => {
-    if (machine.pingStatus) {
-      return (
-        <Tag color="green" icon={<CheckCircleOutlined />}>
-          Ping正常
-        </Tag>
-      );
-    }
-    return (
+    const pingTag = machine.pingStatus ? (
+      <Tag color="green" icon={<CheckCircleOutlined />}>
+        Ping正常
+      </Tag>
+    ) : (
       <Tag color="red" icon={<CloseCircleOutlined />}>
         Ping失败
       </Tag>
     );
+
+    return (
+      <Tooltip
+        title={`最后Ping: ${machine.lastPingTimeFormatted || formatTime(machine.lastPingTime)}`}
+        color="rgba(0, 0, 0, 0.75)"
+      >
+        {pingTag}
+      </Tooltip>
+    );
   };
 
   const getAgentStatusTag = (machine: API.MachineStatusResponse) => {
-    if (machine.agentStatus) {
-      return (
-        <Tag color="blue" icon={<CheckCircleOutlined />}>
-          Agent在线
-        </Tag>
-      );
-    }
-    return (
+    const agentTag = machine.agentStatus ? (
+      <Tag color="blue" icon={<CheckCircleOutlined />}>
+        Agent在线
+      </Tag>
+    ) : (
       <Tag color="orange" icon={<CloseCircleOutlined />}>
         Agent离线
       </Tag>
+    );
+
+    return (
+      <Tooltip
+        title={`最后心跳: ${machine.lastHeartbeatTimeFormatted || formatTime(machine.lastHeartbeatTime)}`}
+        color="rgba(0, 0, 0, 0.75)"
+      >
+        {agentTag}
+      </Tooltip>
     );
   };
 
@@ -192,23 +204,6 @@ const MachineStatusMonitor: React.FC<MachineStatusMonitorProps> = ({
                   {getAgentStatusTag(machine)}
                   {/* {getGpuTag(machine)} */}
                 </Space>
-              </div>
-
-              <div className={styles.machineDetails}>
-                <div className={styles.detailRow}>
-                  <span className={styles.detailLabel}>最后Ping:</span>
-                  <span className={styles.detailValue}>
-                    {machine.lastPingTimeFormatted ||
-                      formatTime(machine.lastPingTime)}
-                  </span>
-                </div>
-                <div className={styles.detailRow}>
-                  <span className={styles.detailLabel}>最后心跳:</span>
-                  <span className={styles.detailValue}>
-                    {machine.lastHeartbeatTimeFormatted ||
-                      formatTime(machine.lastHeartbeatTime)}
-                  </span>
-                </div>
               </div>
             </div>
           </Card>
