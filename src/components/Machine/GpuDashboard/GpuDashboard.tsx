@@ -296,6 +296,7 @@ const GpuDashboard: React.FC<Props> = (props) => {
         title={memoryTooltipContent}
         placement="top"
         overlayStyle={{ maxWidth: 350 }}
+        color={token.colorBgElevated}
       >
         <h1 className={styles.title} style={{ cursor: 'help' }}>
           {name}

@@ -301,6 +301,7 @@ const GpuUsageCard: React.FC<Props> = (props) => {
             title={gpuTooltipContent}
             placement="topLeft"
             overlayStyle={{ maxWidth: 300 }}
+            color={token.colorBgElevated}
           >
             <span style={{ cursor: 'help' }}>
               [{gpuIndex}]{gpuUsageInfo?.gpuName || ''}
@@ -373,6 +374,7 @@ const GpuUsageCard: React.FC<Props> = (props) => {
           }
           placement="topLeft"
           overlayStyle={{ maxWidth: 250 }}
+          color={token.colorBgElevated}
         >
           <div className={styles.innerLine} style={{ cursor: 'help' }}>
             {gpuMemoryUsageFormatted}/{gpuMemoryTotalFormatted}GiB
