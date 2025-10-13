@@ -1,8 +1,45 @@
 .container {
   padding: 0;
+
+  // 移动端适配
+  @media (max-width: 768px) {
+    padding: 0 8px;
+  }
 }
 
 .content {
   width: 100%;
   max-width: 100%;
+
+  // 移动端适配
+  @media (max-width: 768px) {
+    :global {
+      .ant-card-body {
+        padding: 12px !important;
+      }
+
+      .ant-form-item {
+        margin-bottom: 16px;
+      }
+
+      .ant-input,
+      .ant-select-selector,
+      .ant-btn {
+        font-size: 16px; // 防止iOS缩放
+      }
+
+      .ant-table {
+        font-size: 14px;
+      }
+
+      .ant-table-thead > tr > th {
+        font-size: 14px;
+        padding: 8px;
+      }
+
+      .ant-table-tbody > tr > td {
+        padding: 8px;
+      }
+    }
+  }
 }

@@ -1,9 +1,13 @@
+import TaskDetailModal, {
+  TaskDetailModalHandles,
+} from '@/pages/TaskQuery/components/TaskDetailModal';
+import { getTaskByTaskId } from '@/services/group_center/gpuTaskQuery';
 import {
   getUserList,
   getUserSubscriptions,
   unsubscribeProject,
 } from '@/services/group_center/publicApi';
-import { DeleteOutlined } from '@ant-design/icons';
+import { DeleteOutlined, EyeOutlined } from '@ant-design/icons';
 import {
   Button,
   Card,
@@ -30,6 +34,12 @@ interface SubscriptionInfo {
   count: number;
 }
 
+interface TaskDetailInfo {
+  taskId: string;
+  taskInfo?: API.GpuTaskInfo;
+  loading: boolean;
+}
+
 const SubscriptionManagementPanel: React.FC = () => {
   const [userList, setUserList] = useState<UserInfo[]>([]);
   const [selectedUser, setSelectedUser] = useState<string>('');
@@ -37,7 +47,11 @@ const SubscriptionManagementPanel: React.FC = () => {
     null,
   );
   const [loading, setLoading] = useState(false);
+  const [taskDetails, setTaskDetails] = useState<
+    Record<string, TaskDetailInfo>
+  >({});
   const [messageApi, contextHolder] = message.useMessage();
+  const taskDetailModalRef = React.useRef<TaskDetailModalHandles>(null);
 
   // 获取用户列表
   useEffect(() => {
@@ -64,10 +78,14 @@ const SubscriptionManagementPanel: React.FC = () => {
     try {
       const response = await getUserSubscriptions({ userName });
 
-      if (response.isSucceed) {
-        setSubscriptions(response.result);
+      if (response.isSucceed && response.result) {
+        const subscriptionData = response.result as SubscriptionInfo;
+        setSubscriptions(subscriptionData);
       } else {
-        const errorMessage = response.result || '获取订阅列表失败';
+        const errorMessage =
+          typeof response.result === 'string'
+            ? response.result
+            : '获取订阅列表失败';
         messageApi.error(errorMessage);
         setSubscriptions(null);
       }
@@ -84,6 +102,53 @@ const SubscriptionManagementPanel: React.FC = () => {
   const handleUserChange = (value: string) => {
     setSelectedUser(value);
     fetchUserSubscriptions(value);
+  };
+
+  // 获取任务详情
+  const fetchTaskDetail = async (taskId: string) => {
+    if (taskDetails[taskId]?.taskInfo) {
+      // 如果已经有缓存的任务信息，直接显示
+      taskDetailModalRef.current?.tryToShowModal();
+      return;
+    }
+
+    // 设置加载状态
+    setTaskDetails((prev) => ({
+      ...prev,
+      [taskId]: { taskId, loading: true },
+    }));
+
+    try {
+      const response = await getTaskByTaskId({ taskId });
+
+      if (response.isSucceed && response.result) {
+        const taskInfo = response.result as API.GpuTaskInfo;
+        setTaskDetails((prev) => ({
+          ...prev,
+          [taskId]: { taskId, taskInfo, loading: false },
+        }));
+        // 显示详情弹窗
+        taskDetailModalRef.current?.tryToShowModal();
+      } else {
+        messageApi.error('获取任务详情失败');
+        setTaskDetails((prev) => ({
+          ...prev,
+          [taskId]: { taskId, loading: false },
+        }));
+      }
+    } catch (error) {
+      console.error('Error fetching task detail:', error);
+      messageApi.error('获取任务详情时发生错误');
+      setTaskDetails((prev) => ({
+        ...prev,
+        [taskId]: { taskId, loading: false },
+      }));
+    }
+  };
+
+  // 处理查看任务详情
+  const handleViewTaskDetail = (taskId: string) => {
+    fetchTaskDetail(taskId);
   };
 
   // 处理取消订阅
@@ -162,42 +227,57 @@ const SubscriptionManagementPanel: React.FC = () => {
                   loading={loading}
                   dataSource={subscriptions.subscriptions}
                   style={{ width: '100%' }}
-                  renderItem={(projectId) => (
-                    <List.Item
-                      style={{
-                        padding: '16px 0',
-                        borderBottom: '1px solid #f0f0f0',
-                      }}
-                      actions={[
-                        <Popconfirm
-                          key="unsubscribe"
-                          title="确认取消订阅"
-                          description={`确定要取消订阅项目 ${projectId} 吗？`}
-                          onConfirm={() => handleUnsubscribe(projectId)}
-                          okText="确定"
-                          cancelText="取消"
-                        >
+                  renderItem={(projectId) => {
+                    const taskDetail = taskDetails[projectId];
+                    const isLoading = taskDetail?.loading || false;
+
+                    return (
+                      <List.Item
+                        style={{
+                          padding: '16px 0',
+                          borderBottom: '1px solid #f0f0f0',
+                        }}
+                        actions={[
                           <Button
+                            key="view"
                             type="link"
-                            danger
-                            icon={<DeleteOutlined />}
+                            icon={<EyeOutlined />}
                             size="middle"
+                            loading={isLoading}
+                            onClick={() => handleViewTaskDetail(projectId)}
                           >
-                            取消订阅
-                          </Button>
-                        </Popconfirm>,
-                      ]}
-                    >
-                      <List.Item.Meta
-                        title={
-                          <Text strong style={{ fontSize: '16px' }}>
-                            项目 ID: {projectId}
-                          </Text>
-                        }
-                        description={`用户: ${subscriptions.userName}`}
-                      />
-                    </List.Item>
-                  )}
+                            查看详情
+                          </Button>,
+                          <Popconfirm
+                            key="unsubscribe"
+                            title="确认取消订阅"
+                            description={`确定要取消订阅项目 ${projectId} 吗？`}
+                            onConfirm={() => handleUnsubscribe(projectId)}
+                            okText="确定"
+                            cancelText="取消"
+                          >
+                            <Button
+                              type="link"
+                              danger
+                              icon={<DeleteOutlined />}
+                              size="middle"
+                            >
+                              取消订阅
+                            </Button>
+                          </Popconfirm>,
+                        ]}
+                      >
+                        <List.Item.Meta
+                          title={
+                            <Text strong style={{ fontSize: '16px' }}>
+                              项目 ID: {projectId}
+                            </Text>
+                          }
+                          description={`用户: ${subscriptions.userName}`}
+                        />
+                      </List.Item>
+                    );
+                  }}
                 />
               ) : (
                 <Empty
@@ -217,6 +297,21 @@ const SubscriptionManagementPanel: React.FC = () => {
           )}
         </Space>
       </Card>
+
+      {/* 任务详情弹窗 */}
+      {subscriptions?.subscriptions.map((taskId) => {
+        const taskDetail = taskDetails[taskId];
+        if (taskDetail?.taskInfo) {
+          return (
+            <TaskDetailModal
+              key={taskId}
+              ref={taskDetailModalRef}
+              taskInfo={taskDetail.taskInfo}
+            />
+          );
+        }
+        return null;
+      })}
     </>
   );
 };

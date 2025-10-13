@@ -131,9 +131,12 @@ export default function ReportPage() {
                   wordBreak: 'break-all',
                   fontSize: '12px',
                   fontFamily: 'monospace',
-                  backgroundColor: '#f5f5f5',
+                  backgroundColor: 'var(--ant-color-bg-container)',
+                  color: 'var(--ant-color-text)',
                   padding: '8px',
                   borderRadius: '4px',
+                  border: '1px solid var(--ant-color-border)',
+                  margin: 0,
                 }}
               >
                 {uaString}
@@ -149,9 +152,12 @@ export default function ReportPage() {
             fontSize: '12px',
             overflow: 'auto',
             maxHeight: '300px',
-            backgroundColor: '#f5f5f5',
+            backgroundColor: 'var(--ant-color-bg-container)',
+            color: 'var(--ant-color-text)',
             padding: '12px',
             borderRadius: '4px',
+            border: '1px solid var(--ant-color-border)',
+            margin: 0,
           }}
         >
           {JSON.stringify(uaResult, null, 2)}
