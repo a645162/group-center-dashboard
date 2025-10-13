@@ -56,9 +56,9 @@ const FilterGroup: React.FC<FilterGroupProps> = ({
     // 清除多GPU筛选器
     clearMultiGpuFilter();
 
-    // 清除机器选择（不选择任何机器）
+    // 清除机器选择（全选所有机器）
     clearMachineSelection();
-    onSelectionChange([]);
+    onSelectionChange(machineList);
 
     console.log('All filters cleared');
   };
