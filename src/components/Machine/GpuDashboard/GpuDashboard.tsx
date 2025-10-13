@@ -1,5 +1,8 @@
 import { useGpuTaskFilterCardStore } from '@/data/store/modules/filter/GpuTaskFilterCard';
 import { getGpuCount } from '@/services/agent/GpuInfo';
+import { getMachineSystemInfo } from '@/services/agent/MachineInfo';
+import { convertFromMBToGB, getMemoryString } from '@/utils/Convert/MemorySize';
+import { Progress, Tooltip, theme } from 'antd';
 import React, { useEffect, useState } from 'react';
 import GpuDevice from './GpuDevice';
 
@@ -28,10 +31,42 @@ const useGpuCountState = (apiUrl: string) => {
   return gpuCountState;
 };
 
+const useMachineSystemInfo = (apiUrl: string) => {
+  const [machineSystemInfo, setMachineSystemInfo] =
+    useState<API.MachineSystemInfo>();
+
+  const updateMachineSystemInfo = () => {
+    getMachineSystemInfo(apiUrl)
+      .then((data) => {
+        setMachineSystemInfo(data);
+      })
+      .catch((error: any) => {
+        console.log('Error(getMachineSystemInfo):', error);
+      });
+  };
+
+  // 初始执行一次
+  useEffect(() => {
+    updateMachineSystemInfo();
+  }, []);
+
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      updateMachineSystemInfo();
+    }, 5000); // 每隔5秒执行一次
+
+    return () => clearInterval(intervalId);
+  }, [apiUrl]);
+
+  return machineSystemInfo;
+};
+
 const GpuDashboard: React.FC<Props> = (props) => {
   const { name, apiUrl } = props;
+  const { token } = theme.useToken();
 
   const gpuCountState = useGpuCountState(apiUrl);
+  const machineSystemInfo = useMachineSystemInfo(apiUrl);
   const gpuIdFilter = useGpuTaskFilterCardStore((state) => state.gpuIdFilter);
 
   // 调试日志：显示筛选状态
@@ -113,9 +148,159 @@ const GpuDashboard: React.FC<Props> = (props) => {
     );
   };
 
+  // 构建内存信息提示内容
+  const memoryTooltipContent = machineSystemInfo ? (
+    <div style={{ minWidth: 280, padding: '8px 0' }}>
+      <div
+        style={{
+          marginBottom: 16,
+          fontWeight: 'bold',
+          fontSize: '16px',
+          textAlign: 'center',
+          color: token.colorText,
+        }}
+      >
+        系统内存信息
+      </div>
+
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+        {/* 物理内存 */}
+        <div>
+          <div
+            style={{
+              fontWeight: 500,
+              marginBottom: 8,
+              fontSize: '14px',
+              color: token.colorTextSecondary,
+            }}
+          >
+            物理内存
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+            <Progress
+              type="dashboard"
+              percent={Math.round(
+                (machineSystemInfo.memoryPhysicUsedMb /
+                  machineSystemInfo.memoryPhysicTotalMb) *
+                  100,
+              )}
+              format={(percent) => `${percent}%`}
+              size={60}
+              strokeColor={{
+                '0%': '#108ee9',
+                '100%': '#87d068',
+              }}
+            />
+            <div style={{ fontSize: '12px', lineHeight: 1.4 }}>
+              <div style={{ color: token.colorText }}>
+                已用:{' '}
+                {getMemoryString(
+                  convertFromMBToGB(machineSystemInfo.memoryPhysicUsedMb),
+                )}
+                GB
+              </div>
+              <div style={{ color: token.colorText }}>
+                总计:{' '}
+                {getMemoryString(
+                  convertFromMBToGB(machineSystemInfo.memoryPhysicTotalMb),
+                )}
+                GB
+              </div>
+              <div style={{ color: token.colorText }}>
+                可用:{' '}
+                {getMemoryString(
+                  convertFromMBToGB(
+                    machineSystemInfo.memoryPhysicTotalMb -
+                      machineSystemInfo.memoryPhysicUsedMb,
+                  ),
+                )}
+                GB
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* 虚拟内存 */}
+        <div>
+          <div
+            style={{
+              fontWeight: 500,
+              marginBottom: 8,
+              fontSize: '14px',
+              color: token.colorTextSecondary,
+            }}
+          >
+            虚拟内存
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+            <Progress
+              type="dashboard"
+              percent={Math.round(
+                (machineSystemInfo.memorySwapUsedMb /
+                  machineSystemInfo.memorySwapTotalMb) *
+                  100,
+              )}
+              format={(percent) => `${percent}%`}
+              size={60}
+              strokeColor={{
+                '0%': '#108ee9',
+                '100%': '#87d068',
+              }}
+            />
+            <div style={{ fontSize: '12px', lineHeight: 1.4 }}>
+              <div style={{ color: token.colorText }}>
+                已用:{' '}
+                {getMemoryString(
+                  convertFromMBToGB(machineSystemInfo.memorySwapUsedMb),
+                )}
+                GB
+              </div>
+              <div style={{ color: token.colorText }}>
+                总计:{' '}
+                {getMemoryString(
+                  convertFromMBToGB(machineSystemInfo.memorySwapTotalMb),
+                )}
+                GB
+              </div>
+              <div style={{ color: token.colorText }}>
+                可用:{' '}
+                {getMemoryString(
+                  convertFromMBToGB(
+                    machineSystemInfo.memorySwapTotalMb -
+                      machineSystemInfo.memorySwapUsedMb,
+                  ),
+                )}
+                GB
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  ) : (
+    <div
+      style={{
+        minWidth: 200,
+        padding: '16px',
+        textAlign: 'center',
+        color: token.colorText,
+      }}
+    >
+      正在加载内存信息...
+    </div>
+  );
+
   return (
     <div id={`device-${name}`}>
-      <h1 className={styles.title}>{name}</h1>
+      <Tooltip
+        title={memoryTooltipContent}
+        placement="top"
+        overlayStyle={{ maxWidth: 350 }}
+      >
+        <h1 className={styles.title} style={{ cursor: 'help' }}>
+          {name}
+        </h1>
+      </Tooltip>
       {gpuInfoContent()}
     </div>
   );
