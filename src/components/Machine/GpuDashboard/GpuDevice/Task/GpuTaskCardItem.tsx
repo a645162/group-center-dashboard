@@ -1,3 +1,4 @@
+import { ProjectSubscriptionModal } from '@/components/ProjectSubscription';
 import RunTimeComponent from '@/components/Time/RunTimeComponent';
 import VShow from '@/components/Vue/V-Show';
 import { useGpuTaskFilterProjectNameStore } from '@/data/store/modules/filter/GpuTaskFilterProjectName';
@@ -57,6 +58,8 @@ const GpuTaskCardItem: React.FC<Props> = (props) => {
 
   const [openStartTimePopConfirm, setOpenStartTimePopConfirm] = useState(false);
   const [openUserFilterPopConfirm, setOpenUserFilterPopConfirm] =
+    useState(false);
+  const [subscriptionModalVisible, setSubscriptionModalVisible] =
     useState(false);
   const [messageApi, contextHolder] = message.useMessage();
 
@@ -178,6 +181,16 @@ const GpuTaskCardItem: React.FC<Props> = (props) => {
     history.push(`/task-query?${params.toString()}`);
   };
 
+  // 处理订阅项目
+  const handleSubscribeProject = () => {
+    setSubscriptionModalVisible(true);
+  };
+
+  // 处理订阅成功
+  const handleSubscriptionSuccess = () => {
+    messageApi.success('订阅操作成功');
+  };
+
   const moreMenuItems: MenuProps['items'] = [
     {
       key: '1',
@@ -208,6 +221,15 @@ const GpuTaskCardItem: React.FC<Props> = (props) => {
       label: `跳转到任务查询（按项目"${taskInfo.projectName}"）`,
       icon: <SearchOutlined />,
       onClick: handleNavigateToTaskQueryByProject,
+    },
+    {
+      type: 'divider',
+    },
+    {
+      key: '6',
+      label: `订阅项目"${taskInfo.projectName}"`,
+      icon: <SearchOutlined />,
+      onClick: handleSubscribeProject,
     },
   ];
   const MoreMenu = () => (
@@ -264,10 +286,23 @@ const GpuTaskCardItem: React.FC<Props> = (props) => {
         <ContextMenuItem onClick={handleNavigateToTaskQueryByProject}>
           跳转到任务查询（按项目"{taskInfo.projectName}"）
         </ContextMenuItem>
+        <ContextMenuDivider />
+        <ContextMenuItem onClick={handleSubscribeProject}>
+          订阅项目"{taskInfo.projectName}"
+        </ContextMenuItem>
       </ContextMenu>
 
       {/* Gpu Task Detail Modal */}
       <GpuTaskDetailModal taskInfo={taskInfo} ref={modalFunctionRef} />
+
+      {/* Project Subscription Modal */}
+      <ProjectSubscriptionModal
+        visible={subscriptionModalVisible}
+        onCancel={() => setSubscriptionModalVisible(false)}
+        onSuccess={handleSubscriptionSuccess}
+        projectId={taskInfo.id || 0}
+        projectName={taskInfo.projectName}
+      />
 
       <Space direction="vertical" size={16}>
         <DisableSelectDiv>

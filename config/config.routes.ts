@@ -41,6 +41,12 @@ const prodRoutes = [
     component: './Report',
     icon: 'DatabaseOutlined',
   },
+  {
+    name: '高级管理',
+    path: '/advanced-management',
+    component: './AdvancedManagement',
+    icon: 'SettingOutlined',
+  },
 ];
 
 const devRoutes = isDev
