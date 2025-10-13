@@ -11,7 +11,7 @@ import {
   Space,
   Switch,
 } from 'antd';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 const { Option } = Select;
 const { RangePicker } = DatePicker;
@@ -20,15 +20,24 @@ interface TaskQueryFormProps {
   onQuery: (params: API.queryGpuTasksSimpleParams) => void;
   onReset: () => void;
   loading: boolean;
+  initialValues?: any;
 }
 
 const TaskQueryForm: React.FC<TaskQueryFormProps> = ({
   onQuery,
   onReset,
   loading,
+  initialValues,
 }) => {
   const [form] = Form.useForm();
   const [showAdvanced, setShowAdvanced] = useState(false);
+
+  // 当initialValues变化时，设置表单值
+  useEffect(() => {
+    if (initialValues) {
+      form.setFieldsValue(initialValues);
+    }
+  }, [initialValues, form]);
 
   const handleSubmit = (values: any) => {
     const params: API.queryGpuTasksSimpleParams = {

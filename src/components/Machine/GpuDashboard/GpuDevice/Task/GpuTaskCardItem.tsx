@@ -11,8 +11,10 @@ import {
   DownOutlined,
   ForkOutlined,
   QuestionCircleOutlined,
+  SearchOutlined,
   WarningOutlined,
 } from '@ant-design/icons';
+import { history } from '@umijs/max';
 import {
   Card,
   Divider,
@@ -150,6 +152,32 @@ const GpuTaskCardItem: React.FC<Props> = (props) => {
     });
   };
 
+  // 跳转到任务查询页面（按用户）
+  const handleNavigateToTaskQueryByUser = () => {
+    const params = new URLSearchParams({
+      userName: taskInfo.name,
+      page: '1',
+      pageSize: '20',
+      sortBy: 'TASK_START_TIME',
+      sortOrder: 'DESC',
+    });
+
+    history.push(`/task-query?${params.toString()}`);
+  };
+
+  // 跳转到任务查询页面（按项目）
+  const handleNavigateToTaskQueryByProject = () => {
+    const params = new URLSearchParams({
+      projectName: taskInfo.projectName,
+      page: '1',
+      pageSize: '20',
+      sortBy: 'TASK_START_TIME',
+      sortOrder: 'DESC',
+    });
+
+    history.push(`/task-query?${params.toString()}`);
+  };
+
   const moreMenuItems: MenuProps['items'] = [
     {
       key: '1',
@@ -165,6 +193,21 @@ const GpuTaskCardItem: React.FC<Props> = (props) => {
       key: '3',
       label: `设置"${taskInfo.projectName}"为项目名过滤器`,
       onClick: handleSetProjectFilter,
+    },
+    {
+      type: 'divider',
+    },
+    {
+      key: '4',
+      label: `跳转到任务查询（按用户"${taskInfo.name}"）`,
+      icon: <SearchOutlined />,
+      onClick: handleNavigateToTaskQueryByUser,
+    },
+    {
+      key: '5',
+      label: `跳转到任务查询（按项目"${taskInfo.projectName}"）`,
+      icon: <SearchOutlined />,
+      onClick: handleNavigateToTaskQueryByProject,
     },
   ];
   const MoreMenu = () => (
@@ -213,6 +256,13 @@ const GpuTaskCardItem: React.FC<Props> = (props) => {
         </ContextMenuItem>
         <ContextMenuItem onClick={handleSetProjectFilter}>
           设置"{taskInfo.projectName}"为项目名过滤器
+        </ContextMenuItem>
+        <ContextMenuDivider />
+        <ContextMenuItem onClick={handleNavigateToTaskQueryByUser}>
+          跳转到任务查询（按用户"{taskInfo.name}"）
+        </ContextMenuItem>
+        <ContextMenuItem onClick={handleNavigateToTaskQueryByProject}>
+          跳转到任务查询（按项目"{taskInfo.projectName}"）
         </ContextMenuItem>
       </ContextMenu>
 
