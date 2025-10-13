@@ -125,6 +125,10 @@ declare namespace API {
     timePeriod?: string;
   };
 
+  type getUserSubscriptionsParams = {
+    userName: string;
+  };
+
   type getUserTaskStatsParams = {
     /** Username to get statistics for */
     userName: string;
@@ -280,6 +284,11 @@ declare namespace API {
 
   type postSshFileUploadParams = {
     userNameEng: string;
+  };
+
+  type ProjectSubscriptionRequest = {
+    projectId: number;
+    userName: string;
   };
 
   type ProxyServerInfo = {
