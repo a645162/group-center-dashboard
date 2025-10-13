@@ -36,16 +36,16 @@ const prodRoutes = [
     icon: 'BarChartOutlined',
   },
   {
-    name: 'Report',
-    path: '/report',
-    component: './Report',
-    icon: 'DatabaseOutlined',
-  },
-  {
     name: '高级管理',
     path: '/advanced-management',
     component: './AdvancedManagement',
     icon: 'SettingOutlined',
+  },
+  {
+    name: '反馈报告',
+    path: '/report',
+    component: './Report',
+    icon: 'DatabaseOutlined',
   },
 ];
 

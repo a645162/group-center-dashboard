@@ -105,6 +105,11 @@ declare namespace API {
     userNameEng: string;
   };
 
+  type getTaskByTaskIdParams = {
+    /** Task ID for exact matching */
+    taskId: string;
+  };
+
   type getTimeTrendStatisticsParams = {
     /** Time period for trend analysis (default: ONE_WEEK) */
     timePeriod?: string;
