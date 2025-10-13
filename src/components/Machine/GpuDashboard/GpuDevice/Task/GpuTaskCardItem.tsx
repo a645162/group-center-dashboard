@@ -10,7 +10,10 @@ import {
   CloseCircleOutlined,
   DatabaseOutlined,
   DownOutlined,
+  FilterOutlined,
   ForkOutlined,
+  InfoCircleOutlined,
+  PlusOutlined,
   QuestionCircleOutlined,
   SearchOutlined,
   WarningOutlined,
@@ -195,16 +198,22 @@ const GpuTaskCardItem: React.FC<Props> = (props) => {
     {
       key: '1',
       label: '详细信息',
+      icon: <InfoCircleOutlined />,
       onClick: onClickShowDetail,
+    },
+    {
+      type: 'divider',
     },
     {
       key: '2',
       label: `设置"${taskInfo.name}"为过滤用户`,
+      icon: <FilterOutlined />,
       onClick: handleSetUserFilter,
     },
     {
       key: '3',
       label: `设置"${taskInfo.projectName}"为项目名过滤器`,
+      icon: <FilterOutlined />,
       onClick: handleSetProjectFilter,
     },
     {
@@ -228,7 +237,7 @@ const GpuTaskCardItem: React.FC<Props> = (props) => {
     {
       key: '6',
       label: `订阅项目"${taskInfo.projectName}"`,
-      icon: <SearchOutlined />,
+      icon: <PlusOutlined />,
       onClick: handleSubscribeProject,
     },
   ];
@@ -271,23 +280,31 @@ const GpuTaskCardItem: React.FC<Props> = (props) => {
       >
         <ContextMenuItem disabled>{taskInfo.projectName}</ContextMenuItem>
         <ContextMenuDivider />
-        <ContextMenuItem onClick={onClickShowDetail}>详细信息</ContextMenuItem>
+        <ContextMenuItem onClick={onClickShowDetail}>
+          <InfoCircleOutlined style={{ marginRight: '8px' }} />
+          详细信息
+        </ContextMenuItem>
         <ContextMenuDivider />
         <ContextMenuItem onClick={handleSetUserFilter}>
+          <FilterOutlined style={{ marginRight: '8px' }} />
           设置"{taskInfo.name}"为过滤用户
         </ContextMenuItem>
         <ContextMenuItem onClick={handleSetProjectFilter}>
+          <FilterOutlined style={{ marginRight: '8px' }} />
           设置"{taskInfo.projectName}"为项目名过滤器
         </ContextMenuItem>
         <ContextMenuDivider />
         <ContextMenuItem onClick={handleNavigateToTaskQueryByUser}>
+          <SearchOutlined style={{ marginRight: '8px' }} />
           跳转到任务查询（按用户"{taskInfo.name}"）
         </ContextMenuItem>
         <ContextMenuItem onClick={handleNavigateToTaskQueryByProject}>
+          <SearchOutlined style={{ marginRight: '8px' }} />
           跳转到任务查询（按项目"{taskInfo.projectName}"）
         </ContextMenuItem>
         <ContextMenuDivider />
         <ContextMenuItem onClick={handleSubscribeProject}>
+          <PlusOutlined style={{ marginRight: '8px' }} />
           订阅项目"{taskInfo.projectName}"
         </ContextMenuItem>
       </ContextMenu>
