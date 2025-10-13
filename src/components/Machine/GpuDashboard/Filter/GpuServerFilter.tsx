@@ -17,16 +17,23 @@ const GpuServerFilter: React.FC<GpuServerFilterProps> = ({
     new Set(),
   );
 
-  // 初始化选中状态 - 只有当没有外部选中状态时才默认全选
+  // 标记是否已经手动设置过选择状态（避免自动全选覆盖手动清空）
+  const [hasManualSelection, setHasManualSelection] = useState(false);
+
+  // 初始化选中状态 - 只有当没有外部选中状态且没有手动设置过时才默认全选
   useEffect(() => {
-    if (machineList.length > 0 && selectedMachines.length === 0) {
+    if (
+      machineList.length > 0 &&
+      selectedMachines.length === 0 &&
+      !hasManualSelection
+    ) {
       const allMachineNames = new Set(
         machineList.map((machine) => machine.machineName),
       );
       setSelectedMachineNames(allMachineNames);
       onSelectionChange(machineList);
     }
-  }, [machineList, selectedMachines.length]);
+  }, [machineList, selectedMachines.length, hasManualSelection]);
 
   // 同步外部选中状态
   useEffect(() => {
@@ -34,6 +41,11 @@ const GpuServerFilter: React.FC<GpuServerFilterProps> = ({
       selectedMachines.map((machine) => machine.machineName),
     );
     setSelectedMachineNames(selectedNames);
+
+    // 如果外部传入了空数组，标记为手动选择（避免自动全选）
+    if (selectedMachines.length === 0) {
+      setHasManualSelection(true);
+    }
   }, [selectedMachines]);
 
   const handleMachineToggle = (machine: API.FrontEndMachine) => {
@@ -46,6 +58,7 @@ const GpuServerFilter: React.FC<GpuServerFilterProps> = ({
     }
 
     setSelectedMachineNames(newSelectedNames);
+    setHasManualSelection(true); // 标记为手动选择
 
     // 更新选中的机器列表
     const newSelectedMachines = machineList.filter((machine) =>
@@ -59,11 +72,14 @@ const GpuServerFilter: React.FC<GpuServerFilterProps> = ({
       machineList.map((machine) => machine.machineName),
     );
     setSelectedMachineNames(allMachineNames);
+    setHasManualSelection(true); // 标记为手动选择
     onSelectionChange(machineList);
   };
 
   const handleClearAll = () => {
+    // 清空选择，不选择任何机器
     setSelectedMachineNames(new Set());
+    setHasManualSelection(true); // 标记为手动清空
     onSelectionChange([]);
   };
 
