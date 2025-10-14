@@ -213,37 +213,91 @@ const GpuUsageCard: React.FC<Props> = (props) => {
 
     // 构建GPU信息提示内容
     const gpuTooltipContent = gpuUsageInfo ? (
-      <div style={{ minWidth: 200 }}>
+      <div style={{ minWidth: 180, padding: '8px 0' }}>
         <div
           style={{
-            marginBottom: 8,
+            marginBottom: 12,
             fontWeight: 'bold',
+            fontSize: '14px',
+            textAlign: 'center',
             color: token.colorText,
           }}
         >
           GPU状态
         </div>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-          <div>
-            <div style={{ fontWeight: 500, color: token.colorTextSecondary }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+            }}
+          >
+            <div
+              style={{
+                fontWeight: 500,
+                color: token.colorTextSecondary,
+                fontSize: '12px',
+              }}
+            >
               功耗
             </div>
-            <div style={{ color: token.colorText }}>
+            <div
+              style={{
+                fontSize: '12px',
+                fontWeight: 'bold',
+                color:
+                  (gpuUsageInfo.gpuPowerUsage || 0) /
+                    (gpuUsageInfo.gpuTDP || 1) >
+                  0.7
+                    ? token.colorError
+                    : (gpuUsageInfo.gpuPowerUsage || 0) /
+                          (gpuUsageInfo.gpuTDP || 1) >
+                        0.3
+                      ? token.colorWarning
+                      : token.colorSuccess,
+              }}
+            >
               {gpuUsageInfo.gpuPowerUsage || 0}W / {gpuUsageInfo.gpuTDP || 0}W
             </div>
           </div>
-          <div>
-            <div style={{ fontWeight: 500, color: token.colorTextSecondary }}>
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+            }}
+          >
+            <div
+              style={{
+                fontWeight: 500,
+                color: token.colorTextSecondary,
+                fontSize: '12px',
+              }}
+            >
               温度
             </div>
-            <div style={{ color: token.colorText }}>
+            <div
+              style={{
+                fontSize: '12px',
+                fontWeight: 'bold',
+                color:
+                  (gpuUsageInfo.gpuTemperature || 0) > 70
+                    ? token.colorError
+                    : (gpuUsageInfo.gpuTemperature || 0) > 50
+                      ? token.colorWarning
+                      : token.colorSuccess,
+              }}
+            >
               {gpuUsageInfo.gpuTemperature || 0}°C
             </div>
           </div>
         </div>
       </div>
     ) : (
-      <div style={{ color: token.colorText }}>正在加载GPU信息...</div>
+      <div style={{ color: token.colorText, padding: '8px 12px' }}>
+        正在加载GPU信息...
+      </div>
     );
 
     return (
@@ -265,24 +319,36 @@ const GpuUsageCard: React.FC<Props> = (props) => {
         {/* 左下 */}
         <Tooltip
           title={
-            <div>
+            <div style={{ minWidth: 160, padding: '8px 0' }}>
               <div
                 style={{
                   fontWeight: 'bold',
-                  marginBottom: 8,
+                  marginBottom: 12,
+                  fontSize: '14px',
+                  textAlign: 'center',
                   color: token.colorText,
                 }}
               >
                 显存详细信息
               </div>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-                <div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                <div
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                  }}
+                >
                   <div
-                    style={{ fontWeight: 500, color: token.colorTextSecondary }}
+                    style={{
+                      fontWeight: 500,
+                      color: token.colorTextSecondary,
+                      fontSize: '12px',
+                    }}
                   >
                     已使用
                   </div>
-                  <div style={{ color: token.colorText }}>
+                  <div style={{ color: token.colorText, fontSize: '12px' }}>
                     {Math.round(
                       ((gpuUsageInfo?.memoryUsage || 0) *
                         (gpuUsageInfo?.gpuMemoryTotalMB || 0)) /
@@ -291,23 +357,43 @@ const GpuUsageCard: React.FC<Props> = (props) => {
                     MB
                   </div>
                 </div>
-                <div>
+                <div
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                  }}
+                >
                   <div
-                    style={{ fontWeight: 500, color: token.colorTextSecondary }}
+                    style={{
+                      fontWeight: 500,
+                      color: token.colorTextSecondary,
+                      fontSize: '12px',
+                    }}
                   >
                     总容量
                   </div>
-                  <div style={{ color: token.colorText }}>
+                  <div style={{ color: token.colorText, fontSize: '12px' }}>
                     {gpuUsageInfo?.gpuMemoryTotalMB || 0}MB
                   </div>
                 </div>
-                <div>
+                <div
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                  }}
+                >
                   <div
-                    style={{ fontWeight: 500, color: token.colorTextSecondary }}
+                    style={{
+                      fontWeight: 500,
+                      color: token.colorTextSecondary,
+                      fontSize: '12px',
+                    }}
                   >
                     可用
                   </div>
-                  <div style={{ color: token.colorText }}>
+                  <div style={{ color: token.colorText, fontSize: '12px' }}>
                     {(gpuUsageInfo?.gpuMemoryTotalMB || 0) -
                       Math.round(
                         ((gpuUsageInfo?.memoryUsage || 0) *
@@ -317,13 +403,23 @@ const GpuUsageCard: React.FC<Props> = (props) => {
                     MB
                   </div>
                 </div>
-                <div>
+                <div
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                  }}
+                >
                   <div
-                    style={{ fontWeight: 500, color: token.colorTextSecondary }}
+                    style={{
+                      fontWeight: 500,
+                      color: token.colorTextSecondary,
+                      fontSize: '12px',
+                    }}
                   >
                     使用率
                   </div>
-                  <div style={{ color: token.colorText }}>
+                  <div style={{ color: token.colorText, fontSize: '12px' }}>
                     {getMemoryUsagePercentage(
                       gpuMemoryUsageGiB,
                       gpuMemoryTotalGiB,

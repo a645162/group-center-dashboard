@@ -42,8 +42,8 @@ const FilterGroup: React.FC<FilterGroupProps> = ({
     (state) => state.clearMachineSelection,
   );
 
-  // 清除所有筛选器
-  const handleClearAllFilters = () => {
+  // 禁用所有筛选器
+  const handleDisableAllFilters = () => {
     // 清除用户名过滤器
     clearUserFilter();
 
@@ -56,11 +56,12 @@ const FilterGroup: React.FC<FilterGroupProps> = ({
     // 清除多GPU筛选器
     clearMultiGpuFilter();
 
-    // 清除机器选择（清空选择，不选择任何机器）
-    clearMachineSelection([]);
-    onSelectionChange([]);
+    // 对于GPU服务器筛选器，全选所有机器而不是清空
+    const allMachines = machineList;
+    clearMachineSelection(allMachines.map((machine) => machine.machineName));
+    onSelectionChange(allMachines);
 
-    console.log('All filters cleared');
+    console.log('All filters disabled (GPU servers selected all)');
   };
 
   return (
@@ -79,11 +80,11 @@ const FilterGroup: React.FC<FilterGroupProps> = ({
           <Button
             type="default"
             icon={<ClearOutlined />}
-            onClick={handleClearAllFilters}
+            onClick={handleDisableAllFilters}
             size="small"
             danger
           >
-            清除所有筛选器
+            禁用所有筛选器
           </Button>
         </Space>
       </div>

@@ -3,7 +3,7 @@ import { getGpuCount } from '@/services/agent/GpuInfo';
 import { getMachineSystemInfo } from '@/services/agent/MachineInfo';
 import { updateNviNotify } from '@/services/agent/Program';
 import { convertFromMBToGB, getMemoryString } from '@/utils/Convert/MemorySize';
-import { Card, Progress, Tooltip, message, notification, theme } from 'antd';
+import { Card, Tooltip, message, notification, theme } from 'antd';
 import React, { useEffect, useState } from 'react';
 import GpuDevice from './GpuDevice';
 
@@ -171,12 +171,12 @@ const GpuDashboard: React.FC<Props> = (props) => {
 
   // 构建内存信息提示内容
   const memoryTooltipContent = machineSystemInfo ? (
-    <div style={{ minWidth: 280, padding: '8px 0' }}>
+    <div style={{ minWidth: 200, padding: '16px 12px' }}>
       <div
         style={{
           marginBottom: 16,
           fontWeight: 'bold',
-          fontSize: '16px',
+          fontSize: '14px',
           textAlign: 'center',
           color: token.colorText,
         }}
@@ -184,116 +184,206 @@ const GpuDashboard: React.FC<Props> = (props) => {
         系统内存信息
       </div>
 
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-        {/* 物理内存 */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+        {/* 物理内存进度条 */}
         <div>
           <div
             style={{
-              fontWeight: 500,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
               marginBottom: 8,
-              fontSize: '14px',
-              color: token.colorTextSecondary,
             }}
           >
-            物理内存
-          </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-            <Progress
-              type="dashboard"
-              percent={Math.round(
+            <span
+              style={{
+                fontWeight: 500,
+                fontSize: '13px',
+                color: token.colorTextSecondary,
+              }}
+            >
+              物理内存
+            </span>
+            <span
+              style={{
+                fontWeight: 'bold',
+                fontSize: '13px',
+                color: token.colorPrimary,
+              }}
+            >
+              {Math.round(
                 (machineSystemInfo.memoryPhysicUsedMb /
                   machineSystemInfo.memoryPhysicTotalMb) *
                   100,
               )}
-              format={(percent) => `${percent}%`}
-              size={60}
-              strokeColor={{
-                '0%': '#108ee9',
-                '100%': '#87d068',
+              %
+            </span>
+          </div>
+          <div
+            style={{
+              width: '100%',
+              height: 8,
+              backgroundColor: token.colorFillSecondary,
+              borderRadius: 4,
+              overflow: 'hidden',
+              marginBottom: 8,
+            }}
+          >
+            <div
+              style={{
+                width: `${Math.round(
+                  (machineSystemInfo.memoryPhysicUsedMb /
+                    machineSystemInfo.memoryPhysicTotalMb) *
+                    100,
+                )}%`,
+                height: '100%',
+                backgroundColor:
+                  Math.round(
+                    (machineSystemInfo.memoryPhysicUsedMb /
+                      machineSystemInfo.memoryPhysicTotalMb) *
+                      100,
+                  ) > 80
+                    ? token.colorError
+                    : Math.round(
+                          (machineSystemInfo.memoryPhysicUsedMb /
+                            machineSystemInfo.memoryPhysicTotalMb) *
+                            100,
+                        ) > 60
+                      ? token.colorWarning
+                      : token.colorPrimary,
+                borderRadius: 4,
+                transition: 'all 0.3s ease',
               }}
             />
-            <div style={{ fontSize: '12px', lineHeight: 1.4 }}>
-              <div style={{ color: token.colorText }}>
-                已用:{' '}
-                {getMemoryString(
-                  convertFromMBToGB(machineSystemInfo.memoryPhysicUsedMb),
-                )}
-                GB
-              </div>
-              <div style={{ color: token.colorText }}>
-                总计:{' '}
-                {getMemoryString(
-                  convertFromMBToGB(machineSystemInfo.memoryPhysicTotalMb),
-                )}
-                GB
-              </div>
-              <div style={{ color: token.colorText }}>
-                可用:{' '}
-                {getMemoryString(
-                  convertFromMBToGB(
-                    machineSystemInfo.memoryPhysicTotalMb -
-                      machineSystemInfo.memoryPhysicUsedMb,
-                  ),
-                )}
-                GB
-              </div>
-            </div>
+          </div>
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+            }}
+          >
+            <span style={{ fontSize: '11px', color: token.colorTextSecondary }}>
+              {getMemoryString(
+                convertFromMBToGB(machineSystemInfo.memoryPhysicUsedMb),
+              )}{' '}
+              /{' '}
+              {getMemoryString(
+                convertFromMBToGB(machineSystemInfo.memoryPhysicTotalMb),
+              )}{' '}
+              GB
+            </span>
+            <span style={{ fontSize: '11px', color: token.colorTextTertiary }}>
+              可用:{' '}
+              {getMemoryString(
+                convertFromMBToGB(
+                  machineSystemInfo.memoryPhysicTotalMb -
+                    machineSystemInfo.memoryPhysicUsedMb,
+                ),
+              )}{' '}
+              GB
+            </span>
           </div>
         </div>
 
-        {/* 虚拟内存 */}
+        {/* 虚拟内存进度条 */}
         <div>
           <div
             style={{
-              fontWeight: 500,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
               marginBottom: 8,
-              fontSize: '14px',
-              color: token.colorTextSecondary,
             }}
           >
-            虚拟内存
-          </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-            <Progress
-              type="dashboard"
-              percent={Math.round(
+            <span
+              style={{
+                fontWeight: 500,
+                fontSize: '13px',
+                color: token.colorTextSecondary,
+              }}
+            >
+              虚拟内存
+            </span>
+            <span
+              style={{
+                fontWeight: 'bold',
+                fontSize: '13px',
+                color: token.colorSuccess,
+              }}
+            >
+              {Math.round(
                 (machineSystemInfo.memorySwapUsedMb /
                   machineSystemInfo.memorySwapTotalMb) *
                   100,
               )}
-              format={(percent) => `${percent}%`}
-              size={60}
-              strokeColor={{
-                '0%': '#108ee9',
-                '100%': '#87d068',
+              %
+            </span>
+          </div>
+          <div
+            style={{
+              width: '100%',
+              height: 8,
+              backgroundColor: token.colorFillSecondary,
+              borderRadius: 4,
+              overflow: 'hidden',
+              marginBottom: 8,
+            }}
+          >
+            <div
+              style={{
+                width: `${Math.round(
+                  (machineSystemInfo.memorySwapUsedMb /
+                    machineSystemInfo.memorySwapTotalMb) *
+                    100,
+                )}%`,
+                height: '100%',
+                backgroundColor:
+                  Math.round(
+                    (machineSystemInfo.memorySwapUsedMb /
+                      machineSystemInfo.memorySwapTotalMb) *
+                      100,
+                  ) > 80
+                    ? token.colorError
+                    : Math.round(
+                          (machineSystemInfo.memorySwapUsedMb /
+                            machineSystemInfo.memorySwapTotalMb) *
+                            100,
+                        ) > 60
+                      ? token.colorWarning
+                      : token.colorSuccess,
+                borderRadius: 4,
+                transition: 'all 0.3s ease',
               }}
             />
-            <div style={{ fontSize: '12px', lineHeight: 1.4 }}>
-              <div style={{ color: token.colorText }}>
-                已用:{' '}
-                {getMemoryString(
-                  convertFromMBToGB(machineSystemInfo.memorySwapUsedMb),
-                )}
-                GB
-              </div>
-              <div style={{ color: token.colorText }}>
-                总计:{' '}
-                {getMemoryString(
-                  convertFromMBToGB(machineSystemInfo.memorySwapTotalMb),
-                )}
-                GB
-              </div>
-              <div style={{ color: token.colorText }}>
-                可用:{' '}
-                {getMemoryString(
-                  convertFromMBToGB(
-                    machineSystemInfo.memorySwapTotalMb -
-                      machineSystemInfo.memorySwapUsedMb,
-                  ),
-                )}
-                GB
-              </div>
-            </div>
+          </div>
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+            }}
+          >
+            <span style={{ fontSize: '11px', color: token.colorTextSecondary }}>
+              {getMemoryString(
+                convertFromMBToGB(machineSystemInfo.memorySwapUsedMb),
+              )}{' '}
+              /{' '}
+              {getMemoryString(
+                convertFromMBToGB(machineSystemInfo.memorySwapTotalMb),
+              )}{' '}
+              GB
+            </span>
+            <span style={{ fontSize: '11px', color: token.colorTextTertiary }}>
+              可用:{' '}
+              {getMemoryString(
+                convertFromMBToGB(
+                  machineSystemInfo.memorySwapTotalMb -
+                    machineSystemInfo.memorySwapUsedMb,
+                ),
+              )}{' '}
+              GB
+            </span>
           </div>
         </div>
       </div>
@@ -301,10 +391,11 @@ const GpuDashboard: React.FC<Props> = (props) => {
   ) : (
     <div
       style={{
-        minWidth: 200,
-        padding: '16px',
+        minWidth: 160,
+        padding: '12px',
         textAlign: 'center',
         color: token.colorText,
+        fontSize: '12px',
       }}
     >
       正在加载内存信息...
