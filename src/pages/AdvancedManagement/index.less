@@ -43,3 +43,19 @@
     }
   }
 }
+
+.responsiveCard {
+  :global {
+    .ant-card-body {
+      padding: 16px;
+    }
+  }
+
+  @media (min-width: 768px) {
+    :global {
+      .ant-card-body {
+        padding: 24px;
+      }
+    }
+  }
+}

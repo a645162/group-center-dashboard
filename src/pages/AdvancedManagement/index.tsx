@@ -13,14 +13,8 @@ const AdvancedManagement: React.FC = () => {
             <Card
               title="高级管理"
               style={{ minHeight: '400px' }}
-              styles={{
-                body: {
-                  padding: '16px',
-                  '@media (min-width: 768px)': {
-                    padding: '24px',
-                  },
-                },
-              }}
+              styles={{ body: { padding: '16px' } }}
+              className={styles.responsiveCard}
             >
               <div className={styles.content}>
                 <SubscriptionManagementPanel />

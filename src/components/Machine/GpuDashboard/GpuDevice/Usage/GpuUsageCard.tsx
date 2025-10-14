@@ -283,7 +283,12 @@ const GpuUsageCard: React.FC<Props> = (props) => {
                     已使用
                   </div>
                   <div style={{ color: token.colorText }}>
-                    {gpuUsageInfo?.gpuMemoryUsedMB || 0}MB
+                    {Math.round(
+                      ((gpuUsageInfo?.memoryUsage || 0) *
+                        (gpuUsageInfo?.gpuMemoryTotalMB || 0)) /
+                        100,
+                    )}
+                    MB
                   </div>
                 </div>
                 <div>
@@ -304,7 +309,11 @@ const GpuUsageCard: React.FC<Props> = (props) => {
                   </div>
                   <div style={{ color: token.colorText }}>
                     {(gpuUsageInfo?.gpuMemoryTotalMB || 0) -
-                      (gpuUsageInfo?.gpuMemoryUsedMB || 0)}
+                      Math.round(
+                        ((gpuUsageInfo?.memoryUsage || 0) *
+                          (gpuUsageInfo?.gpuMemoryTotalMB || 0)) /
+                          100,
+                      )}
                     MB
                   </div>
                 </div>

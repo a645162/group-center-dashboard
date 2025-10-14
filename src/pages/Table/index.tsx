@@ -4,7 +4,6 @@ import {
   FooterToolbar,
   PageContainer,
   ProDescriptions,
-  ProDescriptionsItemProps,
   ProTable,
 } from '@ant-design/pro-components';
 import { Button, Divider, Drawer, message } from 'antd';
@@ -87,10 +86,10 @@ const TableList: React.FC<unknown> = () => {
   const [updateModalVisible, handleUpdateModalVisible] =
     useState<boolean>(false);
   const [stepFormValues, setStepFormValues] = useState({});
-  const actionRef = useRef<ActionType>();
+  const actionRef = useRef<ActionType>(null);
   const [row, setRow] = useState<API.UserInfo>();
   const [selectedRowsState, setSelectedRows] = useState<API.UserInfo[]>([]);
-  const columns: ProDescriptionsItemProps<API.UserInfo>[] = [
+  const columns: any[] = [
     {
       title: '名称',
       dataIndex: 'name',
@@ -122,7 +121,7 @@ const TableList: React.FC<unknown> = () => {
       title: '操作',
       dataIndex: 'option',
       valueType: 'option',
-      render: (_, record) => (
+      render: (_: any, record: API.UserInfo) => (
         <>
           <a
             onClick={() => {
