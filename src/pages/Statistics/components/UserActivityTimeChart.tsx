@@ -324,7 +324,7 @@ const UserActivityTimeChart: React.FC<UserActivityTimeChartProps> = ({
                   transition: 'all 0.3s ease',
                   cursor: 'pointer',
                 }}
-                bodyStyle={{ padding: '16px' }}
+                styles={{ body: { padding: '16px' } }}
                 hoverable
                 onMouseEnter={(e) => {
                   e.currentTarget.style.boxShadow = `0 4px 12px ${token.colorBgElevated}`;

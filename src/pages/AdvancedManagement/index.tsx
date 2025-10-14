@@ -13,10 +13,12 @@ const AdvancedManagement: React.FC = () => {
             <Card
               title="高级管理"
               style={{ minHeight: '400px' }}
-              bodyStyle={{
-                padding: '16px',
-                '@media (min-width: 768px)': {
-                  padding: '24px',
+              styles={{
+                body: {
+                  padding: '16px',
+                  '@media (min-width: 768px)': {
+                    padding: '24px',
+                  },
                 },
               }}
             >

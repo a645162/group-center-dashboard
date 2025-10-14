@@ -23,7 +23,7 @@ const FilterGroup: React.FC<FilterGroupProps> = ({
   selectedMachines,
   onSelectionChange,
 }) => {
-  const [showFilters, setShowFilters] = useState(true);
+  const [showFilters, setShowFilters] = useState(false);
 
   // 获取所有过滤器的清除方法
   const clearUserFilter = useGpuTaskFilterUserNameStore(

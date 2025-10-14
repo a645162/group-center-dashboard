@@ -1,4 +1,5 @@
 import { PageContainer } from '@ant-design/pro-components';
+import { Modal } from 'antd';
 import React, { useEffect, useState } from 'react';
 
 import { queryGpuTasksSimple } from '@/services/group_center/gpuTaskQuery';
@@ -78,9 +79,12 @@ const TaskQueryPage: React.FC = () => {
         params.sortOrder = sortOrder as any;
       }
 
+      // 检查是否有实际的查询条件（除了默认的分页和排序参数）
+      const hasActualQueryParams =
+        userName || projectName || deviceName || taskType || isMultiGpu;
+
       // 如果有URL参数，设置表单字段值并自动执行查询
-      if (Object.keys(params).length > 3) {
-        // 除了默认的page, pageSize, sortBy, sortOrder之外还有其他参数
+      if (hasActualQueryParams) {
         console.log('从URL参数自动执行查询:', params);
 
         // 设置表单字段值
@@ -102,6 +106,17 @@ const TaskQueryPage: React.FC = () => {
         setTimeout(() => {
           handleQuery(params);
         }, 100);
+      } else {
+        // 没有实际查询条件，只设置表单初始值但不执行查询
+        const formValues: any = {};
+        if (page) formValues.page = parseInt(page, 10);
+        if (pageSize) formValues.pageSize = parseInt(pageSize, 10);
+        if (sortBy) formValues.sortBy = sortBy;
+        if (sortOrder) formValues.sortOrder = sortOrder;
+
+        if (Object.keys(formValues).length > 0) {
+          setFormInitialValues(formValues);
+        }
       }
     };
 
@@ -109,6 +124,33 @@ const TaskQueryPage: React.FC = () => {
   }, [location.search]);
 
   const handleQuery = async (params: API.queryGpuTasksSimpleParams) => {
+    // 检查是否为空查询条件
+    const isEmptyQuery =
+      !params.userName &&
+      !params.projectName &&
+      !params.deviceName &&
+      !params.taskType &&
+      !params.startTime &&
+      !params.endTime &&
+      params.isMultiGpu === undefined;
+
+    if (isEmptyQuery) {
+      // 显示确认弹窗
+      Modal.confirm({
+        title: '空条件查询确认',
+        content: '您没有设置任何查询条件，这将查询所有任务。确定要继续吗？',
+        okText: '确定',
+        cancelText: '取消',
+        onOk: () => {
+          executeQuery(params);
+        },
+      });
+    } else {
+      executeQuery(params);
+    }
+  };
+
+  const executeQuery = async (params: API.queryGpuTasksSimpleParams) => {
     setLoading(true);
     setQueryParams(params);
 

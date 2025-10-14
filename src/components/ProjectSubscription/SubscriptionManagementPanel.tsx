@@ -185,7 +185,7 @@ const SubscriptionManagementPanel: React.FC = () => {
           width: '100%',
           maxWidth: '100%',
         }}
-        bodyStyle={{ padding: '24px' }}
+        styles={{ body: { padding: '24px' } }}
         extra={<Text type="secondary">查看和管理用户的项目订阅</Text>}
       >
         <Space direction="vertical" size="large" style={{ width: '100%' }}>
