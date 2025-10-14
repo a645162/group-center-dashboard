@@ -1,5 +1,7 @@
 .filterGroupContainer {
   margin-bottom: 20px;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .filterContent {
@@ -28,6 +30,14 @@
   margin-bottom: 16px;
   display: flex;
   justify-content: flex-start;
+  width: 100%;
+  box-sizing: border-box;
+
+  .ant-space {
+    width: 100%;
+    justify-content: flex-start;
+    flex-wrap: nowrap;
+  }
 
   .ant-btn {
     border-radius: 8px;
@@ -53,6 +63,7 @@
   border: 1px solid var(--ant-color-border);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 8%);
   overflow: hidden;
+  width: 100%;
 
   .ant-card-head {
     background: linear-gradient(
