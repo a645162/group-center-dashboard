@@ -7,6 +7,10 @@ import {
   getUserSubscriptions,
   unsubscribeProject,
 } from '@/services/group_center/publicApi';
+import {
+  getSubscriptionSelectedUser,
+  setSubscriptionSelectedUser,
+} from '@/utils/storage';
 import { DeleteOutlined, EyeOutlined } from '@ant-design/icons';
 import {
   Button,
@@ -53,12 +57,25 @@ const SubscriptionManagementPanel: React.FC = () => {
   const [messageApi, contextHolder] = message.useMessage();
   const taskDetailModalRef = React.useRef<TaskDetailModalHandles>(null);
 
-  // 获取用户列表
+  // 获取用户列表并尝试恢复上次选择的用户
   useEffect(() => {
     getUserList()
       .then((response) => {
         if (response.isSucceed && Array.isArray(response.result)) {
           setUserList(response.result);
+
+          // 尝试恢复上次选择的用户
+          const savedUser = getSubscriptionSelectedUser();
+          if (savedUser) {
+            // 检查保存的用户是否在用户列表中
+            const userExists = response.result.some(
+              (user) => user.name === savedUser,
+            );
+            if (userExists) {
+              setSelectedUser(savedUser);
+              fetchUserSubscriptions(savedUser);
+            }
+          }
         } else {
           console.error('Failed to get user list:', response);
           messageApi.error('获取用户列表失败');
@@ -101,6 +118,8 @@ const SubscriptionManagementPanel: React.FC = () => {
   // 处理用户选择变化
   const handleUserChange = (value: string) => {
     setSelectedUser(value);
+    // 保存选择的用户到本地存储
+    setSubscriptionSelectedUser(value);
     fetchUserSubscriptions(value);
   };
 
