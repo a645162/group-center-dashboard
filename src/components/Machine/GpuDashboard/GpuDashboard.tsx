@@ -3,7 +3,7 @@ import { getGpuCount } from '@/services/agent/GpuInfo';
 import { getMachineSystemInfo } from '@/services/agent/MachineInfo';
 import { updateNviNotify } from '@/services/agent/Program';
 import { convertFromMBToGB, getMemoryString } from '@/utils/Convert/MemorySize';
-import { Card, Progress, Tooltip, message, theme } from 'antd';
+import { Card, Progress, Tooltip, message, notification, theme } from 'antd';
 import React, { useEffect, useState } from 'react';
 import GpuDevice from './GpuDevice';
 
@@ -76,6 +76,8 @@ const GpuDashboard: React.FC<Props> = (props) => {
   const { name, apiUrl } = props;
   const { token } = theme.useToken();
   const [messageApi, contextHolder] = message.useMessage();
+  const [notificationApi, notificationContextHolder] =
+    notification.useNotification();
 
   // 右键菜单状态
   const [isContextMenuOpen, setContextMenuOpen] = useState(false);
@@ -316,23 +318,29 @@ const GpuDashboard: React.FC<Props> = (props) => {
       const response = await updateNviNotify(apiUrl);
 
       if (response.success) {
-        messageApi.open({
-          type: 'success',
-          content: `nvi-notify updated successfully for ${name}`,
+        notificationApi.success({
+          message: 'nvi-notify 更新成功',
+          description: `机器 ${name} 的 nvi-notify 已成功更新`,
+          placement: 'topRight',
+          duration: 0, // 0表示不会自动关闭，需要手动点击X
         });
         console.log('Update nvi-notify response:', response);
       } else {
-        messageApi.open({
-          type: 'error',
-          content: `Failed to update nvi-notify for ${name}: ${response.message}`,
+        notificationApi.error({
+          message: 'nvi-notify 更新失败',
+          description: `机器 ${name} 的 nvi-notify 更新失败: ${response.message}`,
+          placement: 'topRight',
+          duration: 0,
         });
         console.error('Update nvi-notify failed:', response.message);
       }
     } catch (error) {
       console.error('Error updating nvi-notify:', error);
-      messageApi.open({
-        type: 'error',
-        content: `Error updating nvi-notify for ${name}`,
+      notificationApi.error({
+        message: 'nvi-notify 更新错误',
+        description: `机器 ${name} 的 nvi-notify 更新过程中发生错误`,
+        placement: 'topRight',
+        duration: 0,
       });
     } finally {
       setContextMenuOpen(false);
@@ -350,6 +358,7 @@ const GpuDashboard: React.FC<Props> = (props) => {
   return (
     <div id={`device-${name}`}>
       {contextHolder}
+      {notificationContextHolder}
       <ContextMenu
         anchorPoint={contextMenuAnchorPoint}
         state={isContextMenuOpen ? 'open' : 'closed'}

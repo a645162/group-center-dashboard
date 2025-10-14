@@ -1,4 +1,5 @@
 import { version as getGroupCenterVersion } from '@/services/group_center/programInfo';
+import { cleanVersion } from '@/utils/format';
 import { Alert, Card, Col, Layout, Row, Spin, version } from 'antd';
 import { useEffect, useState } from 'react';
 import { UAParser } from 'ua-parser-js';
@@ -18,6 +19,50 @@ export default function ReportPage() {
   const uaDevice = uaParser.getDevice();
   const uaOs = uaParser.getOS();
   const uaResult = uaParser.getResult();
+
+  // 获取关键库版本信息
+  const getLibraryVersions = () => {
+    const dependencies = packageJson.dependencies;
+    const devDependencies = packageJson.devDependencies;
+
+    return {
+      // 核心框架
+      umiMax: cleanVersion(dependencies['@umijs/max']),
+      react: cleanVersion(devDependencies['@types/react']),
+      antd: cleanVersion(dependencies['antd']),
+      antdCharts: cleanVersion(dependencies['@ant-design/charts']),
+      antdProComponents: cleanVersion(
+        dependencies['@ant-design/pro-components'],
+      ),
+
+      // 状态管理
+      zustand: cleanVersion(dependencies['zustand']),
+
+      // HTTP客户端
+      axios: cleanVersion(dependencies['axios']),
+
+      // 样式和UI
+      tailwindcss: cleanVersion(devDependencies['tailwindcss']),
+      antdStyle: cleanVersion(dependencies['antd-style']),
+
+      // 开发工具
+      typescript: cleanVersion(devDependencies['typescript']),
+      eslint: cleanVersion(devDependencies['eslint']),
+      prettier: cleanVersion(devDependencies['prettier']),
+
+      // 其他关键库
+      reactMenu: cleanVersion(dependencies['@szhsin/react-menu']),
+      uaParser: cleanVersion(dependencies['ua-parser-js']),
+    };
+  };
+
+  const libraryVersions = getLibraryVersions();
+
+  // 获取Node.js版本（在浏览器中无法获取，这里显示为N/A）
+  const nodeVersion =
+    typeof process !== 'undefined' && process.versions
+      ? process.versions.node
+      : 'N/A';
 
   useEffect(() => {
     const fetchVersion = async () => {
@@ -140,6 +185,118 @@ export default function ReportPage() {
                 }}
               >
                 {uaString}
+              </p>
+            </Card>
+          </Col>
+        </Row>
+      </Card>
+
+      <Card title="Library Versions" style={{ marginBottom: '16px' }}>
+        <Row gutter={[16, 16]}>
+          {/* 核心框架 */}
+          <Col xs={24} sm={12} md={8} lg={6}>
+            <Card size="small" title="Umi Max">
+              <p>
+                <strong>Version:</strong> {libraryVersions.umiMax}
+              </p>
+            </Card>
+          </Col>
+          <Col xs={24} sm={12} md={8} lg={6}>
+            <Card size="small" title="React">
+              <p>
+                <strong>Version:</strong> {libraryVersions.react}
+              </p>
+            </Card>
+          </Col>
+          <Col xs={24} sm={12} md={8} lg={6}>
+            <Card size="small" title="Ant Design">
+              <p>
+                <strong>Version:</strong> {libraryVersions.antd}
+              </p>
+            </Card>
+          </Col>
+          <Col xs={24} sm={12} md={8} lg={6}>
+            <Card size="small" title="Ant Design Charts">
+              <p>
+                <strong>Version:</strong> {libraryVersions.antdCharts}
+              </p>
+            </Card>
+          </Col>
+
+          {/* 状态管理和HTTP */}
+          <Col xs={24} sm={12} md={8} lg={6}>
+            <Card size="small" title="Zustand">
+              <p>
+                <strong>Version:</strong> {libraryVersions.zustand}
+              </p>
+            </Card>
+          </Col>
+          <Col xs={24} sm={12} md={8} lg={6}>
+            <Card size="small" title="Axios">
+              <p>
+                <strong>Version:</strong> {libraryVersions.axios}
+              </p>
+            </Card>
+          </Col>
+
+          {/* 样式和UI */}
+          <Col xs={24} sm={12} md={8} lg={6}>
+            <Card size="small" title="Tailwind CSS">
+              <p>
+                <strong>Version:</strong> {libraryVersions.tailwindcss}
+              </p>
+            </Card>
+          </Col>
+          <Col xs={24} sm={12} md={8} lg={6}>
+            <Card size="small" title="Ant Design Style">
+              <p>
+                <strong>Version:</strong> {libraryVersions.antdStyle}
+              </p>
+            </Card>
+          </Col>
+
+          {/* 开发工具 */}
+          <Col xs={24} sm={12} md={8} lg={6}>
+            <Card size="small" title="TypeScript">
+              <p>
+                <strong>Version:</strong> {libraryVersions.typescript}
+              </p>
+            </Card>
+          </Col>
+          <Col xs={24} sm={12} md={8} lg={6}>
+            <Card size="small" title="ESLint">
+              <p>
+                <strong>Version:</strong> {libraryVersions.eslint}
+              </p>
+            </Card>
+          </Col>
+          <Col xs={24} sm={12} md={8} lg={6}>
+            <Card size="small" title="Prettier">
+              <p>
+                <strong>Version:</strong> {libraryVersions.prettier}
+              </p>
+            </Card>
+          </Col>
+
+          {/* 其他关键库 */}
+          <Col xs={24} sm={12} md={8} lg={6}>
+            <Card size="small" title="React Menu">
+              <p>
+                <strong>Version:</strong> {libraryVersions.reactMenu}
+              </p>
+            </Card>
+          </Col>
+          <Col xs={24} sm={12} md={8} lg={6}>
+            <Card size="small" title="UA Parser">
+              <p>
+                <strong>Version:</strong> {libraryVersions.uaParser}
+              </p>
+            </Card>
+          </Col>
+          <Col xs={24} sm={12} md={8} lg={6}>
+            <Card size="small" title="Node.js">
+              <p>
+                <strong>Version:</strong> {nodeVersion}
               </p>
             </Card>
           </Col>
