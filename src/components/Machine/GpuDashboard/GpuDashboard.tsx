@@ -1,10 +1,21 @@
 import { useGpuTaskFilterCardStore } from '@/data/store/modules/filter/GpuTaskFilterCard';
 import { getGpuCount } from '@/services/agent/GpuInfo';
 import { getMachineSystemInfo } from '@/services/agent/MachineInfo';
+import { updateNviNotify } from '@/services/agent/Program';
 import { convertFromMBToGB, getMemoryString } from '@/utils/Convert/MemorySize';
-import { Progress, Tooltip, theme } from 'antd';
+import { Card, Progress, Tooltip, message, theme } from 'antd';
 import React, { useEffect, useState } from 'react';
 import GpuDevice from './GpuDevice';
+
+import { SyncOutlined } from '@ant-design/icons';
+import {
+  ControlledMenu as ContextMenu,
+  MenuDivider as ContextMenuDivider,
+  MenuItem as ContextMenuItem,
+} from '@szhsin/react-menu';
+import '@szhsin/react-menu/dist/index.css';
+import '@szhsin/react-menu/dist/theme-dark.css';
+import '@szhsin/react-menu/dist/transitions/zoom.css';
 
 import styles from './GpuDashboard.less';
 
@@ -64,6 +75,14 @@ const useMachineSystemInfo = (apiUrl: string) => {
 const GpuDashboard: React.FC<Props> = (props) => {
   const { name, apiUrl } = props;
   const { token } = theme.useToken();
+  const [messageApi, contextHolder] = message.useMessage();
+
+  // 右键菜单状态
+  const [isContextMenuOpen, setContextMenuOpen] = useState(false);
+  const [contextMenuAnchorPoint, setContextMenuAnchorPoint] = useState({
+    x: 0,
+    y: 0,
+  });
 
   const gpuCountState = useGpuCountState(apiUrl);
   const machineSystemInfo = useMachineSystemInfo(apiUrl);
@@ -290,18 +309,85 @@ const GpuDashboard: React.FC<Props> = (props) => {
     </div>
   );
 
+  // 处理更新 nvi-notify
+  const handleUpdateNviNotify = async () => {
+    try {
+      console.log(`Updating nvi-notify for machine: ${name}`);
+      const response = await updateNviNotify(apiUrl);
+
+      if (response.success) {
+        messageApi.open({
+          type: 'success',
+          content: `nvi-notify updated successfully for ${name}`,
+        });
+        console.log('Update nvi-notify response:', response);
+      } else {
+        messageApi.open({
+          type: 'error',
+          content: `Failed to update nvi-notify for ${name}: ${response.message}`,
+        });
+        console.error('Update nvi-notify failed:', response.message);
+      }
+    } catch (error) {
+      console.error('Error updating nvi-notify:', error);
+      messageApi.open({
+        type: 'error',
+        content: `Error updating nvi-notify for ${name}`,
+      });
+    } finally {
+      setContextMenuOpen(false);
+    }
+  };
+
+  // 处理右键菜单
+  const handleContextMenu = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setContextMenuAnchorPoint({ x: e.clientX, y: e.clientY });
+    setContextMenuOpen(true);
+  };
+
   return (
     <div id={`device-${name}`}>
-      <Tooltip
-        title={memoryTooltipContent}
-        placement="top"
-        overlayStyle={{ maxWidth: 350 }}
-        color={token.colorBgElevated}
+      {contextHolder}
+      <ContextMenu
+        anchorPoint={contextMenuAnchorPoint}
+        state={isContextMenuOpen ? 'open' : 'closed'}
+        menuStyle={{
+          zIndex: 1000,
+        }}
+        theming={token.colorBgElevated === '#141414' ? 'dark' : undefined}
+        direction="right"
+        onClose={() => setContextMenuOpen(false)}
       >
-        <h1 className={styles.title} style={{ cursor: 'help' }}>
-          {name}
-        </h1>
-      </Tooltip>
+        <ContextMenuItem disabled>{name}</ContextMenuItem>
+        <ContextMenuDivider />
+        <ContextMenuItem onClick={handleUpdateNviNotify}>
+          <SyncOutlined style={{ marginRight: '8px' }} />
+          Update nvi-notify
+        </ContextMenuItem>
+      </ContextMenu>
+
+      <Card
+        style={{
+          marginBottom: 16,
+          cursor: 'context-menu',
+          backgroundColor: token.colorBgContainer,
+          border: `1px solid ${token.colorBorderSecondary}`,
+        }}
+        bodyStyle={{ padding: '12px 16px' }}
+        onContextMenu={handleContextMenu}
+      >
+        <Tooltip
+          title={memoryTooltipContent}
+          placement="top"
+          color={token.colorBgElevated}
+        >
+          <h1 className={styles.title} style={{ cursor: 'help', margin: 0 }}>
+            {name}
+          </h1>
+        </Tooltip>
+      </Card>
       {gpuInfoContent()}
     </div>
   );

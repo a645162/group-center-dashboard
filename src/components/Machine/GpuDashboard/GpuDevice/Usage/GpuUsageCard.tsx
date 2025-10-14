@@ -246,53 +246,6 @@ const GpuUsageCard: React.FC<Props> = (props) => {
       <div style={{ color: token.colorText }}>正在加载GPU信息...</div>
     );
 
-    // 构建内存信息提示内容
-    const memoryTooltipContent = machineSystemInfo ? (
-      <div style={{ minWidth: 200 }}>
-        <div
-          style={{
-            marginBottom: 8,
-            fontWeight: 'bold',
-            color: token.colorText,
-          }}
-        >
-          系统内存信息
-        </div>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-          <div>
-            <div style={{ fontWeight: 500, color: token.colorTextSecondary }}>
-              物理内存
-            </div>
-            <div style={{ color: token.colorText }}>
-              {machineSystemInfo.memoryPhysicUsedMb}MB /{' '}
-              {machineSystemInfo.memoryPhysicTotalMb}MB (
-              {getMemoryUsagePercentage(
-                machineSystemInfo.memoryPhysicUsedMb,
-                machineSystemInfo.memoryPhysicTotalMb,
-              )}
-              %)
-            </div>
-          </div>
-          <div>
-            <div style={{ fontWeight: 500, color: token.colorTextSecondary }}>
-              虚拟内存
-            </div>
-            <div style={{ color: token.colorText }}>
-              {machineSystemInfo.memorySwapUsedMb}MB /{' '}
-              {machineSystemInfo.memorySwapTotalMb}MB (
-              {getMemoryUsagePercentage(
-                machineSystemInfo.memorySwapUsedMb,
-                machineSystemInfo.memorySwapTotalMb,
-              )}
-              %)
-            </div>
-          </div>
-        </div>
-      </div>
-    ) : (
-      <div style={{ color: token.colorText }}>正在加载内存信息...</div>
-    );
-
     return (
       <Space className={styles.space} direction="vertical" size="middle">
         {/* 左上 */}

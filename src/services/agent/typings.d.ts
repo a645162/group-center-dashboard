@@ -1,4 +1,11 @@
 declare namespace API {
+  interface ProgramUpdateResponse {
+    success: boolean;
+    message: string;
+    currentPid: number;
+    gitOutput: string;
+  }
+
   interface MachineSystemInfo {
     memoryPhysicTotalMb: number;
     memoryPhysicUsedMb: number;
