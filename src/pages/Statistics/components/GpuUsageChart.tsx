@@ -1,5 +1,6 @@
 import { getGpuStatistics } from '@/services/group_center/dashboardStatistics';
 import { GetIsDarkMode } from '@/utils/AntD5/AntD5DarkMode';
+import { calculateDateRange, getTimeRangeDisplayName } from '@/utils/dateRange';
 import { Column, Pie } from '@ant-design/charts';
 import { Alert, Card, Col, Empty, Row, Spin, Statistic } from 'antd';
 import React, { useEffect, useState } from 'react';
@@ -25,6 +26,7 @@ interface GpuStatisticsData {
   mostPopularGpu: string;
   mostPopularGpuTasks: number;
   usageByDevice: GpuStat[];
+  refreshTime?: string;
 }
 
 const GpuUsageChart: React.FC<GpuUsageChartProps> = ({ timePeriod }) => {
@@ -98,6 +100,7 @@ const GpuUsageChart: React.FC<GpuUsageChartProps> = ({ timePeriod }) => {
           mostPopularGpu,
           mostPopularGpuTasks,
           usageByDevice: gpuStats,
+          refreshTime: new Date().toLocaleString('zh-CN'), // 使用当前时间作为统计时间
         });
         console.log('GpuUsageChart: GPU data set successfully');
       } else {
@@ -453,9 +456,25 @@ const GpuUsageChart: React.FC<GpuUsageChartProps> = ({ timePeriod }) => {
         title="各GPU设备任务数分布"
         style={{ marginBottom: 24 }}
         extra={
-          <span style={{ color: '#666', fontSize: '12px' }}>
-            时间范围: {timePeriod}
-          </span>
+          <div
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'flex-end',
+            }}
+          >
+            <span style={{ color: '#666', fontSize: '12px' }}>
+              时间范围: {getTimeRangeDisplayName(timePeriod)}{' '}
+              {calculateDateRange(timePeriod)}
+            </span>
+            {gpuData.refreshTime && (
+              <span
+                style={{ color: '#999', fontSize: '11px', marginTop: '2px' }}
+              >
+                统计时间: {gpuData.refreshTime}
+              </span>
+            )}
+          </div>
         }
       >
         <Row gutter={16}>

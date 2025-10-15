@@ -1,5 +1,6 @@
 import { getTimeTrendStatistics } from '@/services/group_center/dashboardStatistics';
 import { GetIsDarkMode } from '@/utils/AntD5/AntD5DarkMode';
+import { calculateDateRange, getTimeRangeDisplayName } from '@/utils/dateRange';
 import { Line } from '@ant-design/charts';
 import {
   Alert,
@@ -40,6 +41,7 @@ interface TimeTrendData {
   totalUsers: number;
   averageDailyTasks: number;
   averageDailyRuntime: number;
+  refreshTime?: string;
 }
 
 const TimeTrendChart: React.FC<TimeTrendChartProps> = ({ timePeriod }) => {
@@ -76,7 +78,10 @@ const TimeTrendChart: React.FC<TimeTrendChartProps> = ({ timePeriod }) => {
         const trendData = response.result as TimeTrendData;
         console.log('TimeTrendChart: Raw trend data:', trendData);
 
-        setTrendData(trendData);
+        setTrendData({
+          ...trendData,
+          refreshTime: new Date().toLocaleString('zh-CN'), // 使用当前时间作为统计时间
+        });
         console.log('TimeTrendChart: Trend data set successfully');
       } else {
         console.error(
@@ -361,9 +366,27 @@ const TimeTrendChart: React.FC<TimeTrendChartProps> = ({ timePeriod }) => {
       <Card
         title="任务数趋势"
         extra={
-          <span style={{ color: '#666', fontSize: '12px' }}>
-            时间范围: {timePeriod}
-          </span>
+          <div
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'flex-end',
+            }}
+          >
+            <span style={{ color: '#666', fontSize: '12px' }}>
+              时间范围: {getTimeRangeDisplayName(timePeriod)}
+            </span>
+            <span style={{ color: '#666', fontSize: '12px', marginTop: '2px' }}>
+              {calculateDateRange(timePeriod)}
+            </span>
+            {trendData.refreshTime && (
+              <span
+                style={{ color: '#999', fontSize: '11px', marginTop: '2px' }}
+              >
+                统计时间: {trendData.refreshTime}
+              </span>
+            )}
+          </div>
         }
       >
         <div style={{ height: 400 }}>

@@ -1,5 +1,6 @@
 import { getUserStatistics } from '@/services/group_center/dashboardStatistics';
 import { GetIsDarkMode } from '@/utils/AntD5/AntD5DarkMode';
+import { calculateDateRange, getTimeRangeDisplayName } from '@/utils/dateRange';
 import { Pie } from '@ant-design/charts';
 import {
   Alert,
@@ -36,6 +37,7 @@ interface UserStatisticsData {
   activeUsers: number;
   averageTasksPerUser: number;
   topUsers: UserStat[];
+  refreshTime?: string;
 }
 
 const UserStatistics: React.FC<UserStatisticsProps> = ({ timePeriod }) => {
@@ -100,6 +102,7 @@ const UserStatistics: React.FC<UserStatisticsProps> = ({ timePeriod }) => {
           activeUsers,
           averageTasksPerUser,
           topUsers: userStats, // 存储所有用户数据
+          refreshTime: new Date().toLocaleString('zh-CN'), // 使用当前时间作为统计时间
         });
         console.log('UserStatistics: User data set successfully');
       } else {
@@ -492,9 +495,27 @@ const UserStatistics: React.FC<UserStatisticsProps> = ({ timePeriod }) => {
       <Card
         title="用户使用排名"
         extra={
-          <span style={{ color: '#666', fontSize: '12px' }}>
-            时间范围: {timePeriod}
-          </span>
+          <div
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'flex-end',
+            }}
+          >
+            <span style={{ color: '#666', fontSize: '12px' }}>
+              时间范围: {getTimeRangeDisplayName(timePeriod)}
+            </span>
+            <span style={{ color: '#666', fontSize: '11px', marginTop: '2px' }}>
+              {calculateDateRange(timePeriod)}
+            </span>
+            {userData.refreshTime && (
+              <span
+                style={{ color: '#999', fontSize: '11px', marginTop: '2px' }}
+              >
+                统计时间: {userData.refreshTime}
+              </span>
+            )}
+          </div>
         }
       >
         <List

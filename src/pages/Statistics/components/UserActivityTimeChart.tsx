@@ -1,5 +1,6 @@
 import { getUserActivityTimeDistribution } from '@/services/group_center/dashboardStatistics';
 import { GetIsDarkMode } from '@/utils/AntD5/AntD5DarkMode';
+import { calculateDateRange, getTimeRangeDisplayName } from '@/utils/dateRange';
 import { Alert, Card, Col, Empty, Row, Spin, Statistic, theme } from 'antd';
 import React, { useEffect, useState } from 'react';
 
@@ -267,9 +268,33 @@ const UserActivityTimeChart: React.FC<UserActivityTimeChartProps> = ({
       <Card
         title="用户活动时间分布"
         extra={
-          <span style={{ color: token.colorTextSecondary, fontSize: '12px' }}>
-            时间范围: {timePeriod} | 数据刷新: {activityData.refreshTime}
-          </span>
+          <div
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'flex-end',
+            }}
+          >
+            <span style={{ color: token.colorTextSecondary, fontSize: '12px' }}>
+              时间范围: {getTimeRangeDisplayName(timePeriod)}
+            </span>
+            <span
+              style={{
+                color: token.colorTextSecondary,
+                fontSize: '11px',
+                marginTop: '2px',
+              }}
+            >
+              {calculateDateRange(timePeriod)}
+            </span>
+            {activityData.refreshTime && (
+              <span
+                style={{ color: '#999', fontSize: '11px', marginTop: '2px' }}
+              >
+                统计时间: {activityData.refreshTime}
+              </span>
+            )}
+          </div>
         }
       >
         <style>

@@ -1,5 +1,6 @@
 import { getProjectStatistics } from '@/services/group_center/dashboardStatistics';
 import { GetIsDarkMode } from '@/utils/AntD5/AntD5DarkMode';
+import { calculateDateRange, getTimeRangeDisplayName } from '@/utils/dateRange';
 import { Pie } from '@ant-design/charts';
 import {
   Alert,
@@ -36,6 +37,7 @@ interface ProjectStatisticsData {
   activeProjects: number;
   averageTasksPerProject: number;
   topProjects: ProjectStat[];
+  refreshTime?: string;
 }
 
 const ProjectStatistics: React.FC<ProjectStatisticsProps> = ({
@@ -104,6 +106,7 @@ const ProjectStatistics: React.FC<ProjectStatisticsProps> = ({
           activeProjects,
           averageTasksPerProject,
           topProjects: projectStats, // 存储所有项目数据
+          refreshTime: new Date().toLocaleString('zh-CN'), // 使用当前时间作为统计时间
         });
         console.log('ProjectStatistics: Project data set successfully');
       } else {
@@ -436,9 +439,27 @@ const ProjectStatistics: React.FC<ProjectStatisticsProps> = ({
       <Card
         title="项目使用排名"
         extra={
-          <span style={{ color: '#666', fontSize: '12px' }}>
-            时间范围: {timePeriod}
-          </span>
+          <div
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'flex-end',
+            }}
+          >
+            <span style={{ color: '#666', fontSize: '12px' }}>
+              时间范围: {getTimeRangeDisplayName(timePeriod)}
+            </span>
+            <span style={{ color: '#666', fontSize: '11px', marginTop: '2px' }}>
+              {calculateDateRange(timePeriod)}
+            </span>
+            {projectData.refreshTime && (
+              <span
+                style={{ color: '#999', fontSize: '11px', marginTop: '2px' }}
+              >
+                统计时间: {projectData.refreshTime}
+              </span>
+            )}
+          </div>
         }
       >
         <List
