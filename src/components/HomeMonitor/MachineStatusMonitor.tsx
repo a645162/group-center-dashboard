@@ -27,10 +27,16 @@ const MachineStatusMonitor: React.FC<MachineStatusMonitorProps> = ({
     any
   > | null>(null);
   const [loading, setLoading] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
   const [lastUpdate, setLastUpdate] = useState<Date | null>(null);
 
-  const fetchMachineData = async () => {
-    setLoading(true);
+  const fetchMachineData = async (isManualRefresh = false) => {
+    // 只有手动刷新时才设置refreshing状态
+    if (isManualRefresh) {
+      setRefreshing(true);
+    }
+    // 自动刷新时不设置loading状态，保持数据可见
+
     try {
       const [statusResponse, summaryResponse] = await Promise.all([
         getAllMachineStatus(),
@@ -43,8 +49,13 @@ const MachineStatusMonitor: React.FC<MachineStatusMonitorProps> = ({
       setLastUpdate(new Date());
     } catch (error) {
       console.error('获取机器状态数据失败:', error);
+      // 出错时保持现有数据，不重置
     } finally {
-      setLoading(false);
+      // 只有手动刷新时才清除refreshing状态
+      if (isManualRefresh) {
+        setRefreshing(false);
+      }
+      // 自动刷新时不设置loading为false，因为初始加载后loading就一直是false
     }
   };
 
@@ -134,15 +145,16 @@ const MachineStatusMonitor: React.FC<MachineStatusMonitorProps> = ({
 
   return (
     <Card
-      title="GPU服务器状态监视"
-      loading={loading}
+      title="GPU服务器"
+      loading={loading && machineStatus.length === 0}
       extra={
         <Space>
           <Tooltip title="刷新数据">
             <Button
               icon={<ReloadOutlined />}
               size="small"
-              onClick={fetchMachineData}
+              onClick={() => fetchMachineData(true)}
+              loading={refreshing}
             >
               刷新
             </Button>
@@ -150,6 +162,7 @@ const MachineStatusMonitor: React.FC<MachineStatusMonitorProps> = ({
           {lastUpdate && (
             <span style={{ fontSize: '12px', color: '#666' }}>
               最后更新: {lastUpdate.toLocaleTimeString('zh-CN')}
+              {refreshing && ' (刷新中...)'}
             </span>
           )}
         </Space>

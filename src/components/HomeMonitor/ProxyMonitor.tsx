@@ -49,6 +49,7 @@ const ProxyMonitor: React.FC<ProxyMonitorProps> = ({
     null,
   );
   const [loading, setLoading] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
   const [lastUpdate, setLastUpdate] = useState<Date | null>(null);
   const [messageApi, contextHolder] = message.useMessage();
 
@@ -61,8 +62,13 @@ const ProxyMonitor: React.FC<ProxyMonitorProps> = ({
   const [selectedServer, setSelectedServer] =
     useState<API.ProxyServerInfo | null>(null);
 
-  const fetchProxyData = async () => {
-    setLoading(true);
+  const fetchProxyData = async (isManualRefresh = false) => {
+    // 只有手动刷新时才设置refreshing状态
+    if (isManualRefresh) {
+      setRefreshing(true);
+    }
+    // 自动刷新时不设置loading状态，保持数据可见
+
     try {
       const [serversResponse, statusResponse] = await Promise.all([
         getAllProxyServers(),
@@ -80,8 +86,13 @@ const ProxyMonitor: React.FC<ProxyMonitorProps> = ({
       setLastUpdate(new Date());
     } catch (error) {
       console.error('获取代理服务器数据失败:', error);
+      // 出错时保持现有数据，不重置
     } finally {
-      setLoading(false);
+      // 只有手动刷新时才清除refreshing状态
+      if (isManualRefresh) {
+        setRefreshing(false);
+      }
+      // 自动刷新时不设置loading为false，因为初始加载后loading就一直是false
     }
   };
 
@@ -89,7 +100,7 @@ const ProxyMonitor: React.FC<ProxyMonitorProps> = ({
     try {
       await triggerHealthCheck();
       // 健康检查后重新获取数据
-      setTimeout(fetchProxyData, 2000);
+      setTimeout(() => fetchProxyData(true), 2000);
     } catch (error) {
       console.error('健康检查失败:', error);
     }
@@ -185,6 +196,12 @@ const ProxyMonitor: React.FC<ProxyMonitorProps> = ({
     return `$env:http_proxy="${proxyUrl}"\n$env:https_proxy="${proxyUrl}"\n$env:HTTP_PROXY="${proxyUrl}"\n$env:HTTPS_PROXY="${proxyUrl}"`;
   };
 
+  // 生成Python代理环境变量代码
+  const generatePythonProxyCode = (server: API.ProxyServerInfo): string => {
+    const proxyUrl = `http://${server.host}:${server.port}`;
+    return `import os\n\nos.environ['http_proxy'] = '${proxyUrl}'\nos.environ['https_proxy'] = '${proxyUrl}'\nos.environ['HTTP_PROXY'] = '${proxyUrl}'\nos.environ['HTTPS_PROXY'] = '${proxyUrl}'`;
+  };
+
   // 复制Bash代理命令
   const handleCopyBashCommand = async () => {
     if (!selectedServer) return;
@@ -215,6 +232,26 @@ const ProxyMonitor: React.FC<ProxyMonitorProps> = ({
       messageApi.open({
         type: 'success',
         content: 'PowerShell代理命令已复制到剪贴板',
+      });
+    } catch (error) {
+      messageApi.open({
+        type: 'error',
+        content: '复制失败',
+      });
+    }
+    setContextMenuOpen(false);
+  };
+
+  // 复制Python代理环境变量代码
+  const handleCopyPythonCode = async () => {
+    if (!selectedServer) return;
+
+    const code = generatePythonProxyCode(selectedServer);
+    try {
+      await copyToClipboardPromise(code);
+      messageApi.open({
+        type: 'success',
+        content: 'Python代理环境变量代码已复制到剪贴板',
       });
     } catch (error) {
       messageApi.open({
@@ -289,6 +326,31 @@ const ProxyMonitor: React.FC<ProxyMonitorProps> = ({
           });
       },
     },
+    {
+      key: '3',
+      label: (
+        <Space>
+          <CodeOutlined />
+          复制为Python代理环境变量
+        </Space>
+      ),
+      onClick: () => {
+        const code = generatePythonProxyCode(server);
+        copyToClipboardPromise(code)
+          .then(() => {
+            messageApi.open({
+              type: 'success',
+              content: 'Python代理环境变量代码已复制到剪贴板',
+            });
+          })
+          .catch(() => {
+            messageApi.open({
+              type: 'error',
+              content: '复制失败',
+            });
+          });
+      },
+    },
   ];
 
   const MoreMenu = ({ server }: { server: API.ProxyServerInfo }) => (
@@ -338,7 +400,7 @@ const ProxyMonitor: React.FC<ProxyMonitorProps> = ({
       </ContextMenu>
 
       <Card
-        title="代理服务器监视"
+        title="代理服务器"
         loading={loading}
         extra={
           <Space>
