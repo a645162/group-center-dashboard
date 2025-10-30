@@ -199,7 +199,7 @@ const ProxyMonitor: React.FC<ProxyMonitorProps> = ({
   // 生成Python代理环境变量代码
   const generatePythonProxyCode = (server: API.ProxyServerInfo): string => {
     const proxyUrl = `http://${server.host}:${server.port}`;
-    return `import os\n\nos.environ['http_proxy'] = '${proxyUrl}'\nos.environ['https_proxy'] = '${proxyUrl}'\nos.environ['HTTP_PROXY'] = '${proxyUrl}'\nos.environ['HTTPS_PROXY'] = '${proxyUrl}'`;
+    return `import os\n\nproxy_url = "${proxyUrl}"\nos.environ["http_proxy"] = proxy_url\nos.environ["https_proxy"] = proxy_url\nos.environ["HTTP_PROXY"] = proxy_url\nos.environ["HTTPS_PROXY"] = proxy_url`;
   };
 
   // 复制Bash代理命令
@@ -395,6 +395,12 @@ const ProxyMonitor: React.FC<ProxyMonitorProps> = ({
           <Space>
             <CodeOutlined />
             复制"{selectedServer?.name}"为PowerShell代理服务器
+          </Space>
+        </ContextMenuItem>
+        <ContextMenuItem onClick={handleCopyPythonCode}>
+          <Space>
+            <CodeOutlined />
+            复制"{selectedServer?.name}"为Python代理环境变量
           </Space>
         </ContextMenuItem>
       </ContextMenu>
