@@ -42,7 +42,7 @@ export default function ReportPage() {
       axios: cleanVersion(dependencies['axios']),
 
       // 样式和UI
-      tailwindcss: cleanVersion(devDependencies['tailwindcss']),
+      // tailwindcss: cleanVersion(devDependencies['tailwindcss']),
       antdStyle: cleanVersion(dependencies['antd-style']),
 
       // 开发工具

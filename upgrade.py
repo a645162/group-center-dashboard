@@ -20,7 +20,8 @@ def update(without_regex=""):
 # Install dependencies
 os.system("bun i")
 # Upgrade dependencies
-update("/tailwindcss/")
+# update("/tailwindcss/")
+update()
 # os.system('bun run ncu -x "/tailwindcss/" -u')
 # os.system('bun run ncu -f "/tailwindcss/" -t minor -u')
 # Reinstall dependencies
