@@ -50,7 +50,6 @@
     "@umijs/max-plugin-openapi": "^2.0.3",
     "cross-env": "^10.1.0",
     "eslint": "^9.38.0",
-    "eslint-plugin-deprecation": "^3.0.0",
     "eslint-plugin-react": "^7.37.5",
     "husky": "^9.1.7",
     "lint-staged": "^16.2.6",
