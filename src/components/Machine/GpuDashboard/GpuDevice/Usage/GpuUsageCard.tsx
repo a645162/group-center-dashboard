@@ -307,7 +307,7 @@ const GpuUsageCard: React.FC<Props> = (props) => {
           <Tooltip
             title={gpuTooltipContent}
             placement="topLeft"
-            overlayStyle={{ maxWidth: 300 }}
+            styles={{ root: { maxWidth: 300 } }}
             color={token.colorBgElevated}
           >
             <span style={{ cursor: 'help' }}>
@@ -431,7 +431,7 @@ const GpuUsageCard: React.FC<Props> = (props) => {
             </div>
           }
           placement="topLeft"
-          overlayStyle={{ maxWidth: 250 }}
+          styles={{ root: { maxWidth: 250 } }}
           color={token.colorBgElevated}
         >
           <div className={styles.innerLine} style={{ cursor: 'help' }}>
