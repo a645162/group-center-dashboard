@@ -21,6 +21,7 @@ declare namespace API {
     serverVersion: string;
     succeed?: boolean;
     authenticated?: boolean;
+    succeed?: boolean;
   };
 
   type ClientResponse = {
@@ -31,6 +32,7 @@ declare namespace API {
     result?: Record<string, any>;
     succeed?: boolean;
     authenticated?: boolean;
+    succeed?: boolean;
   };
 
   type DataDashBoardSite = {
@@ -210,6 +212,7 @@ declare namespace API {
     success: boolean;
     message: string;
     results: Record<string, any>;
+    detailedResults: Record;
   };
 
   type LarkUser = {
@@ -315,6 +318,7 @@ declare namespace API {
     healthCheckInterval: number;
     healthCheckTimeout: number;
     testUrls: string[];
+    urlTestResults: UrlTestResultInfo[];
   };
 
   type ProxyServerResponse = {
@@ -451,8 +455,19 @@ declare namespace API {
   type TimeRange = {
     startTime?: string;
     endTime?: string;
-    startTimestamp?: number;
     endTimestamp?: number;
+    startTimestamp?: number;
+  };
+
+  type UrlTestResultInfo = {
+    url: string;
+    name: string;
+    nameEng: string;
+    isSuccess: boolean;
+    responseTime?: number;
+    statusCode?: number;
+    error?: string;
+    testTime: number;
   };
 
   type WeComUser = {

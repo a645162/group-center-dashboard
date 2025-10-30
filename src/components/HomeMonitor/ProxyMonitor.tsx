@@ -202,6 +202,58 @@ const ProxyMonitor: React.FC<ProxyMonitorProps> = ({
     return `import os\n\nproxy_url = "${proxyUrl}"\nos.environ["http_proxy"] = proxy_url\nos.environ["https_proxy"] = proxy_url\nos.environ["HTTP_PROXY"] = proxy_url\nos.environ["HTTPS_PROXY"] = proxy_url`;
   };
 
+  // 获取URL测试结果的tag显示
+  const getUrlTestTags = (server: API.ProxyServerInfo) => {
+    if (!server.urlTestResults || server.urlTestResults.length === 0) {
+      return null;
+    }
+
+    return (
+      <div className={styles.urlTestTags}>
+        <span className={styles.detailLabel}>URL测试:</span>
+        <Space size={[4, 4]} wrap>
+          {server.urlTestResults.map((test, index) => (
+            <Tooltip
+              key={index}
+              title={
+                <div>
+                  <div>
+                    <strong>{test.name}</strong>
+                  </div>
+                  <div>URL: {test.url}</div>
+                  <div>状态: {test.isSuccess ? '成功' : '失败'}</div>
+                  {test.responseTime && (
+                    <div>响应时间: {test.responseTime}ms</div>
+                  )}
+                  {test.statusCode && <div>状态码: {test.statusCode}</div>}
+                  {test.error && (
+                    <div style={{ color: '#ff4d4f' }}>错误: {test.error}</div>
+                  )}
+                  <div>测试时间: {formatTime(test.testTime)}</div>
+                </div>
+              }
+              color="rgba(0, 0, 0, 0.75)"
+              placement="top"
+            >
+              <Tag
+                color={test.isSuccess ? 'green' : 'red'}
+                icon={
+                  test.isSuccess ? (
+                    <CheckCircleOutlined />
+                  ) : (
+                    <CloseCircleOutlined />
+                  )
+                }
+              >
+                {test.nameEng}
+              </Tag>
+            </Tooltip>
+          ))}
+        </Space>
+      </div>
+    );
+  };
+
   // 复制Bash代理命令
   const handleCopyBashCommand = async () => {
     if (!selectedServer) return;
@@ -522,6 +574,9 @@ const ProxyMonitor: React.FC<ProxyMonitorProps> = ({
                     </span>
                   </div>
                 )}
+
+                {/* URL测试结果 */}
+                {getUrlTestTags(server)}
 
                 {/* 成功率进度条 */}
                 <div className={styles.successRate}>

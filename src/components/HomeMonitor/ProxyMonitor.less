@@ -99,6 +99,35 @@
     margin-top: 8px;
   }
 
+  .urlTestTags {
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1px dashed var(--ant-color-border);
+
+    .detailLabel {
+      font-weight: 500;
+      color: var(--ant-color-text-secondary);
+      font-size: 12px;
+      margin-bottom: 4px;
+      display: block;
+    }
+
+    :global(.ant-space) {
+      width: 100%;
+    }
+
+    :global(.ant-tag) {
+      margin-bottom: 4px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+
+      &:hover {
+        transform: scale(1.05);
+        box-shadow: 0 2px 8px var(--ant-box-shadow);
+      }
+    }
+  }
+
   .divTags {
     margin-top: 12px;
   }
