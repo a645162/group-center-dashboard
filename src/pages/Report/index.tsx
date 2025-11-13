@@ -240,13 +240,13 @@ export default function ReportPage() {
           </Col>
 
           {/* 样式和UI */}
-          <Col xs={24} sm={12} md={8} lg={6}>
+          {/* <Col xs={24} sm={12} md={8} lg={6}>
             <Card size="small" title="Tailwind CSS">
               <p>
                 <strong>Version:</strong> {libraryVersions.tailwindcss}
               </p>
             </Card>
-          </Col>
+          </Col> */}
           <Col xs={24} sm={12} md={8} lg={6}>
             <Card size="small" title="Ant Design Style">
               <p>
