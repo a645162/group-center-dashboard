@@ -1,10 +1,9 @@
 import {
   CheckCircleOutlined,
   CloseCircleOutlined,
-  DesktopOutlined,
   ReloadOutlined,
 } from '@ant-design/icons';
-import { Button, Card, List, Space, Statistic, Tag, Tooltip } from 'antd';
+import { Button, Card, Space, Statistic, Tag, Tooltip } from 'antd';
 import React, { useEffect, useState } from 'react';
 
 import {
@@ -28,10 +27,16 @@ const MachineStatusMonitor: React.FC<MachineStatusMonitorProps> = ({
     any
   > | null>(null);
   const [loading, setLoading] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
   const [lastUpdate, setLastUpdate] = useState<Date | null>(null);
 
-  const fetchMachineData = async () => {
-    setLoading(true);
+  const fetchMachineData = async (isManualRefresh = false) => {
+    // 只有手动刷新时才设置refreshing状态
+    if (isManualRefresh) {
+      setRefreshing(true);
+    }
+    // 自动刷新时不设置loading状态，保持数据可见
+
     try {
       const [statusResponse, summaryResponse] = await Promise.all([
         getAllMachineStatus(),
@@ -44,8 +49,13 @@ const MachineStatusMonitor: React.FC<MachineStatusMonitorProps> = ({
       setLastUpdate(new Date());
     } catch (error) {
       console.error('获取机器状态数据失败:', error);
+      // 出错时保持现有数据，不重置
     } finally {
-      setLoading(false);
+      // 只有手动刷新时才清除refreshing状态
+      if (isManualRefresh) {
+        setRefreshing(false);
+      }
+      // 自动刷新时不设置loading为false，因为初始加载后loading就一直是false
     }
   };
 
@@ -57,45 +67,57 @@ const MachineStatusMonitor: React.FC<MachineStatusMonitorProps> = ({
   }, [refreshInterval]);
 
   const getPingStatusTag = (machine: API.MachineStatusResponse) => {
-    if (machine.pingStatus) {
-      return (
-        <Tag color="green" icon={<CheckCircleOutlined />}>
-          Ping正常
-        </Tag>
-      );
-    }
-    return (
+    const pingTag = machine.pingStatus ? (
+      <Tag color="green" icon={<CheckCircleOutlined />}>
+        Ping正常
+      </Tag>
+    ) : (
       <Tag color="red" icon={<CloseCircleOutlined />}>
         Ping失败
       </Tag>
     );
+
+    return (
+      <Tooltip
+        title={`最后Ping: ${machine.lastPingTimeFormatted || formatTime(machine.lastPingTime)}`}
+        color="rgba(0, 0, 0, 0.75)"
+      >
+        {pingTag}
+      </Tooltip>
+    );
   };
 
   const getAgentStatusTag = (machine: API.MachineStatusResponse) => {
-    if (machine.agentStatus) {
-      return (
-        <Tag color="blue" icon={<CheckCircleOutlined />}>
-          Agent在线
-        </Tag>
-      );
-    }
-    return (
+    const agentTag = machine.agentStatus ? (
+      <Tag color="blue" icon={<CheckCircleOutlined />}>
+        Agent在线
+      </Tag>
+    ) : (
       <Tag color="orange" icon={<CloseCircleOutlined />}>
         Agent离线
       </Tag>
     );
+
+    return (
+      <Tooltip
+        title={`最后心跳: ${machine.lastHeartbeatTimeFormatted || formatTime(machine.lastHeartbeatTime)}`}
+        color="rgba(0, 0, 0, 0.75)"
+      >
+        {agentTag}
+      </Tooltip>
+    );
   };
 
-  const getGpuTag = (machine: API.MachineStatusResponse) => {
-    if (machine.isGpu) {
-      return (
-        <Tag color="purple" icon={<DesktopOutlined />}>
-          GPU服务器
-        </Tag>
-      );
-    }
-    return <Tag color="default">普通服务器</Tag>;
-  };
+  // const getGpuTag = (machine: API.MachineStatusResponse) => {
+  //   if (machine.isGpu) {
+  //     return (
+  //       <Tag color="purple" icon={<DesktopOutlined />}>
+  //         GPU服务器
+  //       </Tag>
+  //     );
+  //   }
+  //   return <Tag color="default">普通服务器</Tag>;
+  // };
 
   const formatTime = (timestamp?: number) => {
     if (!timestamp || timestamp <= 0) {
@@ -123,15 +145,16 @@ const MachineStatusMonitor: React.FC<MachineStatusMonitorProps> = ({
 
   return (
     <Card
-      title="GPU服务器状态监视"
-      loading={loading}
+      title="GPU服务器"
+      loading={loading && machineStatus.length === 0}
       extra={
         <Space>
           <Tooltip title="刷新数据">
             <Button
               icon={<ReloadOutlined />}
               size="small"
-              onClick={fetchMachineData}
+              onClick={() => fetchMachineData(true)}
+              loading={refreshing}
             >
               刷新
             </Button>
@@ -139,6 +162,7 @@ const MachineStatusMonitor: React.FC<MachineStatusMonitorProps> = ({
           {lastUpdate && (
             <span style={{ fontSize: '12px', color: '#666' }}>
               最后更新: {lastUpdate.toLocaleTimeString('zh-CN')}
+              {refreshing && ' (刷新中...)'}
             </span>
           )}
         </Space>
@@ -173,50 +197,31 @@ const MachineStatusMonitor: React.FC<MachineStatusMonitorProps> = ({
         </div>
       )}
 
-      {/* 服务器列表 */}
-      <List
-        dataSource={machineStatus}
-        renderItem={(machine) => (
-          <List.Item className={styles[getMachineStatusColor(machine)]}>
-            <div className={styles.machineItem}>
-              <div className={styles.machineHeader}>
-                <Space>
-                  <span className={styles.machineName}>{machine.name}</span>
+      {/* 服务器卡片容器 */}
+      <div className={styles.machineCardsContainer}>
+        {machineStatus.map((machine) => (
+          <Card
+            key={machine.name}
+            size="small"
+            className={`${styles.machineCard} ${styles[getMachineStatusColor(machine)]}`}
+          >
+            <div className={styles.cardHeader}>
+              <span className={styles.machineName}>{machine.name}</span>
+              <span className={styles.machinePosition}>{machine.position}</span>
+            </div>
+
+            <div className={styles.cardContent}>
+              <div className={styles.statusTags}>
+                <Space size="small" wrap>
                   {getPingStatusTag(machine)}
                   {getAgentStatusTag(machine)}
-                  {getGpuTag(machine)}
-                </Space>
-                <span className={styles.machinePosition}>
-                  {machine.position}
-                </span>
-              </div>
-
-              <div className={styles.machineDetails}>
-                <Space
-                  direction="vertical"
-                  size="small"
-                  style={{ width: '100%' }}
-                >
-                  {/* <div>
-                    <span className={styles.detailLabel}>主机地址:</span>
-                    {machine.host}
-                  </div> */}
-                  <div>
-                    <span className={styles.detailLabel}>最后Ping:</span>
-                    {machine.lastPingTimeFormatted ||
-                      formatTime(machine.lastPingTime)}
-                  </div>
-                  <div>
-                    <span className={styles.detailLabel}>最后心跳:</span>
-                    {machine.lastHeartbeatTimeFormatted ||
-                      formatTime(machine.lastHeartbeatTime)}
-                  </div>
+                  {/* {getGpuTag(machine)} */}
                 </Space>
               </div>
             </div>
-          </List.Item>
-        )}
-      />
+          </Card>
+        ))}
+      </div>
     </Card>
   );
 };

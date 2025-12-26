@@ -1,9 +1,10 @@
 import DisableSelectDiv from '@/components/Public/Layout/DisableSelectDiv';
 import LinerDividerLayout from '@/components/Public/Layout/LinerDividerLayout';
 import { getGpuUsageInfo } from '@/services/agent/GpuInfo';
+import { getMachineSystemInfo } from '@/services/agent/MachineInfo';
 import { convertFromMBToGB, getMemoryString } from '@/utils/Convert/MemorySize';
 import { green, orange, red } from '@ant-design/colors';
-import { Card, Progress, Skeleton, Space } from 'antd';
+import { Card, Progress, Skeleton, Space, Tooltip, theme } from 'antd';
 import React, { useEffect, useState } from 'react';
 
 import styles from './GpuUsageCard.less';
@@ -11,6 +12,7 @@ import styles from './GpuUsageCard.less';
 interface Props {
   apiUrl: string;
   gpuIndex: number;
+  shouldShowByGpuName?: (gpuName: string | undefined) => boolean;
 }
 
 const useGpuMemoryDetail = (gpuMemoryTotalMB: number, memoryUsage: number) => {
@@ -64,6 +66,36 @@ const useGpuUsageInfo = (apiUrl: string, gpuIndex: number) => {
   }, [apiUrl]); // 依赖项数组包含apiUrl，当apiUrl发生变化时重新设置定时器
 
   return gpuUsageInfo;
+};
+
+const useMachineSystemInfo = (apiUrl: string) => {
+  const [machineSystemInfo, setMachineSystemInfo] =
+    useState<API.MachineSystemInfo>();
+
+  const updateMachineSystemInfo = () => {
+    getMachineSystemInfo(apiUrl)
+      .then((data) => {
+        setMachineSystemInfo(data);
+      })
+      .catch((error: any) => {
+        console.log('Error(getMachineSystemInfo):', error);
+      });
+  };
+
+  // 初始执行一次
+  useEffect(() => {
+    updateMachineSystemInfo();
+  }, []);
+
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      updateMachineSystemInfo();
+    }, 5000); // 每隔5秒执行一次
+
+    return () => clearInterval(intervalId);
+  }, [apiUrl]);
+
+  return machineSystemInfo;
 };
 
 const ProgressComponent = (percent: number) => {
@@ -133,14 +165,21 @@ const ProgressComponent = (percent: number) => {
 };
 
 const GpuUsageCard: React.FC<Props> = (props) => {
-  const { apiUrl, gpuIndex } = props;
+  const { apiUrl, gpuIndex, shouldShowByGpuName } = props;
+  const { token } = theme.useToken();
 
   const gpuUsageInfo = useGpuUsageInfo(apiUrl, gpuIndex);
+  const machineSystemInfo = useMachineSystemInfo(apiUrl);
 
   const { gpuMemoryTotalGiB, gpuMemoryUsageGiB } = useGpuMemoryDetail(
     gpuUsageInfo?.gpuMemoryTotalMB || 0,
     gpuUsageInfo?.memoryUsage || 0,
   );
+
+  // 检查是否应该显示此GPU卡（基于卡名筛选）
+  const shouldShowCard = shouldShowByGpuName
+    ? shouldShowByGpuName(gpuUsageInfo?.gpuName)
+    : true;
 
   if (!gpuUsageInfo) {
     return (
@@ -154,6 +193,11 @@ const GpuUsageCard: React.FC<Props> = (props) => {
     );
   }
 
+  // 如果不应该显示此卡，返回null
+  if (!shouldShowCard) {
+    return null;
+  }
+
   const leftContainer = (
     gpuIndex: number,
     gpuUsageInfo: API.DashboardGpuUsageInfo,
@@ -161,17 +205,239 @@ const GpuUsageCard: React.FC<Props> = (props) => {
     const gpuMemoryUsageFormatted = getMemoryString(gpuMemoryUsageGiB);
     const gpuMemoryTotalFormatted = getMemoryString(gpuMemoryTotalGiB);
 
+    // 计算内存使用率
+    const getMemoryUsagePercentage = (used: number, total: number) => {
+      if (total === 0) return 0;
+      return Math.round((used / total) * 100);
+    };
+
+    // 构建GPU信息提示内容
+    const gpuTooltipContent = gpuUsageInfo ? (
+      <div style={{ minWidth: 180, padding: '8px 0' }}>
+        <div
+          style={{
+            marginBottom: 12,
+            fontWeight: 'bold',
+            fontSize: '14px',
+            textAlign: 'center',
+            color: token.colorText,
+          }}
+        >
+          GPU状态
+        </div>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+            }}
+          >
+            <div
+              style={{
+                fontWeight: 500,
+                color: token.colorTextSecondary,
+                fontSize: '12px',
+              }}
+            >
+              功耗
+            </div>
+            <div
+              style={{
+                fontSize: '12px',
+                fontWeight: 'bold',
+                color:
+                  (gpuUsageInfo.gpuPowerUsage || 0) /
+                    (gpuUsageInfo.gpuTDP || 1) >
+                  0.7
+                    ? token.colorError
+                    : (gpuUsageInfo.gpuPowerUsage || 0) /
+                          (gpuUsageInfo.gpuTDP || 1) >
+                        0.3
+                      ? token.colorWarning
+                      : token.colorSuccess,
+              }}
+            >
+              {gpuUsageInfo.gpuPowerUsage || 0}W / {gpuUsageInfo.gpuTDP || 0}W
+            </div>
+          </div>
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+            }}
+          >
+            <div
+              style={{
+                fontWeight: 500,
+                color: token.colorTextSecondary,
+                fontSize: '12px',
+              }}
+            >
+              温度
+            </div>
+            <div
+              style={{
+                fontSize: '12px',
+                fontWeight: 'bold',
+                color:
+                  (gpuUsageInfo.gpuTemperature || 0) > 70
+                    ? token.colorError
+                    : (gpuUsageInfo.gpuTemperature || 0) > 50
+                      ? token.colorWarning
+                      : token.colorSuccess,
+              }}
+            >
+              {gpuUsageInfo.gpuTemperature || 0}°C
+            </div>
+          </div>
+        </div>
+      </div>
+    ) : (
+      <div style={{ color: token.colorText, padding: '8px 12px' }}>
+        正在加载GPU信息...
+      </div>
+    );
+
     return (
       <Space className={styles.space} direction="vertical" size="middle">
         {/* 左上 */}
         <div className={styles.innerLine}>
-          [{gpuIndex}]{gpuUsageInfo?.gpuName || ''}
+          <Tooltip
+            title={gpuTooltipContent}
+            placement="topLeft"
+            styles={{ root: { maxWidth: 300 } }}
+            color={token.colorBgElevated}
+          >
+            <span style={{ cursor: 'help' }}>
+              [{gpuIndex}]{gpuUsageInfo?.gpuName || ''}
+            </span>
+          </Tooltip>
         </div>
 
         {/* 左下 */}
-        <div className={styles.innerLine}>
-          {gpuMemoryUsageFormatted}/{gpuMemoryTotalFormatted}GiB
-        </div>
+        <Tooltip
+          title={
+            <div style={{ minWidth: 160, padding: '8px 0' }}>
+              <div
+                style={{
+                  fontWeight: 'bold',
+                  marginBottom: 12,
+                  fontSize: '14px',
+                  textAlign: 'center',
+                  color: token.colorText,
+                }}
+              >
+                显存详细信息
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                <div
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                  }}
+                >
+                  <div
+                    style={{
+                      fontWeight: 500,
+                      color: token.colorTextSecondary,
+                      fontSize: '12px',
+                    }}
+                  >
+                    已使用
+                  </div>
+                  <div style={{ color: token.colorText, fontSize: '12px' }}>
+                    {Math.round(
+                      ((gpuUsageInfo?.memoryUsage || 0) *
+                        (gpuUsageInfo?.gpuMemoryTotalMB || 0)) /
+                        100,
+                    )}
+                    MB
+                  </div>
+                </div>
+                <div
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                  }}
+                >
+                  <div
+                    style={{
+                      fontWeight: 500,
+                      color: token.colorTextSecondary,
+                      fontSize: '12px',
+                    }}
+                  >
+                    总容量
+                  </div>
+                  <div style={{ color: token.colorText, fontSize: '12px' }}>
+                    {gpuUsageInfo?.gpuMemoryTotalMB || 0}MB
+                  </div>
+                </div>
+                <div
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                  }}
+                >
+                  <div
+                    style={{
+                      fontWeight: 500,
+                      color: token.colorTextSecondary,
+                      fontSize: '12px',
+                    }}
+                  >
+                    可用
+                  </div>
+                  <div style={{ color: token.colorText, fontSize: '12px' }}>
+                    {(gpuUsageInfo?.gpuMemoryTotalMB || 0) -
+                      Math.round(
+                        ((gpuUsageInfo?.memoryUsage || 0) *
+                          (gpuUsageInfo?.gpuMemoryTotalMB || 0)) /
+                          100,
+                      )}
+                    MB
+                  </div>
+                </div>
+                <div
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                  }}
+                >
+                  <div
+                    style={{
+                      fontWeight: 500,
+                      color: token.colorTextSecondary,
+                      fontSize: '12px',
+                    }}
+                  >
+                    使用率
+                  </div>
+                  <div style={{ color: token.colorText, fontSize: '12px' }}>
+                    {getMemoryUsagePercentage(
+                      gpuMemoryUsageGiB,
+                      gpuMemoryTotalGiB,
+                    )}
+                    %
+                  </div>
+                </div>
+              </div>
+            </div>
+          }
+          placement="topLeft"
+          styles={{ root: { maxWidth: 250 } }}
+          color={token.colorBgElevated}
+        >
+          <div className={styles.innerLine} style={{ cursor: 'help' }}>
+            {gpuMemoryUsageFormatted}/{gpuMemoryTotalFormatted}GiB
+          </div>
+        </Tooltip>
       </Space>
     );
   };

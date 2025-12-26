@@ -11,3 +11,7 @@ src/assets/
 dist/
 
 pnpm-lock.yaml
+
+*.json
+
+src/services/group_center/

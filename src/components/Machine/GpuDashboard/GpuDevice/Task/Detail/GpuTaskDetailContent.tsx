@@ -42,6 +42,13 @@ const GpuTaskDetailModal: React.FC<Props> = (props) => {
 
   return (
     <>
+      <VShow v-show={taskInfo.id}>
+        <div>
+          <b>任务 ID: </b>
+          {taskInfo.id}
+        </div>
+      </VShow>
+
       <div>
         <VShow v-show={taskInfo.pid}>
           <div>

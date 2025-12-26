@@ -21,7 +21,11 @@ const HomeSiteClassWidget: React.FC<Props> = (props) => {
 
   return (
     <div>
-      <Card title={siteClassObject.className} extra={<ClassIcon />}>
+      <Card
+        title={siteClassObject.className}
+        extra={<ClassIcon />}
+        className={styles.siteCard}
+      >
         <div className={styles.siteListDiv}>
           {siteClassObject.sites.map((siteObject, index) => {
             return (

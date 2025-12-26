@@ -19,7 +19,7 @@ export async function getMachineBaseList(options?: { [key: string]: any }) {
 }
 
 /** 客户端获取环境用户列表 GET /api/client/config/user_list */
-export async function getUserList(options?: { [key: string]: any }) {
+export async function getUserList1(options?: { [key: string]: any }) {
   return request<API.GroupUserConfig[]>('/api/client/config/user_list', {
     method: 'GET',
     ...(options || {}),

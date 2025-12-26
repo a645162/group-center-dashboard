@@ -1,21 +1,102 @@
 .filterGroupContainer {
+  margin-bottom: 20px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.filterContent {
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  max-height: 0;
+  opacity: 0;
+  transform: translateY(-10px);
+}
+
+.filterContentVisible {
+  max-height: 1000px; /* 足够大的值以容纳内容 */
+  opacity: 1;
+  transform: translateY(0);
   margin-bottom: 16px;
 }
 
+.filterContentHidden {
+  max-height: 0;
+  opacity: 0;
+  transform: translateY(-10px);
+  margin-bottom: 0;
+}
+
 .filterToggle {
-  margin-bottom: 12px;
+  margin-bottom: 16px;
   display: flex;
   justify-content: flex-start;
+  width: 100%;
+  box-sizing: border-box;
+
+  .ant-space {
+    width: 100%;
+    justify-content: flex-start;
+    flex-wrap: nowrap;
+  }
+
+  .ant-btn {
+    border-radius: 8px;
+    height: 36px;
+    padding: 0 16px;
+    font-size: 13px;
+    font-weight: 500;
+    background: linear-gradient(135deg, #1890ff 0%, #096dd9 100%);
+    border: none;
+    box-shadow: 0 2px 8px rgba(24, 144, 255, 30%);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+    &:hover {
+      background: linear-gradient(135deg, #40a9ff 0%, #1890ff 100%);
+      box-shadow: 0 4px 12px rgba(24, 144, 255, 40%);
+      transform: translateY(-2px);
+    }
+  }
 }
 
 .filterCard {
+  border-radius: 12px;
+  border: 1px solid var(--ant-color-border);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 8%);
+  overflow: hidden;
+  width: 100%;
+
+  .ant-card-head {
+    background: linear-gradient(
+      135deg,
+      var(--ant-color-bg-layout) 0%,
+      var(--ant-color-bg-container) 100%
+    );
+    border-bottom: 1px solid var(--ant-color-border);
+    padding: 12px 16px;
+
+    .ant-card-head-title {
+      font-weight: 600;
+      font-size: 15px;
+      color: var(--ant-color-text-heading);
+    }
+  }
+
   .ant-card-body {
-    padding: 16px;
+    padding: 20px;
+    background: var(--ant-color-bg-container);
   }
 }
 
 .filterSection {
-  margin-bottom: 16px;
+  margin-bottom: 20px;
+  padding: 16px;
+  background: linear-gradient(
+    135deg,
+    var(--ant-color-bg-layout) 0%,
+    var(--ant-color-bg-container) 100%
+  );
+  border-radius: 8px;
+  border: 1px solid var(--ant-color-border);
 
   &:last-child {
     margin-bottom: 0;
@@ -24,19 +105,155 @@
 
 .filterLabel {
   font-weight: 600;
-  margin-bottom: 8px;
-  color: rgba(0, 0, 0, 85%);
+  margin-bottom: 12px;
+  color: var(--ant-color-text-heading);
   font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  &::before {
+    content: '🔍';
+    font-size: 12px;
+  }
+}
+
+.filterSubSection {
+  margin-bottom: 16px;
+  padding: 12px;
+  background: var(--ant-color-bg-container);
+  border-radius: 6px;
+  border: 1px solid var(--ant-color-border);
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.filterSubLabel {
+  font-weight: 500;
+  margin-bottom: 8px;
+  color: var(--ant-color-text-secondary);
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+
+  &::before {
+    content: '•';
+    font-size: 14px;
+    color: #1890ff;
+  }
+}
+
+// 移动端适配
+@media (max-width: 768px) {
+  .filterGroupContainer {
+    margin-bottom: 16px;
+  }
+
+  .filterToggle {
+    margin-bottom: 12px;
+
+    .ant-btn {
+      height: 32px;
+      font-size: 12px;
+      padding: 0 12px;
+    }
+  }
+
+  .filterCard {
+    .ant-card-head {
+      padding: 10px 12px;
+
+      .ant-card-head-title {
+        font-size: 14px;
+      }
+    }
+
+    .ant-card-body {
+      padding: 16px;
+    }
+  }
+
+  .filterSection {
+    margin-bottom: 16px;
+    padding: 12px;
+  }
+
+  .filterLabel {
+    font-size: 13px;
+    margin-bottom: 10px;
+  }
+}
+
+// 小屏幕适配
+@media (max-width: 480px) {
+  .filterGroupContainer {
+    margin-bottom: 12px;
+  }
+
+  .filterToggle {
+    margin-bottom: 8px;
+
+    .ant-btn {
+      height: 30px;
+      font-size: 11px;
+      padding: 0 10px;
+    }
+  }
+
+  .filterCard {
+    .ant-card-head {
+      padding: 8px 10px;
+
+      .ant-card-head-title {
+        font-size: 13px;
+      }
+    }
+
+    .ant-card-body {
+      padding: 12px;
+    }
+  }
+
+  .filterSection {
+    margin-bottom: 12px;
+    padding: 10px;
+  }
+
+  .filterLabel {
+    font-size: 12px;
+    margin-bottom: 8px;
+  }
 }
 
 // 暗色主题支持
 [data-theme='dark'] {
-  .filterLabel {
-    color: rgba(255, 255, 255, 85%);
+  .filterCard {
+    background: var(--ant-color-bg-container);
+    border-color: var(--ant-color-border);
+
+    .ant-card-head {
+      background: var(--ant-color-bg-container-hover);
+      border-bottom-color: var(--ant-color-border);
+
+      .ant-card-head-title {
+        color: rgba(255, 255, 255, 90%);
+      }
+    }
+
+    .ant-card-body {
+      background: rgba(255, 255, 255, 2%);
+    }
   }
 
-  .filterCard {
-    background: rgba(255, 255, 255, 4%);
-    border-color: rgba(255, 255, 255, 12%);
+  .filterSection {
+    background: var(--ant-color-bg-container);
+    border-color: var(--ant-color-border);
+  }
+
+  .filterLabel {
+    color: rgba(255, 255, 255, 90%);
   }
 }

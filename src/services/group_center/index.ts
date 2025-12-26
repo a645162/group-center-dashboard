@@ -16,6 +16,7 @@ import * as machineStatus from './machineStatus';
 import * as monitorClientAuthController from './monitorClientAuthController';
 import * as programInfo from './programInfo';
 import * as proxyManagement from './proxyManagement';
+import * as publicApi from './publicApi';
 import * as reportPush from './reportPush';
 import * as restfulTest from './restfulTest';
 import * as sshKeyController from './sshKeyController';
@@ -23,6 +24,7 @@ export default {
   gpuTaskQuery,
   dashboardStatistics,
   restfulTest,
+  publicApi,
   proxyManagement,
   customClientMessageController,
   gpuMonitorController,

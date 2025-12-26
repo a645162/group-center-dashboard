@@ -21,6 +21,7 @@ declare namespace API {
     serverVersion: string;
     succeed?: boolean;
     authenticated?: boolean;
+    succeed?: boolean;
   };
 
   type ClientResponse = {
@@ -31,6 +32,7 @@ declare namespace API {
     result?: Record<string, any>;
     succeed?: boolean;
     authenticated?: boolean;
+    succeed?: boolean;
   };
 
   type DataDashBoardSite = {
@@ -105,14 +107,33 @@ declare namespace API {
     userNameEng: string;
   };
 
+  type getTaskByTaskIdParams = {
+    /** Task ID for exact matching */
+    taskId: string;
+  };
+
   type getTimeTrendStatisticsParams = {
     /** Time period for trend analysis (default: ONE_WEEK) */
+    timePeriod?: string;
+  };
+
+  type getUserActivityTimeDistributionCustomParams = {
+    startTime: string;
+    endTime: string;
+  };
+
+  type getUserActivityTimeDistributionParams = {
+    /** Time period for statistics (default: ONE_WEEK) */
     timePeriod?: string;
   };
 
   type getUserStatisticsParams = {
     /** Time period for statistics (default: ONE_WEEK) */
     timePeriod?: string;
+  };
+
+  type getUserSubscriptionsParams = {
+    userName: string;
   };
 
   type getUserTaskStatsParams = {
@@ -191,6 +212,7 @@ declare namespace API {
     success: boolean;
     message: string;
     results: Record<string, any>;
+    detailedResults: Record;
   };
 
   type LarkUser = {
@@ -272,6 +294,11 @@ declare namespace API {
     userNameEng: string;
   };
 
+  type ProjectSubscriptionRequest = {
+    projectId: number;
+    userName: string;
+  };
+
   type ProxyServerInfo = {
     name: string;
     nameEng: string;
@@ -291,6 +318,7 @@ declare namespace API {
     healthCheckInterval: number;
     healthCheckTimeout: number;
     testUrls: string[];
+    urlTestResults: UrlTestResultInfo[];
   };
 
   type ProxyServerResponse = {
@@ -427,8 +455,19 @@ declare namespace API {
   type TimeRange = {
     startTime?: string;
     endTime?: string;
-    startTimestamp?: number;
     endTimestamp?: number;
+    startTimestamp?: number;
+  };
+
+  type UrlTestResultInfo = {
+    url: string;
+    name: string;
+    nameEng: string;
+    isSuccess: boolean;
+    responseTime?: number;
+    statusCode?: number;
+    error?: string;
+    testTime: number;
   };
 
   type WeComUser = {

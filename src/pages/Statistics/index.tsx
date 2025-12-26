@@ -6,6 +6,7 @@ import { get24HourReport } from '@/services/group_center/dashboardStatistics';
 import GpuUsageChart from './components/GpuUsageChart';
 import ProjectStatistics from './components/ProjectStatistics';
 import TimeTrendChart from './components/TimeTrendChart';
+import UserActivityTimeChart from './components/UserActivityTimeChart';
 import UserStatistics from './components/UserStatistics';
 import styles from './index.less';
 
@@ -20,6 +21,7 @@ interface OverviewStats {
 
 const StatisticsPage: React.FC = () => {
   const [timePeriod, setTimePeriod] = useState<string>('ONE_WEEK');
+  const [activeTab, setActiveTab] = useState<string>('gpu');
   const [overviewStats, setOverviewStats] = useState<OverviewStats | null>(
     null,
   );
@@ -182,7 +184,14 @@ const StatisticsPage: React.FC = () => {
       <div className={styles.statisticsPage}>
         {/* 详细统计 */}
         <Tabs
-          defaultActiveKey="gpu"
+          activeKey={activeTab}
+          onChange={(key) => {
+            setActiveTab(key);
+            // 延迟触发resize事件,让图表重新计算大小
+            setTimeout(() => {
+              window.dispatchEvent(new Event('resize'));
+            }, 100);
+          }}
           size="large"
           items={[
             {
@@ -204,6 +213,11 @@ const StatisticsPage: React.FC = () => {
               key: 'trend',
               label: '时间趋势',
               children: <TimeTrendChart timePeriod={timePeriod} />,
+            },
+            {
+              key: 'activity',
+              label: '活动时间分布',
+              children: <UserActivityTimeChart timePeriod={timePeriod} />,
             },
           ]}
         />

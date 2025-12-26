@@ -209,6 +209,56 @@ export async function getTimeTrendStatistics(
   });
 }
 
+/** 获取用户活动时间分布 
+            统计每个用户的活动时间段，以4点为分界线处理跨天时间区间。
+            特殊处理逻辑：
+            - 如果用户的活动时间跨越4点，需要特殊处理跨天区间
+            - 例如：用户6点启动，3点启动，活动区间为6:00-3:00（跨天）
+            - 4点之前的时间视为第二天的对应时间进行计算
+         GET /web/dashboard/statistics/user-activity-time-distribution */
+export async function getUserActivityTimeDistribution(
+  // 叠加生成的Param类型 (非body参数swagger默认没有生成对象)
+  params: API.getUserActivityTimeDistributionParams,
+  options?: { [key: string]: any },
+) {
+  return request<API.ClientResponse>(
+    '/web/dashboard/statistics/user-activity-time-distribution',
+    {
+      method: 'GET',
+      params: {
+        // timePeriod has a default value: ONE_WEEK
+        timePeriod: 'ONE_WEEK',
+        ...params,
+      },
+      ...(options || {}),
+    },
+  );
+}
+
+/** 获取自定义时间段用户活动时间分布 
+            统计指定时间段内用户的活动时间段，以4点为分界线处理跨天时间区间。
+            特殊处理逻辑：
+            - 如果用户的活动时间跨越4点，需要特殊处理跨天区间
+            - 例如：用户6点启动，3点启动，活动区间为6:00-3:00（跨天）
+            - 4点之前的时间视为第二天的对应时间进行计算
+         GET /web/dashboard/statistics/user-activity-time-distribution/custom */
+export async function getUserActivityTimeDistributionCustom(
+  // 叠加生成的Param类型 (非body参数swagger默认没有生成对象)
+  params: API.getUserActivityTimeDistributionCustomParams,
+  options?: { [key: string]: any },
+) {
+  return request<API.ClientResponse>(
+    '/web/dashboard/statistics/user-activity-time-distribution/custom',
+    {
+      method: 'GET',
+      params: {
+        ...params,
+      },
+      ...(options || {}),
+    },
+  );
+}
+
 /** Get User Statistics Retrieve user statistics including active users, task counts, and usage patterns for the specified time period GET /web/dashboard/statistics/users */
 export async function getUserStatistics(
   // 叠加生成的Param类型 (非body参数swagger默认没有生成对象)

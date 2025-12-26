@@ -1,6 +1,22 @@
 import { getUserStatistics } from '@/services/group_center/dashboardStatistics';
-import { Alert, Card, Empty, List, Progress, Spin, Statistic, Tag } from 'antd';
+import { GetIsDarkMode } from '@/utils/AntD5/AntD5DarkMode';
+import { calculateDateRange, getTimeRangeDisplayName } from '@/utils/dateRange';
+import { Pie } from '@ant-design/charts';
+import {
+  Alert,
+  Card,
+  Empty,
+  List,
+  Pagination,
+  Progress,
+  Select,
+  Spin,
+  Statistic,
+  Tag,
+} from 'antd';
 import React, { useEffect, useState } from 'react';
+
+const { Option } = Select;
 
 interface UserStatisticsProps {
   timePeriod: string;
@@ -21,12 +37,16 @@ interface UserStatisticsData {
   activeUsers: number;
   averageTasksPerUser: number;
   topUsers: UserStat[];
+  refreshTime?: string;
 }
 
 const UserStatistics: React.FC<UserStatisticsProps> = ({ timePeriod }) => {
   const [userData, setUserData] = useState<UserStatisticsData | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [pageSize, setPageSize] = useState<number>(10);
+  const [topK, setTopK] = useState<number | null>(10);
 
   useEffect(() => {
     fetchUserStatistics();
@@ -81,7 +101,8 @@ const UserStatistics: React.FC<UserStatisticsProps> = ({ timePeriod }) => {
           totalUsers,
           activeUsers,
           averageTasksPerUser,
-          topUsers: userStats.slice(0, 10), // 只显示前10名
+          topUsers: userStats, // 存储所有用户数据
+          refreshTime: new Date().toLocaleString('zh-CN'), // 使用当前时间作为统计时间
         });
         console.log('UserStatistics: User data set successfully');
       } else {
@@ -114,6 +135,14 @@ const UserStatistics: React.FC<UserStatisticsProps> = ({ timePeriod }) => {
     return totalRuntime > 0 ? (user.totalRuntime / totalRuntime) * 100 : 0;
   };
 
+  // 获取当前页显示的用户数据
+  const getCurrentPageUsers = () => {
+    if (!userData) return [];
+    const startIndex = (currentPage - 1) * pageSize;
+    const endIndex = startIndex + pageSize;
+    return userData.topUsers.slice(startIndex, endIndex);
+  };
+
   // 准备用户任务分布饼图数据
   const getTaskDistributionData = () => {
     if (!userData) return [];
@@ -137,15 +166,54 @@ const UserStatistics: React.FC<UserStatisticsProps> = ({ timePeriod }) => {
     }));
   };
 
-  // 饼图配置
+  // 处理分页变化
+  const handlePageChange = (page: number, size: number) => {
+    setCurrentPage(page);
+    setPageSize(size);
+  };
+
+  // 准备用户时间占比饼图数据
+  const getUserTimeDistributionData = () => {
+    if (!userData) return [];
+
+    const topUsers = topK
+      ? userData.topUsers.slice(0, topK)
+      : userData.topUsers;
+    const totalRuntime = topUsers.reduce(
+      (sum, user) => sum + user.totalRuntime,
+      0,
+    );
+
+    return topUsers.map((user) => ({
+      type: user.userName,
+      value: user.totalRuntime,
+      runtime: user.totalRuntime,
+      tasks: user.totalTasks,
+      favoriteGpu: user.favoriteGpu,
+      percentage:
+        totalRuntime > 0
+          ? ((user.totalRuntime / totalRuntime) * 100).toFixed(1)
+          : '0',
+    }));
+  };
+
+  const isDark = GetIsDarkMode();
+
+  // 饼图配置 - 使用Ant Design Charts最新API
   const pieConfig = {
     data: getTaskDistributionData(),
     angleField: 'value',
     colorField: 'type',
     radius: 0.8,
+    autoFit: true,
+    theme: isDark ? 'dark' : 'light',
     label: {
       type: 'outer',
       content: '{name} {percentage}',
+      formatter: (datum: any, mappingData: any) => {
+        const percentage = ((datum.value / mappingData.total) * 100).toFixed(1);
+        return `${datum.type}\n${percentage}%`;
+      },
     },
     interactions: [
       {
@@ -153,27 +221,48 @@ const UserStatistics: React.FC<UserStatisticsProps> = ({ timePeriod }) => {
       },
     ],
     tooltip: {
-      fields: ['type', 'value', 'runtime'],
-      formatter: (datum) => {
-        const hours = Math.floor(datum.runtime / 3600);
-        return {
-          name: datum.type,
-          value: `任务数: ${datum.value}\n运行时间: ${hours}h`,
-        };
-      },
+      title: 'type',
+      items: [
+        {
+          name: '任务数',
+          field: 'value',
+          formatter: (datum: any) => `${datum.value}个`,
+        },
+        {
+          name: '运行时间',
+          field: 'runtime',
+          formatter: (datum: any) => {
+            const hours = Math.floor(datum.runtime / 3600);
+            return `${hours}h`;
+          },
+        },
+      ],
     },
     legend: {
       position: 'bottom',
+      itemName: {
+        formatter: (text: string) => {
+          return text.length > 15 ? text.substring(0, 15) + '...' : text;
+        },
+      },
+    },
+    animation: {
+      appear: {
+        animation: 'scale-in',
+        duration: 1000,
+      },
     },
   };
 
-  // 柱状图配置
+  // 柱状图配置 - 使用Ant Design Charts最新API
   const columnConfig = {
     data: getRuntimeChartData(),
     xField: 'user',
     yField: 'runtime',
     seriesField: 'user',
     isGroup: false,
+    autoFit: true,
+    theme: isDark ? 'dark' : 'light',
     columnStyle: {
       radius: [4, 4, 0, 0],
     },
@@ -181,26 +270,108 @@ const UserStatistics: React.FC<UserStatisticsProps> = ({ timePeriod }) => {
       position: 'top',
       style: {
         fill: '#000',
+        fontSize: 12,
       },
-      formatter: (datum) => `${datum.runtime}h`,
+      formatter: (datum: any) => `${datum.runtime}h`,
     },
     tooltip: {
-      fields: ['user', 'runtime', 'tasks', 'favoriteGpu'],
-      formatter: (datum) => {
-        return {
-          name: datum.user,
-          value: `运行时间: ${datum.runtime}h\n任务数: ${datum.tasks}\n常用GPU: ${datum.favoriteGpu || 'N/A'}`,
-        };
-      },
+      title: 'user',
+      items: [
+        {
+          name: '运行时间',
+          field: 'runtime',
+          formatter: (datum: any) => `${datum.runtime}h`,
+        },
+        {
+          name: '任务数',
+          field: 'tasks',
+          formatter: (datum: any) => `${datum.tasks}个`,
+        },
+        {
+          name: '常用GPU',
+          field: 'favoriteGpu',
+          formatter: (datum: any) => datum.favoriteGpu || 'N/A',
+        },
+      ],
     },
     xAxis: {
       label: {
-        autoRotate: false,
+        autoRotate: true,
+        formatter: (text: string) => {
+          return text.length > 10 ? text.substring(0, 10) + '...' : text;
+        },
       },
     },
     yAxis: {
       label: {
-        formatter: (v) => `${v}h`,
+        formatter: (v: number) => `${Math.round(v)}h`,
+      },
+    },
+    animation: {
+      appear: {
+        animation: 'scale-in-y',
+        duration: 800,
+      },
+    },
+  };
+
+  // 用户时间占比饼图配置 - 使用Ant Design Charts最新API
+  const userTimePieConfig = {
+    data: getUserTimeDistributionData(),
+    angleField: 'value',
+    colorField: 'type',
+    radius: 0.8,
+    autoFit: true,
+    theme: isDark ? 'dark' : 'light',
+    label: {
+      text: 'type',
+      position: 'outside',
+      formatter: (text: string, item: any) => {
+        const percent = item.percentage || '0';
+        return `${text} ${percent}%`;
+      },
+    },
+    tooltip: {
+      title: 'type',
+      items: [
+        {
+          name: '运行时间',
+          field: 'runtime',
+          formatter: (datum: any) => {
+            const hours = Math.floor(datum.runtime / 3600);
+            return `${hours}h`;
+          },
+        },
+        {
+          name: '占比',
+          field: 'percentage',
+          formatter: (datum: any) => `${datum.percentage}%`,
+        },
+        {
+          name: '任务数',
+          field: 'tasks',
+          formatter: (datum: any) => `${datum.tasks}个`,
+        },
+        {
+          name: '常用GPU',
+          field: 'favoriteGpu',
+          formatter: (datum: any) => datum.favoriteGpu || 'N/A',
+        },
+      ],
+    },
+    legend: {
+      position: 'bottom',
+      layout: 'horizontal',
+      itemName: {
+        formatter: (text: string) => {
+          return text.length > 15 ? text.substring(0, 15) + '...' : text;
+        },
+      },
+    },
+    animation: {
+      appear: {
+        animation: 'fade-in',
+        duration: 1000,
       },
     },
   };
@@ -280,18 +451,77 @@ const UserStatistics: React.FC<UserStatisticsProps> = ({ timePeriod }) => {
         </Card>
       </div>
 
+      {/* 用户时间占比分布 */}
+      <Card
+        title={
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+            }}
+          >
+            <span>用户时间占比分布</span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <span style={{ fontSize: '12px', color: '#666' }}>显示前</span>
+              <Select
+                value={topK}
+                onChange={setTopK}
+                style={{ width: 100 }}
+                size="small"
+              >
+                <Option value={5}>5</Option>
+                <Option value={10}>10</Option>
+                <Option value={15}>15</Option>
+                <Option value={20}>20</Option>
+                <Option value={25}>25</Option>
+                <Option value={null}>无限制</Option>
+              </Select>
+              <span style={{ fontSize: '12px', color: '#666' }}>
+                个用户 {topK ? '' : '(显示全部)'} (共 {userData.topUsers.length}{' '}
+                个)
+              </span>
+            </div>
+          </div>
+        }
+        style={{ marginBottom: 24 }}
+      >
+        <div style={{ height: 400 }}>
+          <Pie {...userTimePieConfig} />
+        </div>
+      </Card>
+
       {/* 用户排名列表 */}
       <Card
         title="用户使用排名"
         extra={
-          <span style={{ color: '#666', fontSize: '12px' }}>
-            时间范围: {timePeriod}
-          </span>
+          <div
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'flex-end',
+            }}
+          >
+            <span style={{ color: '#666', fontSize: '12px' }}>
+              时间范围: {getTimeRangeDisplayName(timePeriod)}
+            </span>
+            <span style={{ color: '#666', fontSize: '11px', marginTop: '2px' }}>
+              {calculateDateRange(timePeriod)}
+            </span>
+            {userData.refreshTime && (
+              <span
+                style={{ color: '#999', fontSize: '11px', marginTop: '2px' }}
+              >
+                统计时间: {userData.refreshTime}
+              </span>
+            )}
+          </div>
         }
       >
         <List
-          dataSource={userData.topUsers}
+          dataSource={getCurrentPageUsers()}
           renderItem={(user, index) => {
+            const globalIndex = (currentPage - 1) * pageSize + index;
             const usagePercentage = calculateUsagePercentage(
               user,
               userData.topUsers,
@@ -308,10 +538,14 @@ const UserStatistics: React.FC<UserStatisticsProps> = ({ timePeriod }) => {
                   <div style={{ width: 40, textAlign: 'center' }}>
                     <Tag
                       color={
-                        index < 3 ? '#f50' : index < 5 ? '#2db7f5' : '#87d068'
+                        globalIndex < 3
+                          ? '#f50'
+                          : globalIndex < 5
+                            ? '#2db7f5'
+                            : '#87d068'
                       }
                     >
-                      #{index + 1}
+                      #{globalIndex + 1}
                     </Tag>
                   </div>
 
@@ -380,29 +614,19 @@ const UserStatistics: React.FC<UserStatisticsProps> = ({ timePeriod }) => {
             );
           }}
         />
-      </Card>
-
-      {/* 用户活动时间分布 */}
-      <Card title="用户活动时间分布" style={{ marginTop: 24 }}>
-        <div
-          style={{
-            height: 200,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            background: '#f5f5f5',
-            borderRadius: 6,
-          }}
-        >
-          <div style={{ textAlign: 'center', color: '#666' }}>
-            <div style={{ fontSize: '16px', marginBottom: 8 }}>
-              用户活动时间分布图
-            </div>
-            <div style={{ fontSize: '12px' }}>
-              这里将显示用户在不同时间段的活跃度分布
-            </div>
-            <div style={{ fontSize: '12px' }}>时间范围: {timePeriod}</div>
-          </div>
+        <div style={{ marginTop: 16, textAlign: 'center' }}>
+          <Pagination
+            current={currentPage}
+            pageSize={pageSize}
+            total={userData.topUsers.length}
+            showSizeChanger
+            showQuickJumper
+            showTotal={(total, range) =>
+              `第 ${range[0]}-${range[1]} 条，共 ${total} 条`
+            }
+            onChange={handlePageChange}
+            onShowSizeChange={handlePageChange}
+          />
         </div>
       </Card>
     </div>

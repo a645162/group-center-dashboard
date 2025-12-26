@@ -1,3 +1,4 @@
+import { ProjectSubscriptionModal } from '@/components/ProjectSubscription';
 import RunTimeComponent from '@/components/Time/RunTimeComponent';
 import VShow from '@/components/Vue/V-Show';
 import { useGpuTaskFilterProjectNameStore } from '@/data/store/modules/filter/GpuTaskFilterProjectName';
@@ -9,10 +10,15 @@ import {
   CloseCircleOutlined,
   DatabaseOutlined,
   DownOutlined,
+  FilterOutlined,
   ForkOutlined,
+  InfoCircleOutlined,
+  PlusOutlined,
   QuestionCircleOutlined,
+  SearchOutlined,
   WarningOutlined,
 } from '@ant-design/icons';
+import { history } from '@umijs/max';
 import {
   Card,
   Divider,
@@ -55,6 +61,8 @@ const GpuTaskCardItem: React.FC<Props> = (props) => {
 
   const [openStartTimePopConfirm, setOpenStartTimePopConfirm] = useState(false);
   const [openUserFilterPopConfirm, setOpenUserFilterPopConfirm] =
+    useState(false);
+  const [subscriptionModalVisible, setSubscriptionModalVisible] =
     useState(false);
   const [messageApi, contextHolder] = message.useMessage();
 
@@ -150,21 +158,87 @@ const GpuTaskCardItem: React.FC<Props> = (props) => {
     });
   };
 
+  // 跳转到任务查询页面（按用户）
+  const handleNavigateToTaskQueryByUser = () => {
+    const params = new URLSearchParams({
+      userName: taskInfo.name,
+      page: '1',
+      pageSize: '20',
+      sortBy: 'TASK_START_TIME',
+      sortOrder: 'DESC',
+    });
+
+    history.push(`/task-query?${params.toString()}`);
+  };
+
+  // 跳转到任务查询页面（按项目）
+  const handleNavigateToTaskQueryByProject = () => {
+    const params = new URLSearchParams({
+      projectName: taskInfo.projectName,
+      page: '1',
+      pageSize: '20',
+      sortBy: 'TASK_START_TIME',
+      sortOrder: 'DESC',
+    });
+
+    history.push(`/task-query?${params.toString()}`);
+  };
+
+  // 处理订阅项目
+  const handleSubscribeProject = () => {
+    setSubscriptionModalVisible(true);
+  };
+
+  // 处理订阅成功
+  const handleSubscriptionSuccess = () => {
+    messageApi.success('订阅操作成功');
+  };
+
   const moreMenuItems: MenuProps['items'] = [
     {
       key: '1',
       label: '详细信息',
+      icon: <InfoCircleOutlined />,
       onClick: onClickShowDetail,
+    },
+    {
+      type: 'divider',
     },
     {
       key: '2',
       label: `设置"${taskInfo.name}"为过滤用户`,
+      icon: <FilterOutlined />,
       onClick: handleSetUserFilter,
     },
     {
       key: '3',
       label: `设置"${taskInfo.projectName}"为项目名过滤器`,
+      icon: <FilterOutlined />,
       onClick: handleSetProjectFilter,
+    },
+    {
+      type: 'divider',
+    },
+    {
+      key: '4',
+      label: `跳转到任务查询（按用户"${taskInfo.name}"）`,
+      icon: <SearchOutlined />,
+      onClick: handleNavigateToTaskQueryByUser,
+    },
+    {
+      key: '5',
+      label: `跳转到任务查询（按项目"${taskInfo.projectName}"）`,
+      icon: <SearchOutlined />,
+      onClick: handleNavigateToTaskQueryByProject,
+    },
+    {
+      type: 'divider',
+    },
+    {
+      key: '6',
+      label: `订阅项目"${taskInfo.projectName}"`,
+      icon: <PlusOutlined />,
+      onClick: handleSubscribeProject,
     },
   ];
   const MoreMenu = () => (
@@ -206,18 +280,46 @@ const GpuTaskCardItem: React.FC<Props> = (props) => {
       >
         <ContextMenuItem disabled>{taskInfo.projectName}</ContextMenuItem>
         <ContextMenuDivider />
-        <ContextMenuItem onClick={onClickShowDetail}>详细信息</ContextMenuItem>
+        <ContextMenuItem onClick={onClickShowDetail}>
+          <InfoCircleOutlined style={{ marginRight: '8px' }} />
+          详细信息
+        </ContextMenuItem>
         <ContextMenuDivider />
         <ContextMenuItem onClick={handleSetUserFilter}>
+          <FilterOutlined style={{ marginRight: '8px' }} />
           设置"{taskInfo.name}"为过滤用户
         </ContextMenuItem>
         <ContextMenuItem onClick={handleSetProjectFilter}>
+          <FilterOutlined style={{ marginRight: '8px' }} />
           设置"{taskInfo.projectName}"为项目名过滤器
+        </ContextMenuItem>
+        <ContextMenuDivider />
+        <ContextMenuItem onClick={handleNavigateToTaskQueryByUser}>
+          <SearchOutlined style={{ marginRight: '8px' }} />
+          跳转到任务查询（按用户"{taskInfo.name}"）
+        </ContextMenuItem>
+        <ContextMenuItem onClick={handleNavigateToTaskQueryByProject}>
+          <SearchOutlined style={{ marginRight: '8px' }} />
+          跳转到任务查询（按项目"{taskInfo.projectName}"）
+        </ContextMenuItem>
+        <ContextMenuDivider />
+        <ContextMenuItem onClick={handleSubscribeProject}>
+          <PlusOutlined style={{ marginRight: '8px' }} />
+          订阅项目"{taskInfo.projectName}"
         </ContextMenuItem>
       </ContextMenu>
 
       {/* Gpu Task Detail Modal */}
       <GpuTaskDetailModal taskInfo={taskInfo} ref={modalFunctionRef} />
+
+      {/* Project Subscription Modal */}
+      <ProjectSubscriptionModal
+        visible={subscriptionModalVisible}
+        onCancel={() => setSubscriptionModalVisible(false)}
+        onSuccess={handleSubscriptionSuccess}
+        projectId={taskInfo.id || 0}
+        projectName={taskInfo.projectName}
+      />
 
       <Space direction="vertical" size={16}>
         <DisableSelectDiv>

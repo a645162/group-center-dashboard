@@ -17,5 +17,7 @@ export default defineConfig({
   ...childConfig,
   npmClient: 'pnpm',
   mako: {},
-  tailwindcss: {},
+  // tailwindcss: {},
+  // 引入全局样式
+  styles: ['@/global.less'],
 });

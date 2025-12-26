@@ -72,6 +72,14 @@ Use `mako` for umi on macOS/Linux
 npx umi config set mako {}
 ```
 
+## Issues
+
+### Outdated lockfile version: failed to parse lockfile: 'bun.lockb'
+
+Please upgrade bun to at least 'v1.2.0'!
+
+https://bun.com/docs/pm/lockfile
+
 ## Ref
 
 https://umijs.org/

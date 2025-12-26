@@ -205,7 +205,7 @@ const TaskResultTable: React.FC<TaskResultTableProps> = ({
       key: 'action',
       width: 80,
       fixed: 'right' as const,
-      render: (_, record: API.GpuTaskInfo) => (
+      render: (_: any, record: API.GpuTaskInfo) => (
         <Tooltip title="查看详情">
           <EyeOutlined
             style={{ color: '#1890ff', cursor: 'pointer' }}

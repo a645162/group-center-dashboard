@@ -94,6 +94,20 @@ export async function getRecentTasks(
   });
 }
 
+/** Get Task by Task ID Retrieve a specific GPU task by exact task ID match GET /web/open/gpu-tasks/task/${param0} */
+export async function getTaskByTaskId(
+  // 叠加生成的Param类型 (非body参数swagger默认没有生成对象)
+  params: API.getTaskByTaskIdParams,
+  options?: { [key: string]: any },
+) {
+  const { taskId: param0, ...queryParams } = params;
+  return request<API.ClientResponse>(`/web/open/gpu-tasks/task/${param0}`, {
+    method: 'GET',
+    params: { ...queryParams },
+    ...(options || {}),
+  });
+}
+
 /** Get User Task Statistics Retrieve detailed statistics for a specific user's GPU tasks GET /web/open/gpu-tasks/user-stats/${param0} */
 export async function getUserTaskStats(
   // 叠加生成的Param类型 (非body参数swagger默认没有生成对象)

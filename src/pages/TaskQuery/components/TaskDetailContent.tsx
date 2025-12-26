@@ -43,6 +43,13 @@ const TaskDetailContent: React.FC<Props> = (props) => {
   return (
     <>
       <div>
+        <VShow v-show={taskInfo.taskId}>
+          <div>
+            <b>任务 ID: </b>
+            {taskInfo.taskId}
+          </div>
+        </VShow>
+
         <VShow v-show={taskInfo.taskPid}>
           <div>
             <b>Process ID: </b>

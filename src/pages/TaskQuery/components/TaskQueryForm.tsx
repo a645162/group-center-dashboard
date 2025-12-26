@@ -6,12 +6,13 @@ import {
   DatePicker,
   Form,
   Input,
+  Modal,
   Row,
   Select,
   Space,
   Switch,
 } from 'antd';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 const { Option } = Select;
 const { RangePicker } = DatePicker;
@@ -20,17 +21,52 @@ interface TaskQueryFormProps {
   onQuery: (params: API.queryGpuTasksSimpleParams) => void;
   onReset: () => void;
   loading: boolean;
+  initialValues?: any;
 }
 
 const TaskQueryForm: React.FC<TaskQueryFormProps> = ({
   onQuery,
   onReset,
   loading,
+  initialValues,
 }) => {
   const [form] = Form.useForm();
   const [showAdvanced, setShowAdvanced] = useState(false);
 
+  // 当initialValues变化时，设置表单值
+  useEffect(() => {
+    if (initialValues) {
+      form.setFieldsValue(initialValues);
+    }
+  }, [initialValues, form]);
+
   const handleSubmit = (values: any) => {
+    // 检查是否为空查询条件
+    const isEmptyQuery =
+      !values.userName &&
+      !values.projectName &&
+      !values.deviceName &&
+      !values.taskType &&
+      !values.timeRange &&
+      values.isMultiGpu === undefined;
+
+    if (isEmptyQuery) {
+      // 显示确认弹窗
+      Modal.confirm({
+        title: '空条件查询确认',
+        content: '您没有设置任何查询条件，这将查询所有任务。确定要继续吗？',
+        okText: '确定',
+        cancelText: '取消',
+        onOk: () => {
+          executeQuery(values);
+        },
+      });
+    } else {
+      executeQuery(values);
+    }
+  };
+
+  const executeQuery = (values: any) => {
     const params: API.queryGpuTasksSimpleParams = {
       userName: values.userName,
       projectName: values.projectName,
