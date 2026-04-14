@@ -27,8 +27,19 @@ const useMachineListState = () => {
   useEffect(() => {
     getPublicMachineList()
       .then((data) => {
-        // console.log('data:', data);
-        setMachineList(data.filter((machine) => machine.isGpu));
+        console.log('machineList raw sample:', data?.[0]);
+        console.log('machineList keys:', data?.[0] && Object.keys(data[0]));
+        console.log('isGpu/gpu counts:', {
+          isGpuTrue: data?.filter((m) => m.isGpu).length,
+          gpuTrue: data?.filter((m) => (m as any).gpu).length,
+        });
+        setMachineList(
+          data.filter((machine) =>
+            typeof machine.isGpu === 'boolean'
+              ? machine.isGpu
+              : (machine as any).gpu,
+          ),
+        );
       })
       .catch((error: any) => {
         console.log('error:', error);

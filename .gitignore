@@ -17,3 +17,5 @@
 /.mfsu
 .swc
 !.umirc.ts
+
+tsconfig.tsbuildinfo

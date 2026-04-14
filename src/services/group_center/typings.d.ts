@@ -11,28 +11,29 @@ declare namespace API {
   };
 
   type AuthResponse = {
-    isAuthenticated: boolean;
-    isSucceed: boolean;
     haveError: boolean;
     result: string;
     accessKey: string;
     ipAddress: string;
     rememberAuthIp: boolean;
     serverVersion: string;
-    succeed?: boolean;
-    authenticated?: boolean;
-    succeed?: boolean;
+    isAuthenticated: boolean;
+    isSucceed: boolean;
+  };
+
+  type ClientAlarmMessage = {
+    title: string;
+    content: string;
+    source: string;
+    urgent: boolean;
   };
 
   type ClientResponse = {
     serverVersion: string;
-    isAuthenticated: boolean;
     haveError: boolean;
+    result?: Record;
+    isAuthenticated: boolean;
     isSucceed: boolean;
-    result?: Record<string, any>;
-    succeed?: boolean;
-    authenticated?: boolean;
-    succeed?: boolean;
   };
 
   type DataDashBoardSite = {
@@ -286,8 +287,8 @@ declare namespace API {
       | 'TASK_GPU_MEMORY_GB';
     sortOrder: 'ASC' | 'DESC';
     offset: number;
-    sortColumn: string;
     sortDirection: string;
+    sortColumn: string;
   };
 
   type postSshFileUploadParams = {
@@ -455,8 +456,8 @@ declare namespace API {
   type TimeRange = {
     startTime?: string;
     endTime?: string;
-    endTimestamp?: number;
     startTimestamp?: number;
+    endTimestamp?: number;
   };
 
   type UrlTestResultInfo = {

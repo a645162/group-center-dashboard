@@ -2,6 +2,7 @@
 /* eslint-disable */
 // API 更新时间：
 // API 唯一标识：
+import * as clientAlarmMessage from './clientAlarmMessage';
 import * as clientConfigController from './clientConfigController';
 import * as clientHeartbeat from './clientHeartbeat';
 import * as customClientMessageController from './customClientMessageController';
@@ -32,6 +33,7 @@ export default {
   diskWarningController,
   gpuTask,
   sshKeyController,
+  clientAlarmMessage,
   reportPush,
   ipController,
   frontendPublic,
