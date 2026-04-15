@@ -7,40 +7,44 @@ import { getRandomBool, getRandomFloat, getRandomInt } from './common';
 
 const basicGpuUsageInfo = {
   result: 1,
-  gpuName: 'RTX 3090',
-  coreUsage: 79,
-  memoryUsage: 54.6,
-  gpuMemoryUsage: '13412MiB',
-  gpuMemoryTotal: '23.99GiB',
-  gpuPowerUsage: 271,
-  gpuTDP: 350,
-  gpuTemperature: 60,
-  gpuMemoryTotalMB: 24564,
+  gpuName: 'RTX 4090',
+  coreUsage: 45,
+  memoryUsage: 68.5,
+  gpuMemoryUsage: '18432MiB',
+  gpuMemoryTotal: '24GiB',
+  gpuPowerUsage: 285,
+  gpuTDP: 450,
+  gpuTemperature: 52,
+  gpuMemoryTotalMB: 24576,
 };
 
 const basicTaskDict = {
   id: 477998,
-  name: '孔昊旻',
+  name: 'konghaomin',
   debugMode: false,
-  projectDirectory: '/mnt/hdd1/data/konghaomin/123',
-  projectName: '123',
-  pyFileName: 'train.py',
-  runTime: '1:00:27',
-  startTimestamp: 1723008640000,
-  gpuMemoryUsage: 13572,
-  gpuMemoryUsageMax: 17760,
-  worldSize: 0,
+  multiprocessingSpawn: false,
+  projectDirectory: '/mnt/nvme0/data/konghaomin/sd_train',
+  projectName: 'StableDiffusion',
+  pyFileName: 'train_network.py',
+  runTime: '3:24:15',
+  startTimestamp: 1744712400000,
+  gpuMemoryUsage: 8192,
+  gpuMemoryUsageMax: 16384,
+  worldSize: 1,
   localRank: 0,
-  topPythonPid: -1,
-  condaEnv: 'khm3.8',
-  screenSessionName: 'khm',
-  pythonVersion: '3.8.16',
-  command: 'python train.py',
-  taskMainMemoryMB: 5263,
+  topPythonPid: 12345,
+  condaEnv: 'py38',
+  screenSessionName: 'sd',
+  pythonVersion: '3.8.18',
+  command: 'python train_network.py --config config.yaml',
+  taskMainMemoryMB: 16384,
   cudaRoot: '/usr/local/cuda',
-  cudaVersion: '12.1.105',
-  cudaVisibleDevices: '',
-  driverVersion: '555.42.06',
+  cudaVersion: '12.4.1',
+  cudaVisibleDevices: '0',
+  driverVersion: '550.90.07',
+  zeroAlreadyAlertedGpuUsage: false,
+  zeroAlreadyAlertedCpuUsage: false,
+  userEnvEpoch: '',
 };
 
 export const generateGpuCountResponse = (gpuCount: number) => {
@@ -77,21 +81,47 @@ export const generateGpuUsageInfo = (gpuName: string) => {
 export const generateGpuTaskInfo = (taskCount: number) => {
   let taskList = [];
 
+  const projectNames = [
+    'StableDiffusion',
+    'LLM_train',
+    'VideoDiffusion',
+    'ImageClassifier',
+    'YOLOv8',
+    'ResNet50',
+    'BERTFineTune',
+    'GAN_train',
+    'SpeechRecognition',
+    'NLP_transformer',
+  ];
+
+  const userNames = ['konghaomin', 'zhangsan', 'lisi', 'wangwu', 'zhaoliu'];
+
+  const condaEnvs = ['py38', 'py39', 'py310', 'py311', 'torch2.0', 'tf2.14'];
+
   for (let i = 0; i < taskCount; i++) {
     let currentTask = { ...basicTaskDict };
 
-    currentTask.debugMode = Math.random() < 0.5; // 50% debugMode
-    currentTask.name = 'User ' + getRandomInt(9);
-    currentTask.projectName = 'Project ' + (i + 1).toString();
+    currentTask.debugMode = Math.random() < 0.2;
+    currentTask.multiprocessingSpawn = Math.random() < 0.3;
+    currentTask.name = userNames[getRandomInt(userNames.length - 1)];
+    currentTask.projectName =
+      projectNames[getRandomInt(projectNames.length - 1)];
+    currentTask.condaEnv = condaEnvs[getRandomInt(condaEnvs.length - 1)];
+
     if (Math.random() < 0.5) {
-      currentTask.screenSessionName = 'Screen ' + (i + 1).toString();
+      currentTask.screenSessionName =
+        'screen_' + currentTask.projectName.toLowerCase();
     } else {
       currentTask.screenSessionName = '';
     }
 
+    const hasZeroAlert = Math.random() < 0.1;
+    currentTask.zeroAlreadyAlertedGpuUsage = hasZeroAlert;
+    currentTask.zeroAlreadyAlertedCpuUsage = hasZeroAlert;
+
     currentTask.startTimestamp = getPreviousTimeStamp(
       getCurrentTimeStamp(),
-      getRandomInt(24),
+      getRandomInt(72),
       getRandomInt(60),
     );
 
@@ -117,14 +147,15 @@ const generateGpuTaskInfoMultiGpu = (devicesCount: number) => {
 
 export const generateTaskInfoResponse = (
   taskCount: number,
-  devicesCount: number = 2,
+  devicesCount: number = 1,
 ) => {
   const eachMaxCount = getRandomInt(taskCount, 1);
   const singleGpuTaskList = generateGpuTaskInfo(eachMaxCount);
 
-  const multiGpuTaskList = getRandomBool()
-    ? generateGpuTaskInfoMultiGpu(devicesCount)
-    : [];
+  const multiGpuTaskList =
+    getRandomBool() && devicesCount > 1
+      ? generateGpuTaskInfoMultiGpu(devicesCount)
+      : [];
 
   const taskList = [...singleGpuTaskList, ...multiGpuTaskList];
 
