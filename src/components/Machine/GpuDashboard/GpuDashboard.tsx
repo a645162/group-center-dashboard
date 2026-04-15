@@ -473,7 +473,6 @@ const GpuDashboard: React.FC<Props> = (props) => {
           marginBottom: 16,
           cursor: 'context-menu',
           backgroundColor: token.colorBgContainer,
-          border: `1px solid ${token.colorBorderSecondary}`,
         }}
         styles={{ body: { padding: '12px 16px' } }}
         onContextMenu={handleContextMenu}
