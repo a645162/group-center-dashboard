@@ -2,6 +2,18 @@
   width: auto;
   min-width: 280px;
   max-width: 280px;
+  border-radius: 10px;
+  border: 1px solid var(--ant-color-border-secondary);
+  transition: all 0.3s ease;
+
+  &:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 8%);
+    border-color: var(--ant-color-primary);
+  }
+
+  :global(.ant-card-body) {
+    padding: 16px;
+  }
 }
 
 .space {
@@ -12,8 +24,6 @@
 
 .innerLine {
   width: auto;
-
-  // 居中
   display: flex;
   justify-content: center;
   align-items: center;
@@ -23,23 +33,25 @@
   padding-left: 8px;
   margin-right: 8px;
   white-space: nowrap;
-
-  // /* 可选：防止内容溢出容器 */
-  // overflow: hidden;
-
-  // /* 可选：当内容溢出时显示省略号 */
-  // text-overflow: ellipsis;
+  font-weight: 500;
+  color: var(--ant-color-text-secondary);
 }
 
 .gpuUsagePercent {
-  // 内部两个组件水平分布
   display: flex;
   justify-content: center;
-
-  // 垂直居中
   align-items: center;
 }
 
 .gpuUsagePercentText {
   padding-left: 4px;
+  font-weight: 600;
+  color: var(--ant-color-text);
+}
+
+@media (max-width: 768px) {
+  .gpuUsageCard {
+    min-width: auto;
+    max-width: 100%;
+  }
 }

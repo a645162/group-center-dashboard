@@ -1,8 +1,23 @@
 .divTags {
-  padding-top: 8px;
+  padding-top: 12px;
 }
 
 .taskItemCard {
   min-width: 280px;
   max-width: 280px;
+  border-radius: 10px;
+  border: 1px solid var(--ant-color-border-secondary);
+  transition: all 0.3s ease;
+
+  &:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 8%);
+    border-color: var(--ant-color-primary);
+  }
+}
+
+@media (max-width: 768px) {
+  .taskItemCard {
+    min-width: auto;
+    max-width: 100%;
+  }
 }
