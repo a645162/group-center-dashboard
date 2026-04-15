@@ -159,7 +159,7 @@ const TaskQueryPage: React.FC = () => {
       const result = await queryGpuTasksSimple(params);
       console.log('查询结果:', result);
 
-      if (result.isSucceed && result.result) {
+      if ((result.isSucceed ?? (result as any).succeed) && result.result) {
         // 根据API响应结构调整 - 后端返回的数据结构包含pagination
         const data = result.result.data || result.result.list || [];
         const pagination = result.result.pagination;

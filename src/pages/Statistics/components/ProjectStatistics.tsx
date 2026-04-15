@@ -72,7 +72,10 @@ const ProjectStatistics: React.FC<ProjectStatisticsProps> = ({
       const response = await getProjectStatistics({ timePeriod });
       console.log('ProjectStatistics: API response received:', response);
 
-      if (response.isSucceed && response.result) {
+      if (
+        (response.isSucceed ?? (response as any).succeed) &&
+        response.result
+      ) {
         console.log(
           'ProjectStatistics: API call successful, processing project data',
         );

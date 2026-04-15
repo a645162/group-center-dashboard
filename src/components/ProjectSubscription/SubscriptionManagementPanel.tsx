@@ -61,7 +61,10 @@ const SubscriptionManagementPanel: React.FC = () => {
   useEffect(() => {
     getUserList()
       .then((response) => {
-        if (response.isSucceed && Array.isArray(response.result)) {
+        if (
+          (response.isSucceed ?? (response as any).succeed) &&
+          Array.isArray(response.result)
+        ) {
           setUserList(response.result);
 
           // 尝试恢复上次选择的用户
@@ -95,7 +98,10 @@ const SubscriptionManagementPanel: React.FC = () => {
     try {
       const response = await getUserSubscriptions({ userName });
 
-      if (response.isSucceed && response.result) {
+      if (
+        (response.isSucceed ?? (response as any).succeed) &&
+        response.result
+      ) {
         const subscriptionData = response.result as SubscriptionInfo;
         setSubscriptions(subscriptionData);
       } else {
@@ -140,7 +146,10 @@ const SubscriptionManagementPanel: React.FC = () => {
     try {
       const response = await getTaskByTaskId({ taskId });
 
-      if (response.isSucceed && response.result) {
+      if (
+        (response.isSucceed ?? (response as any).succeed) &&
+        response.result
+      ) {
         const taskInfo = response.result as API.GpuTaskInfo;
         setTaskDetails((prev) => ({
           ...prev,
@@ -180,7 +189,7 @@ const SubscriptionManagementPanel: React.FC = () => {
         userName: selectedUser,
       });
 
-      if (response.isSucceed) {
+      if (response.isSucceed ?? (response as any).succeed) {
         messageApi.success('取消订阅成功');
         // 重新获取订阅列表
         fetchUserSubscriptions(selectedUser);

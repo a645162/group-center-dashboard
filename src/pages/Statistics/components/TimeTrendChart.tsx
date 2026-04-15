@@ -71,7 +71,10 @@ const TimeTrendChart: React.FC<TimeTrendChartProps> = ({ timePeriod }) => {
       const response = await getTimeTrendStatistics({ timePeriod });
       console.log('TimeTrendChart: API response received:', response);
 
-      if (response.isSucceed && response.result) {
+      if (
+        (response.isSucceed ?? (response as any).succeed) &&
+        response.result
+      ) {
         console.log(
           'TimeTrendChart: API call successful, processing trend data',
         );

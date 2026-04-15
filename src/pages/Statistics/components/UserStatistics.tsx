@@ -68,7 +68,10 @@ const UserStatistics: React.FC<UserStatisticsProps> = ({ timePeriod }) => {
       const response = await getUserStatistics({ timePeriod });
       console.log('UserStatistics: API response received:', response);
 
-      if (response.isSucceed && response.result) {
+      if (
+        (response.isSucceed ?? (response as any).succeed) &&
+        response.result
+      ) {
         console.log(
           'UserStatistics: API call successful, processing user data',
         );

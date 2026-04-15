@@ -52,7 +52,10 @@ const UserActivityTimeChart: React.FC<UserActivityTimeChartProps> = ({
       const response = await getUserActivityTimeDistribution({ timePeriod });
       console.log('UserActivityTimeChart: API response received:', response);
 
-      if (response.isSucceed && response.result) {
+      if (
+        (response.isSucceed ?? (response as any).succeed) &&
+        response.result
+      ) {
         console.log(
           'UserActivityTimeChart: API call successful, processing activity time data',
         );

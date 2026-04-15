@@ -50,7 +50,10 @@ const StatisticsPage: React.FC = () => {
       const response = await get24HourReport();
       console.log('StatisticsPage: API response received:', response);
 
-      if (response.isSucceed && response.result) {
+      if (
+        (response.isSucceed ?? (response as any).succeed) &&
+        response.result
+      ) {
         console.log('StatisticsPage: API call successful, processing data');
         const report = response.result;
         console.log('StatisticsPage: Report data:', report);

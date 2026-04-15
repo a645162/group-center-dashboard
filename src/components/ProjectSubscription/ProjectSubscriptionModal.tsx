@@ -37,7 +37,10 @@ const ProjectSubscriptionModal: React.FC<Props> = (props) => {
     if (visible) {
       getUserList()
         .then((response) => {
-          if (response.isSucceed && Array.isArray(response.result)) {
+          if (
+            (response.isSucceed ?? (response as any).succeed) &&
+            Array.isArray(response.result)
+          ) {
             setUserList(response.result);
 
             // 尝试恢复上次选择的用户
@@ -77,7 +80,7 @@ const ProjectSubscriptionModal: React.FC<Props> = (props) => {
         userName: selectedUser,
       });
 
-      if (response.isSucceed) {
+      if (response.isSucceed ?? (response as any).succeed) {
         messageApi.success('订阅成功');
         // 保存选择的用户到本地存储
         setProjectSubscriptionSelectedUser(selectedUser);

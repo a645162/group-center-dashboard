@@ -53,7 +53,10 @@ const GpuUsageChart: React.FC<GpuUsageChartProps> = ({ timePeriod }) => {
       const response = await getGpuStatistics({ timePeriod });
       console.log('GpuUsageChart: API response received:', response);
 
-      if (response.isSucceed && Array.isArray(response.result)) {
+      if (
+        (response.isSucceed ?? (response as any).succeed) &&
+        Array.isArray(response.result)
+      ) {
         console.log('GpuUsageChart: API call successful, processing GPU data');
         const gpuStats = response.result as GpuStat[];
         console.log('GpuUsageChart: Raw GPU stats:', gpuStats);
