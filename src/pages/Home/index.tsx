@@ -4,6 +4,7 @@ import HomePageSiteWidget from '@/components/SiteList/HomePageSiteWidget/HomePag
 import { trim } from '@/utils/format';
 import { PageContainer } from '@ant-design/pro-components';
 import { useModel } from '@umijs/max';
+import { Card, Col, Row } from 'antd';
 import Clock from 'react-live-clock';
 import styles from './index.less';
 
@@ -12,32 +13,47 @@ const HomePage: React.FC = () => {
   return (
     <PageContainer ghost>
       <div className={styles.container}>
-        <div className={styles.helloDiv}>
-          <Guide name={trim(name)} />
-        </div>
+        <Row gutter={[24, 24]}>
+          <Col span={24}>
+            <Card className={styles.welcomeCard} bordered={false}>
+              <div className={styles.welcomeContent}>
+                <div className={styles.helloDiv}>
+                  <Guide name={trim(name)} />
+                </div>
+                <div className={styles.clockDiv}>
+                  <Clock
+                    format="YYYY年MM月DD日 HH:mm:ss"
+                    interval={1000}
+                    ticking={true}
+                  />
+                </div>
+              </div>
+            </Card>
+          </Col>
 
-        <div className={styles.clockDiv}>
-          <Clock
-            format="YYYY年MM月DD日 HH:mm:ss"
-            interval={1000}
-            ticking={true}
-          />
-        </div>
+          {/* 预设网页 */}
+          <Col span={24}>
+            <div className={styles.containerSiteList}>
+              <HomePageSiteWidget />
+            </div>
+          </Col>
 
-        {/* 预设网页 - 放在上面 */}
-        <div className={styles.containerSiteList}>
-          <HomePageSiteWidget />
-        </div>
-
-        {/* 监视面板 - 放在下面 */}
-        <div className={styles.monitorContainer}>
-          <div className={styles.monitorPanel}>
-            <MachineStatusMonitor refreshInterval={30000} />
-          </div>
-          <div className={styles.monitorPanel}>
-            <ProxyMonitor refreshInterval={30000} />
-          </div>
-        </div>
+          {/* 监视面板 */}
+          <Col span={24}>
+            <Row gutter={[24, 24]} className={styles.monitorContainer}>
+              <Col xs={24} lg={12}>
+                <div className={styles.monitorPanel}>
+                  <MachineStatusMonitor refreshInterval={30000} />
+                </div>
+              </Col>
+              <Col xs={24} lg={12}>
+                <div className={styles.monitorPanel}>
+                  <ProxyMonitor refreshInterval={30000} />
+                </div>
+              </Col>
+            </Row>
+          </Col>
+        </Row>
       </div>
     </PageContainer>
   );

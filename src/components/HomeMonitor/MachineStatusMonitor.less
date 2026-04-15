@@ -6,7 +6,7 @@
     padding: 16px;
     background: var(--ant-color-bg-container);
     border: 1px solid var(--ant-color-border-secondary);
-    border-radius: 6px;
+    border-radius: 10px;
 
     :global(.ant-statistic) {
       text-align: center;
@@ -32,13 +32,15 @@
 
   .machineCard {
     transition: all 0.3s ease;
-    border-radius: 8px;
-    border: 2px solid var(--ant-color-border);
+    border-radius: 10px;
+    border: 1px solid var(--ant-color-border-secondary);
+    background: var(--ant-color-bg-container);
+    overflow: hidden;
 
     &:hover {
-      box-shadow: 0 4px 12px var(--ant-box-shadow);
-      transform: translateY(-2px);
-      border-color: var(--ant-primary-color-hover);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 12%);
+      transform: translateY(-4px);
+      border-color: var(--ant-primary-color);
     }
 
     .cardHeader {

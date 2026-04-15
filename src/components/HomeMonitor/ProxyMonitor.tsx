@@ -138,7 +138,8 @@ const ProxyMonitor: React.FC<ProxyMonitorProps> = ({
     }
 
     // 服务器启用时的状态标签
-    const statusTag = server.isAvailable ? (
+    const isServerAvailable = server.isAvailable ?? (server as any).available;
+    const statusTag = isServerAvailable ? (
       <Tag color="green" icon={<CheckCircleOutlined />}>
         在线
       </Tag>
@@ -212,43 +213,46 @@ const ProxyMonitor: React.FC<ProxyMonitorProps> = ({
       <div className={styles.urlTestTags}>
         <span className={styles.detailLabel}>URL测试:</span>
         <Space size={[4, 4]} wrap>
-          {server.urlTestResults.map((test, index) => (
-            <Tooltip
-              key={index}
-              title={
-                <div>
+          {server.urlTestResults.map((test, index) => {
+            const isTestSuccess = test.isSuccess ?? test.success;
+            return (
+              <Tooltip
+                key={index}
+                title={
                   <div>
-                    <strong>{test.name}</strong>
+                    <div>
+                      <strong>{test.name}</strong>
+                    </div>
+                    <div>URL: {test.url}</div>
+                    <div>状态: {isTestSuccess ? '成功' : '失败'}</div>
+                    {test.responseTime && (
+                      <div>响应时间: {test.responseTime}ms</div>
+                    )}
+                    {test.statusCode && <div>状态码: {test.statusCode}</div>}
+                    {test.error && (
+                      <div style={{ color: '#ff4d4f' }}>错误: {test.error}</div>
+                    )}
+                    <div>测试时间: {formatTime(test.testTime)}</div>
                   </div>
-                  <div>URL: {test.url}</div>
-                  <div>状态: {test.isSuccess ? '成功' : '失败'}</div>
-                  {test.responseTime && (
-                    <div>响应时间: {test.responseTime}ms</div>
-                  )}
-                  {test.statusCode && <div>状态码: {test.statusCode}</div>}
-                  {test.error && (
-                    <div style={{ color: '#ff4d4f' }}>错误: {test.error}</div>
-                  )}
-                  <div>测试时间: {formatTime(test.testTime)}</div>
-                </div>
-              }
-              color="rgba(0, 0, 0, 0.75)"
-              placement="top"
-            >
-              <Tag
-                color={test.isSuccess ? 'green' : 'red'}
-                icon={
-                  test.isSuccess ? (
-                    <CheckCircleOutlined />
-                  ) : (
-                    <CloseCircleOutlined />
-                  )
                 }
+                color="rgba(0, 0, 0, 0.75)"
+                placement="top"
               >
-                {test.nameEng}
-              </Tag>
-            </Tooltip>
-          ))}
+                <Tag
+                  color={isTestSuccess ? 'green' : 'red'}
+                  icon={
+                    isTestSuccess ? (
+                      <CheckCircleOutlined />
+                    ) : (
+                      <CloseCircleOutlined />
+                    )
+                  }
+                >
+                  {test.nameEng}
+                </Tag>
+              </Tooltip>
+            );
+          })}
         </Space>
       </div>
     );
@@ -317,10 +321,11 @@ const ProxyMonitor: React.FC<ProxyMonitorProps> = ({
   // 获取卡片样式类名
   const getCardClassName = (server: API.ProxyServerInfo) => {
     const baseClass = styles.proxyCard;
+    const isServerAvailable = server.isAvailable ?? (server as any).available;
     if (!server.enable) {
       return `${baseClass} ${styles.disabled}`;
     }
-    if (server.isAvailable) {
+    if (isServerAvailable) {
       return `${baseClass} ${styles.available}`;
     }
     return `${baseClass} ${styles.unavailable}`;
