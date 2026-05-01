@@ -172,9 +172,14 @@ const ProxyMonitor: React.FC<ProxyMonitorProps> = ({
   };
 
   const formatTime = (timestamp?: number) => {
-    if (!timestamp) return '未知';
-    // Java时间戳是毫秒级的，直接使用
-    return new Date(timestamp).toLocaleString('zh-CN');
+    if (!timestamp || timestamp <= 0) return '未知';
+    try {
+      // 后端时间戳为秒级，需要乘以1000转为毫秒
+      return new Date(timestamp * 1000).toLocaleString('zh-CN');
+    } catch (error) {
+      console.error('时间戳格式化错误:', timestamp, error);
+      return '格式错误';
+    }
   };
 
   const parseSuccessRate = (rate: string): number => {
