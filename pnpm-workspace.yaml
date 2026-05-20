@@ -1,0 +1,8 @@
+allowBuilds:
+  '@dep-tree/cli': set this to true or false
+  core-js: set this to true or false
+  core-js-pure: set this to true or false
+  es5-ext: set this to true or false
+  esbuild: set this to true or false
+minimumReleaseAgeExclude:
+  - '@types/react@19.2.15'
