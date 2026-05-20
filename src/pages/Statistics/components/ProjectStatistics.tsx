@@ -15,6 +15,7 @@ import {
   Tag,
 } from 'antd';
 import React, { useEffect, useState } from 'react';
+import { mergeTopKWithOther } from '../utils/mergeTopKWithOther';
 
 const { Option } = Select;
 
@@ -160,24 +161,18 @@ const ProjectStatistics: React.FC<ProjectStatisticsProps> = ({
   const getProjectTimeDistributionData = () => {
     if (!projectData) return [];
 
-    const topProjects = topK
-      ? projectData.topProjects.slice(0, topK)
-      : projectData.topProjects;
-    const totalRuntime = topProjects.reduce(
-      (sum, project) => sum + project.totalRuntime,
-      0,
-    );
-
-    return topProjects.map((project) => ({
+    const allData = projectData.topProjects.map((project) => ({
       type: project.projectName,
       value: project.totalRuntime,
       runtime: project.totalRuntime,
       tasks: project.totalTasks,
       users: project.activeUsersCount,
-      percentage:
-        totalRuntime > 0
-          ? ((project.totalRuntime / totalRuntime) * 100).toFixed(1)
-          : '0',
+    }));
+
+    return mergeTopKWithOther(allData, topK, (remaining) => ({
+      runtime: remaining.reduce((sum, item) => sum + item.runtime, 0),
+      tasks: remaining.reduce((sum, item) => sum + item.tasks, 0),
+      users: remaining.reduce((sum, item) => sum + item.users, 0),
     }));
   };
 

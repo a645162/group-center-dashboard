@@ -15,6 +15,7 @@ import {
   Tag,
 } from 'antd';
 import React, { useEffect, useState } from 'react';
+import { mergeTopKWithOther } from '../utils/mergeTopKWithOther';
 
 const { Option } = Select;
 
@@ -179,24 +180,18 @@ const UserStatistics: React.FC<UserStatisticsProps> = ({ timePeriod }) => {
   const getUserTimeDistributionData = () => {
     if (!userData) return [];
 
-    const topUsers = topK
-      ? userData.topUsers.slice(0, topK)
-      : userData.topUsers;
-    const totalRuntime = topUsers.reduce(
-      (sum, user) => sum + user.totalRuntime,
-      0,
-    );
-
-    return topUsers.map((user) => ({
+    const allData = userData.topUsers.map((user) => ({
       type: user.userName,
       value: user.totalRuntime,
       runtime: user.totalRuntime,
       tasks: user.totalTasks,
       favoriteGpu: user.favoriteGpu,
-      percentage:
-        totalRuntime > 0
-          ? ((user.totalRuntime / totalRuntime) * 100).toFixed(1)
-          : '0',
+    }));
+
+    return mergeTopKWithOther(allData, topK, (remaining) => ({
+      runtime: remaining.reduce((sum, item) => sum + item.runtime, 0),
+      tasks: remaining.reduce((sum, item) => sum + item.tasks, 0),
+      favoriteGpu: '',
     }));
   };
 

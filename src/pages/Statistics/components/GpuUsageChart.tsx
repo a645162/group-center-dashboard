@@ -2,8 +2,11 @@ import { getGpuStatistics } from '@/services/group_center/dashboardStatistics';
 import { GetIsDarkMode } from '@/utils/AntD5/AntD5DarkMode';
 import { calculateDateRange, getTimeRangeDisplayName } from '@/utils/dateRange';
 import { Column, Pie } from '@ant-design/charts';
-import { Alert, Card, Col, Empty, Row, Spin, Statistic } from 'antd';
+import { Alert, Card, Col, Empty, Row, Select, Spin, Statistic } from 'antd';
 import React, { useEffect, useState } from 'react';
+import { mergeTopKWithOther } from '../utils/mergeTopKWithOther';
+
+const { Option } = Select;
 
 interface GpuUsageChartProps {
   timePeriod: string;
@@ -33,6 +36,7 @@ const GpuUsageChart: React.FC<GpuUsageChartProps> = ({ timePeriod }) => {
   const [gpuData, setGpuData] = useState<GpuStatisticsData | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [topK, setTopK] = useState<number | null>(10);
 
   useEffect(() => {
     fetchGpuStatistics();
@@ -133,54 +137,24 @@ const GpuUsageChart: React.FC<GpuUsageChartProps> = ({ timePeriod }) => {
       return [];
     }
 
-    console.log('GpuUsageChart: getPieChartData - raw gpuData:', gpuData);
-    console.log(
-      'GpuUsageChart: getPieChartData - usageByDevice:',
-      gpuData.usageByDevice,
-    );
-
     // 按GPU型号聚合任务数
     const gpuModelMap = new Map<string, number>();
-
     gpuData.usageByDevice.forEach((gpu) => {
       const gpuModel = gpu.gpuName || '未知GPU';
       const currentCount = gpuModelMap.get(gpuModel) || 0;
       const taskCount = gpu.totalUsageCount || 0;
       gpuModelMap.set(gpuModel, currentCount + taskCount);
-      console.log(
-        `GpuUsageChart: Processing GPU ${gpuModel} on server ${gpu.serverName}, taskCount: ${taskCount}`,
-      );
     });
 
-    // 计算总任务数
-    const totalTasks = Array.from(gpuModelMap.values()).reduce(
-      (sum, count) => sum + count,
-      0,
-    );
-    console.log(
-      'GpuUsageChart: Total tasks for percentage calculation:',
-      totalTasks,
-    );
+    // 按任务数降序排序
+    const allData = Array.from(gpuModelMap.entries())
+      .sort((a, b) => b[1] - a[1])
+      .map(([gpuModel, taskCount]) => ({
+        type: gpuModel,
+        value: taskCount,
+      }));
 
-    // 转换为饼图数据格式 - 预先计算百分比
-    const pieData = Array.from(gpuModelMap.entries()).map(
-      ([gpuModel, taskCount]) => {
-        const percentage =
-          totalTasks > 0 ? ((taskCount / totalTasks) * 100).toFixed(1) : '0';
-        const dataItem = {
-          type: gpuModel,
-          value: taskCount,
-          percentage: percentage,
-        };
-        console.log('GpuUsageChart: Pie chart data item:', dataItem);
-        return dataItem;
-      },
-    );
-
-    console.log('GpuUsageChart: Final pie chart data:', pieData);
-    console.log('GpuUsageChart: Pie chart data length:', pieData.length);
-
-    return pieData;
+    return mergeTopKWithOther(allData, topK);
   };
 
   // 准备柱状图数据 - 按GPU型号和服务器分组显示任务数
@@ -560,7 +534,41 @@ const GpuUsageChart: React.FC<GpuUsageChartProps> = ({ timePeriod }) => {
       {/* 使用率分布图表 */}
       <Row gutter={16}>
         <Col xs={24} lg={12}>
-          <Card title="GPU型号任务数分布" style={{ marginBottom: 16 }}>
+          <Card
+            title={
+              <div
+                style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                }}
+              >
+                <span>GPU型号任务数分布</span>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <span style={{ fontSize: '12px', color: '#666' }}>
+                    显示前
+                  </span>
+                  <Select
+                    value={topK}
+                    onChange={setTopK}
+                    style={{ width: 100 }}
+                    size="small"
+                  >
+                    <Option value={5}>5</Option>
+                    <Option value={10}>10</Option>
+                    <Option value={15}>15</Option>
+                    <Option value={20}>20</Option>
+                    <Option value={25}>25</Option>
+                    <Option value={null}>无限制</Option>
+                  </Select>
+                  <span style={{ fontSize: '12px', color: '#666' }}>
+                    个型号
+                  </span>
+                </div>
+              </div>
+            }
+            style={{ marginBottom: 16 }}
+          >
             {(() => {
               const pieData = getPieChartData();
               console.log(
