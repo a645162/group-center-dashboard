@@ -3,6 +3,7 @@ import { GetIsDarkMode } from '@/utils/AntD5/AntD5DarkMode';
 import { calculateDateRange, getTimeRangeDisplayName } from '@/utils/dateRange';
 import { Alert, Card, Col, Empty, Row, Spin, Statistic, theme } from 'antd';
 import React, { useEffect, useState } from 'react';
+import { formatRuntime } from '../utils';
 
 interface UserActivityTimeChartProps {
   timePeriod: string;
@@ -23,6 +24,20 @@ interface UserActivityTimeResponse {
   refreshTime: string;
 }
 
+const parseTimeRange = (timeRange: string) => {
+  const [startTime, endTime] = timeRange.split('-');
+  const cleanEndTime = endTime.replace('次日', '').trim();
+  return { startTime, endTime: cleanEndTime };
+};
+
+const isCrossDay = (timeRange: string): boolean => {
+  if (timeRange.includes('次日')) return true;
+  const { startTime, endTime } = parseTimeRange(timeRange);
+  const startHour = parseInt(startTime.split(':')[0]);
+  const endHour = parseInt(endTime.split(':')[0]);
+  return startHour > endHour;
+};
+
 const UserActivityTimeChart: React.FC<UserActivityTimeChartProps> = ({
   timePeriod,
 }) => {
@@ -38,96 +53,26 @@ const UserActivityTimeChart: React.FC<UserActivityTimeChartProps> = ({
 
   const fetchActivityTimeData = async () => {
     try {
-      console.log(
-        'UserActivityTimeChart: Starting to fetch user activity time data, timePeriod:',
-        timePeriod,
-      );
       setLoading(true);
       setError(null);
 
-      console.log(
-        'UserActivityTimeChart: Calling getUserActivityTimeDistribution API with params:',
-        { timePeriod },
-      );
       const response = await getUserActivityTimeDistribution({ timePeriod });
-      console.log('UserActivityTimeChart: API response received:', response);
 
       if (
         (response.isSucceed ?? (response as any).succeed) &&
         response.result
       ) {
-        console.log(
-          'UserActivityTimeChart: API call successful, processing activity time data',
-        );
-        const result = response.result as UserActivityTimeResponse;
-        console.log('UserActivityTimeChart: Raw activity time data:', result);
-
-        setActivityData(result);
-        console.log(
-          'UserActivityTimeChart: Activity time data set successfully',
-        );
+        setActivityData(response.result as UserActivityTimeResponse);
       } else {
-        console.error(
-          'UserActivityTimeChart: API call failed - response not successful:',
-          response,
-        );
         setError('获取用户活动时间数据失败');
       }
     } catch (err) {
-      console.error(
-        'UserActivityTimeChart: Failed to fetch activity time data:',
-        err,
-      );
       setError('网络错误，请稍后重试');
     } finally {
-      console.log('UserActivityTimeChart: Loading state set to false');
       setLoading(false);
     }
   };
 
-  const formatRuntime = (seconds: number): string => {
-    const hours = Math.floor(seconds / 3600);
-    const minutes = Math.floor((seconds % 3600) / 60);
-    return `${hours}h ${minutes}m`;
-  };
-
-  // 解析时间区间，处理跨天情况
-  const parseTimeRange = (timeRange: string) => {
-    console.log('Parsing time range:', timeRange);
-    const [startTime, endTime] = timeRange.split('-');
-    console.log('Parsed startTime:', startTime, 'endTime:', endTime);
-
-    // 处理包含"次日"的情况
-    const cleanEndTime = endTime.replace('次日', '').trim();
-    console.log('Cleaned endTime:', cleanEndTime);
-
-    return { startTime, endTime: cleanEndTime };
-  };
-
-  // 计算跨天时间段的显示逻辑
-  const isCrossDay = (timeRange: string): boolean => {
-    // 如果包含"次日"关键词，直接判断为跨天
-    if (timeRange.includes('次日')) {
-      console.log('Cross day detected by "次日" keyword');
-      return true;
-    }
-
-    const { startTime, endTime } = parseTimeRange(timeRange);
-    const startHour = parseInt(startTime.split(':')[0]);
-    const endHour = parseInt(endTime.split(':')[0]);
-    const result = startHour > endHour; // 如果开始时间的小时大于结束时间的小时，说明跨天
-    console.log(
-      'Cross day check result:',
-      result,
-      'startHour:',
-      startHour,
-      'endHour:',
-      endHour,
-    );
-    return result;
-  };
-
-  // 准备时间区间图数据
   const getTimeRangeChartData = () => {
     if (!activityData) return [];
 
@@ -147,7 +92,6 @@ const UserActivityTimeChart: React.FC<UserActivityTimeChartProps> = ({
     });
   };
 
-  // 计算统计信息
   const calculateStats = () => {
     if (!activityData) return null;
 
@@ -210,9 +154,7 @@ const UserActivityTimeChart: React.FC<UserActivityTimeChartProps> = ({
   const chartData = getTimeRangeChartData();
   const isDark = GetIsDarkMode();
 
-  // 自定义滚动条样式
   const scrollbarStyles = {
-    /* Firefox */
     scrollbarWidth: 'thin' as const,
     scrollbarColor: isDark
       ? 'rgba(255, 255, 255, 0.3) rgba(255, 255, 255, 0.1)'
@@ -221,7 +163,6 @@ const UserActivityTimeChart: React.FC<UserActivityTimeChartProps> = ({
 
   return (
     <div>
-      {/* 概览统计 */}
       {stats && (
         <Row gutter={16} style={{ marginBottom: 24 }}>
           <Col xs={12} sm={6}>
@@ -267,7 +208,6 @@ const UserActivityTimeChart: React.FC<UserActivityTimeChartProps> = ({
         </Row>
       )}
 
-      {/* 合并的用户活动时间分布 - 进度条可视化 */}
       <Card
         title="用户活动时间分布"
         extra={
@@ -329,13 +269,12 @@ const UserActivityTimeChart: React.FC<UserActivityTimeChartProps> = ({
             ...scrollbarStyles,
           }}
         >
-          {chartData.map((item, index) => {
+          {chartData.map((item) => {
             const startHour = parseInt(item.startTime.split(':')[0]);
             const startMinute = parseInt(item.startTime.split(':')[1]);
             const endHour = parseInt(item.endTime.split(':')[0]);
             const endMinute = parseInt(item.endTime.split(':')[1]);
 
-            // 计算开始和结束位置（百分比）
             const startPosition =
               ((startHour * 60 + startMinute) / (24 * 60)) * 100;
             const endPosition = ((endHour * 60 + endMinute) / (24 * 60)) * 100;
@@ -385,7 +324,6 @@ const UserActivityTimeChart: React.FC<UserActivityTimeChartProps> = ({
                   </Col>
 
                   <Col xs={24} sm={14}>
-                    {/* 时间轴进度条 */}
                     <div
                       style={{
                         position: 'relative',
@@ -393,7 +331,6 @@ const UserActivityTimeChart: React.FC<UserActivityTimeChartProps> = ({
                         marginBottom: 8,
                       }}
                     >
-                      {/* 时间轴背景 */}
                       <div
                         style={{
                           position: 'absolute',
@@ -407,11 +344,8 @@ const UserActivityTimeChart: React.FC<UserActivityTimeChartProps> = ({
                         }}
                       />
 
-                      {/* 活动时间进度条 */}
                       {item.crossDay ? (
-                        // 跨天情况：两段染色
                         <>
-                          {/* 第一段：从开始时间到24点 */}
                           <div
                             style={{
                               position: 'absolute',
@@ -425,7 +359,6 @@ const UserActivityTimeChart: React.FC<UserActivityTimeChartProps> = ({
                               opacity: 0.8,
                             }}
                           />
-                          {/* 第二段：从0点到结束时间 */}
                           <div
                             style={{
                               position: 'absolute',
@@ -441,7 +374,6 @@ const UserActivityTimeChart: React.FC<UserActivityTimeChartProps> = ({
                           />
                         </>
                       ) : (
-                        // 不跨天情况：一段染色
                         <div
                           style={{
                             position: 'absolute',
@@ -457,7 +389,6 @@ const UserActivityTimeChart: React.FC<UserActivityTimeChartProps> = ({
                         />
                       )}
 
-                      {/* 时间刻度 */}
                       <div
                         style={{
                           position: 'absolute',
@@ -476,7 +407,6 @@ const UserActivityTimeChart: React.FC<UserActivityTimeChartProps> = ({
                         ))}
                       </div>
 
-                      {/* 开始时间标记 */}
                       <div
                         style={{
                           position: 'absolute',
@@ -512,7 +442,6 @@ const UserActivityTimeChart: React.FC<UserActivityTimeChartProps> = ({
                         {item.startTime}
                       </div>
 
-                      {/* 结束时间标记 */}
                       <div
                         style={{
                           position: 'absolute',
@@ -549,7 +478,6 @@ const UserActivityTimeChart: React.FC<UserActivityTimeChartProps> = ({
                       </div>
                     </div>
 
-                    {/* 活动区间说明 */}
                     <div
                       style={{
                         fontSize: '12px',

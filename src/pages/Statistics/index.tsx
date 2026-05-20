@@ -19,6 +19,14 @@ interface OverviewStats {
   projectCount: number;
 }
 
+const timePeriodOptions = [
+  { value: 'ONE_DAY', label: '24小时' },
+  { value: 'ONE_WEEK', label: '1周' },
+  { value: 'ONE_MONTH', label: '1月' },
+  { value: 'SIX_MONTH', label: '6个月' },
+  { value: 'ONE_YEAR', label: '1年' },
+];
+
 const StatisticsPage: React.FC = () => {
   const [timePeriod, setTimePeriod] = useState<string>('ONE_WEEK');
   const [activeTab, setActiveTab] = useState<string>('gpu');
@@ -28,57 +36,34 @@ const StatisticsPage: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
-  const timePeriodOptions = [
-    { value: 'ONE_DAY', label: '24小时' },
-    { value: 'ONE_WEEK', label: '1周' },
-    { value: 'ONE_MONTH', label: '1月' },
-    { value: 'SIX_MONTH', label: '6个月' },
-    { value: 'ONE_YEAR', label: '1年' },
-  ];
-
   useEffect(() => {
     fetchOverviewStats();
   }, []);
 
   const fetchOverviewStats = async () => {
     try {
-      console.log('StatisticsPage: Starting to fetch overview statistics');
       setLoading(true);
       setError(null);
 
-      console.log('StatisticsPage: Calling get24HourReport API');
       const response = await get24HourReport();
-      console.log('StatisticsPage: API response received:', response);
 
       if (
         (response.isSucceed ?? (response as any).succeed) &&
         response.result
       ) {
-        console.log('StatisticsPage: API call successful, processing data');
         const report = response.result;
-        console.log('StatisticsPage: Report data:', report);
         setOverviewStats({
           totalTasks: report.totalTasks || 0,
           activeUsers: report.activeUsers || 0,
-          averageGpuUsage: 0, // 需要从其他接口获取
+          averageGpuUsage: 0,
           projectCount: report.topProjects?.length || 0,
         });
-        console.log('StatisticsPage: Overview stats set successfully');
       } else {
-        console.error(
-          'StatisticsPage: API call failed - response not successful:',
-          response,
-        );
         setError('获取统计数据失败');
       }
     } catch (err) {
-      console.error(
-        'StatisticsPage: Failed to fetch overview statistics:',
-        err,
-      );
       setError('网络错误，请稍后重试');
     } finally {
-      console.log('StatisticsPage: Loading state set to false');
       setLoading(false);
     }
   };
@@ -185,12 +170,10 @@ const StatisticsPage: React.FC = () => {
       ghost
     >
       <div className={styles.statisticsPage}>
-        {/* 详细统计 */}
         <Tabs
           activeKey={activeTab}
           onChange={(key) => {
             setActiveTab(key);
-            // 延迟触发resize事件,让图表重新计算大小
             setTimeout(() => {
               window.dispatchEvent(new Event('resize'));
             }, 100);

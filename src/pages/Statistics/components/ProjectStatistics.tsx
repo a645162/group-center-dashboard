@@ -15,7 +15,7 @@ import {
   Tag,
 } from 'antd';
 import React, { useEffect, useState } from 'react';
-import { mergeTopKWithOther } from '../utils/mergeTopKWithOther';
+import { formatRuntime, mergeTopKWithOther } from '../utils';
 
 const { Option } = Select;
 
@@ -59,29 +59,16 @@ const ProjectStatistics: React.FC<ProjectStatisticsProps> = ({
 
   const fetchProjectStatistics = async () => {
     try {
-      console.log(
-        'ProjectStatistics: Starting to fetch project statistics, timePeriod:',
-        timePeriod,
-      );
       setLoading(true);
       setError(null);
 
-      console.log(
-        'ProjectStatistics: Calling getProjectStatistics API with params:',
-        { timePeriod },
-      );
       const response = await getProjectStatistics({ timePeriod });
-      console.log('ProjectStatistics: API response received:', response);
 
       if (
         (response.isSucceed ?? (response as any).succeed) &&
         response.result
       ) {
-        console.log(
-          'ProjectStatistics: API call successful, processing project data',
-        );
         const projectStats = response.result as ProjectStat[];
-        console.log('ProjectStatistics: Raw project stats:', projectStats);
 
         const totalProjects = projectStats.length;
         const activeProjects = projectStats.filter(
@@ -94,48 +81,21 @@ const ProjectStatistics: React.FC<ProjectStatisticsProps> = ({
         const averageTasksPerProject =
           totalProjects > 0 ? totalTasks / totalProjects : 0;
 
-        console.log(
-          'ProjectStatistics: Calculated metrics - totalProjects:',
-          totalProjects,
-          'activeProjects:',
-          activeProjects,
-          'totalTasks:',
-          totalTasks,
-          'averageTasksPerProject:',
-          averageTasksPerProject,
-        );
-
         setProjectData({
           totalProjects,
           activeProjects,
           averageTasksPerProject,
-          topProjects: projectStats, // 存储所有项目数据
-          refreshTime: new Date().toLocaleString('zh-CN'), // 使用当前时间作为统计时间
+          topProjects: projectStats,
+          refreshTime: new Date().toLocaleString('zh-CN'),
         });
-        console.log('ProjectStatistics: Project data set successfully');
       } else {
-        console.error(
-          'ProjectStatistics: API call failed - response not successful:',
-          response,
-        );
         setError('获取项目统计数据失败');
       }
     } catch (err) {
-      console.error(
-        'ProjectStatistics: Failed to fetch project statistics:',
-        err,
-      );
       setError('网络错误，请稍后重试');
     } finally {
-      console.log('ProjectStatistics: Loading state set to false');
       setLoading(false);
     }
-  };
-
-  const formatRuntime = (seconds: number): string => {
-    const hours = Math.floor(seconds / 3600);
-    const minutes = Math.floor((seconds % 3600) / 60);
-    return `${hours}h ${minutes}m`;
   };
 
   const calculateUsagePercentage = (
@@ -149,7 +109,6 @@ const ProjectStatistics: React.FC<ProjectStatisticsProps> = ({
     return totalRuntime > 0 ? (project.totalRuntime / totalRuntime) * 100 : 0;
   };
 
-  // 获取当前页显示的项目数据
   const getCurrentPageProjects = () => {
     if (!projectData) return [];
     const startIndex = (currentPage - 1) * pageSize;
@@ -157,7 +116,6 @@ const ProjectStatistics: React.FC<ProjectStatisticsProps> = ({
     return projectData.topProjects.slice(startIndex, endIndex);
   };
 
-  // 准备项目时间占比饼图数据
   const getProjectTimeDistributionData = () => {
     if (!projectData) return [];
 
@@ -176,19 +134,6 @@ const ProjectStatistics: React.FC<ProjectStatisticsProps> = ({
     }));
   };
 
-  // 准备项目运行时间柱状图数据
-  const getRuntimeChartData = () => {
-    if (!projectData) return [];
-
-    return projectData.topProjects.map((project) => ({
-      project: project.projectName,
-      runtime: Math.floor(project.totalRuntime / 3600), // 转换为小时
-      tasks: project.totalTasks,
-      users: project.activeUsersCount,
-    }));
-  };
-
-  // 处理分页变化
   const handlePageChange = (page: number, size: number) => {
     setCurrentPage(page);
     setPageSize(size);
@@ -196,7 +141,6 @@ const ProjectStatistics: React.FC<ProjectStatisticsProps> = ({
 
   const isDark = GetIsDarkMode();
 
-  // 项目时间占比饼图配置 - 使用Ant Design Charts最新API
   const projectTimePieConfig = {
     data: getProjectTimeDistributionData(),
     angleField: 'value',
@@ -206,7 +150,7 @@ const ProjectStatistics: React.FC<ProjectStatisticsProps> = ({
     theme: isDark ? 'dark' : 'light',
     label: {
       text: 'type',
-      position: 'outside',
+      position: 'outside' as const,
       formatter: (text: string, item: any) => {
         const percent = item.percentage || '0';
         return `${text} ${percent}%`;
@@ -218,10 +162,7 @@ const ProjectStatistics: React.FC<ProjectStatisticsProps> = ({
         {
           name: '运行时间',
           field: 'runtime',
-          formatter: (datum: any) => {
-            const hours = Math.floor(datum.runtime / 3600);
-            return `${hours}h`;
-          },
+          formatter: (datum: any) => formatRuntime(datum.runtime),
         },
         {
           name: '占比',
@@ -241,79 +182,17 @@ const ProjectStatistics: React.FC<ProjectStatisticsProps> = ({
       ],
     },
     legend: {
-      position: 'bottom',
-      layout: 'horizontal',
+      position: 'bottom' as const,
+      layout: 'horizontal' as const,
       itemName: {
-        formatter: (text: string) => {
-          return text.length > 15 ? text.substring(0, 15) + '...' : text;
-        },
+        formatter: (text: string) =>
+          text.length > 15 ? text.substring(0, 15) + '...' : text,
       },
     },
     animation: {
       appear: {
         animation: 'fade-in',
         duration: 1000,
-      },
-    },
-  };
-
-  // 柱状图配置 - 使用Ant Design Charts最新API
-  const columnConfig = {
-    data: getRuntimeChartData(),
-    xField: 'project',
-    yField: 'runtime',
-    seriesField: 'project',
-    isGroup: false,
-    autoFit: true,
-    theme: isDark ? 'dark' : 'light',
-    columnStyle: {
-      radius: [4, 4, 0, 0],
-    },
-    label: {
-      position: 'top',
-      style: {
-        fill: '#000',
-        fontSize: 12,
-      },
-      formatter: (datum: any) => `${datum.runtime}h`,
-    },
-    tooltip: {
-      title: 'project',
-      items: [
-        {
-          name: '运行时间',
-          field: 'runtime',
-          formatter: (datum: any) => `${datum.runtime}h`,
-        },
-        {
-          name: '任务数',
-          field: 'tasks',
-          formatter: (datum: any) => `${datum.tasks}个`,
-        },
-        {
-          name: '活跃用户',
-          field: 'users',
-          formatter: (datum: any) => `${datum.users}人`,
-        },
-      ],
-    },
-    xAxis: {
-      label: {
-        autoRotate: true,
-        formatter: (text: string) => {
-          return text.length > 15 ? text.substring(0, 15) + '...' : text;
-        },
-      },
-    },
-    yAxis: {
-      label: {
-        formatter: (v: number) => `${Math.round(v)}h`,
-      },
-    },
-    animation: {
-      appear: {
-        animation: 'scale-in-y',
-        duration: 800,
       },
     },
   };
@@ -354,7 +233,6 @@ const ProjectStatistics: React.FC<ProjectStatisticsProps> = ({
 
   return (
     <div>
-      {/* 项目概览统计 */}
       <div style={{ marginBottom: 24 }}>
         <Card>
           <div
@@ -393,7 +271,6 @@ const ProjectStatistics: React.FC<ProjectStatisticsProps> = ({
         </Card>
       </div>
 
-      {/* 项目时间占比分布 */}
       <Card
         title={
           <div
@@ -433,7 +310,6 @@ const ProjectStatistics: React.FC<ProjectStatisticsProps> = ({
         </div>
       </Card>
 
-      {/* 项目排名列表 */}
       <Card
         title="项目使用排名"
         extra={

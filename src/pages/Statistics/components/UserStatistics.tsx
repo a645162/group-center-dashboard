@@ -15,7 +15,7 @@ import {
   Tag,
 } from 'antd';
 import React, { useEffect, useState } from 'react';
-import { mergeTopKWithOther } from '../utils/mergeTopKWithOther';
+import { formatRuntime, mergeTopKWithOther } from '../utils';
 
 const { Option } = Select;
 
@@ -55,29 +55,16 @@ const UserStatistics: React.FC<UserStatisticsProps> = ({ timePeriod }) => {
 
   const fetchUserStatistics = async () => {
     try {
-      console.log(
-        'UserStatistics: Starting to fetch user statistics, timePeriod:',
-        timePeriod,
-      );
       setLoading(true);
       setError(null);
 
-      console.log(
-        'UserStatistics: Calling getUserStatistics API with params:',
-        { timePeriod },
-      );
       const response = await getUserStatistics({ timePeriod });
-      console.log('UserStatistics: API response received:', response);
 
       if (
         (response.isSucceed ?? (response as any).succeed) &&
         response.result
       ) {
-        console.log(
-          'UserStatistics: API call successful, processing user data',
-        );
         const userStats = response.result as UserStat[];
-        console.log('UserStatistics: Raw user stats:', userStats);
 
         const totalUsers = userStats.length;
         const activeUsers = userStats.filter(
@@ -90,45 +77,21 @@ const UserStatistics: React.FC<UserStatisticsProps> = ({ timePeriod }) => {
         const averageTasksPerUser =
           totalUsers > 0 ? totalTasks / totalUsers : 0;
 
-        console.log(
-          'UserStatistics: Calculated metrics - totalUsers:',
-          totalUsers,
-          'activeUsers:',
-          activeUsers,
-          'totalTasks:',
-          totalTasks,
-          'averageTasksPerUser:',
-          averageTasksPerUser,
-        );
-
         setUserData({
           totalUsers,
           activeUsers,
           averageTasksPerUser,
-          topUsers: userStats, // 存储所有用户数据
-          refreshTime: new Date().toLocaleString('zh-CN'), // 使用当前时间作为统计时间
+          topUsers: userStats,
+          refreshTime: new Date().toLocaleString('zh-CN'),
         });
-        console.log('UserStatistics: User data set successfully');
       } else {
-        console.error(
-          'UserStatistics: API call failed - response not successful:',
-          response,
-        );
         setError('获取用户统计数据失败');
       }
     } catch (err) {
-      console.error('UserStatistics: Failed to fetch user statistics:', err);
       setError('网络错误，请稍后重试');
     } finally {
-      console.log('UserStatistics: Loading state set to false');
       setLoading(false);
     }
-  };
-
-  const formatRuntime = (seconds: number): string => {
-    const hours = Math.floor(seconds / 3600);
-    const minutes = Math.floor((seconds % 3600) / 60);
-    return `${hours}h ${minutes}m`;
   };
 
   const calculateUsagePercentage = (
@@ -139,7 +102,6 @@ const UserStatistics: React.FC<UserStatisticsProps> = ({ timePeriod }) => {
     return totalRuntime > 0 ? (user.totalRuntime / totalRuntime) * 100 : 0;
   };
 
-  // 获取当前页显示的用户数据
   const getCurrentPageUsers = () => {
     if (!userData) return [];
     const startIndex = (currentPage - 1) * pageSize;
@@ -147,36 +109,6 @@ const UserStatistics: React.FC<UserStatisticsProps> = ({ timePeriod }) => {
     return userData.topUsers.slice(startIndex, endIndex);
   };
 
-  // 准备用户任务分布饼图数据
-  const getTaskDistributionData = () => {
-    if (!userData) return [];
-
-    return userData.topUsers.map((user) => ({
-      type: user.userName,
-      value: user.totalTasks,
-      runtime: user.totalRuntime,
-    }));
-  };
-
-  // 准备用户运行时间柱状图数据
-  const getRuntimeChartData = () => {
-    if (!userData) return [];
-
-    return userData.topUsers.map((user) => ({
-      user: user.userName,
-      runtime: Math.floor(user.totalRuntime / 3600), // 转换为小时
-      tasks: user.totalTasks,
-      favoriteGpu: user.favoriteGpu,
-    }));
-  };
-
-  // 处理分页变化
-  const handlePageChange = (page: number, size: number) => {
-    setCurrentPage(page);
-    setPageSize(size);
-  };
-
-  // 准备用户时间占比饼图数据
   const getUserTimeDistributionData = () => {
     if (!userData) return [];
 
@@ -195,125 +127,13 @@ const UserStatistics: React.FC<UserStatisticsProps> = ({ timePeriod }) => {
     }));
   };
 
+  const handlePageChange = (page: number, size: number) => {
+    setCurrentPage(page);
+    setPageSize(size);
+  };
+
   const isDark = GetIsDarkMode();
 
-  // 饼图配置 - 使用Ant Design Charts最新API
-  const pieConfig = {
-    data: getTaskDistributionData(),
-    angleField: 'value',
-    colorField: 'type',
-    radius: 0.8,
-    autoFit: true,
-    theme: isDark ? 'dark' : 'light',
-    label: {
-      type: 'outer',
-      content: '{name} {percentage}',
-      formatter: (datum: any, mappingData: any) => {
-        const percentage = ((datum.value / mappingData.total) * 100).toFixed(1);
-        return `${datum.type}\n${percentage}%`;
-      },
-    },
-    interactions: [
-      {
-        type: 'element-active',
-      },
-    ],
-    tooltip: {
-      title: 'type',
-      items: [
-        {
-          name: '任务数',
-          field: 'value',
-          formatter: (datum: any) => `${datum.value}个`,
-        },
-        {
-          name: '运行时间',
-          field: 'runtime',
-          formatter: (datum: any) => {
-            const hours = Math.floor(datum.runtime / 3600);
-            return `${hours}h`;
-          },
-        },
-      ],
-    },
-    legend: {
-      position: 'bottom',
-      itemName: {
-        formatter: (text: string) => {
-          return text.length > 15 ? text.substring(0, 15) + '...' : text;
-        },
-      },
-    },
-    animation: {
-      appear: {
-        animation: 'scale-in',
-        duration: 1000,
-      },
-    },
-  };
-
-  // 柱状图配置 - 使用Ant Design Charts最新API
-  const columnConfig = {
-    data: getRuntimeChartData(),
-    xField: 'user',
-    yField: 'runtime',
-    seriesField: 'user',
-    isGroup: false,
-    autoFit: true,
-    theme: isDark ? 'dark' : 'light',
-    columnStyle: {
-      radius: [4, 4, 0, 0],
-    },
-    label: {
-      position: 'top',
-      style: {
-        fill: '#000',
-        fontSize: 12,
-      },
-      formatter: (datum: any) => `${datum.runtime}h`,
-    },
-    tooltip: {
-      title: 'user',
-      items: [
-        {
-          name: '运行时间',
-          field: 'runtime',
-          formatter: (datum: any) => `${datum.runtime}h`,
-        },
-        {
-          name: '任务数',
-          field: 'tasks',
-          formatter: (datum: any) => `${datum.tasks}个`,
-        },
-        {
-          name: '常用GPU',
-          field: 'favoriteGpu',
-          formatter: (datum: any) => datum.favoriteGpu || 'N/A',
-        },
-      ],
-    },
-    xAxis: {
-      label: {
-        autoRotate: true,
-        formatter: (text: string) => {
-          return text.length > 10 ? text.substring(0, 10) + '...' : text;
-        },
-      },
-    },
-    yAxis: {
-      label: {
-        formatter: (v: number) => `${Math.round(v)}h`,
-      },
-    },
-    animation: {
-      appear: {
-        animation: 'scale-in-y',
-        duration: 800,
-      },
-    },
-  };
-
-  // 用户时间占比饼图配置 - 使用Ant Design Charts最新API
   const userTimePieConfig = {
     data: getUserTimeDistributionData(),
     angleField: 'value',
@@ -323,7 +143,7 @@ const UserStatistics: React.FC<UserStatisticsProps> = ({ timePeriod }) => {
     theme: isDark ? 'dark' : 'light',
     label: {
       text: 'type',
-      position: 'outside',
+      position: 'outside' as const,
       formatter: (text: string, item: any) => {
         const percent = item.percentage || '0';
         return `${text} ${percent}%`;
@@ -335,10 +155,7 @@ const UserStatistics: React.FC<UserStatisticsProps> = ({ timePeriod }) => {
         {
           name: '运行时间',
           field: 'runtime',
-          formatter: (datum: any) => {
-            const hours = Math.floor(datum.runtime / 3600);
-            return `${hours}h`;
-          },
+          formatter: (datum: any) => formatRuntime(datum.runtime),
         },
         {
           name: '占比',
@@ -358,12 +175,11 @@ const UserStatistics: React.FC<UserStatisticsProps> = ({ timePeriod }) => {
       ],
     },
     legend: {
-      position: 'bottom',
-      layout: 'horizontal',
+      position: 'bottom' as const,
+      layout: 'horizontal' as const,
       itemName: {
-        formatter: (text: string) => {
-          return text.length > 15 ? text.substring(0, 15) + '...' : text;
-        },
+        formatter: (text: string) =>
+          text.length > 15 ? text.substring(0, 15) + '...' : text,
       },
     },
     animation: {
@@ -410,7 +226,6 @@ const UserStatistics: React.FC<UserStatisticsProps> = ({ timePeriod }) => {
 
   return (
     <div>
-      {/* 用户概览统计 */}
       <div style={{ marginBottom: 24 }}>
         <Card>
           <div
@@ -449,7 +264,6 @@ const UserStatistics: React.FC<UserStatisticsProps> = ({ timePeriod }) => {
         </Card>
       </div>
 
-      {/* 用户时间占比分布 */}
       <Card
         title={
           <div
@@ -489,7 +303,6 @@ const UserStatistics: React.FC<UserStatisticsProps> = ({ timePeriod }) => {
         </div>
       </Card>
 
-      {/* 用户排名列表 */}
       <Card
         title="用户使用排名"
         extra={
