@@ -6,3 +6,7 @@ allowBuilds:
   esbuild: set this to true or false
 minimumReleaseAgeExclude:
   - '@types/react@19.2.15'
+  - '@rc-component/async-validator@6.0.0'
+  - '@rc-component/form@1.8.3'
+  - antd@6.4.4
+  - es-toolkit@1.47.1
